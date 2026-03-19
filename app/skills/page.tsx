@@ -1,4 +1,4 @@
-import { supabase } from '@/lib/supabase'
+import { serviceClient } from '@/lib/supabase'
 import type { Skill } from '@/lib/types'
 import { Navbar } from '@/components/navbar'
 import { SkillsClient } from './SkillsClient'
@@ -10,7 +10,7 @@ export default async function SkillsPage({
 }) {
   const { ecosystem, type, source, q } = await searchParams
 
-  const { data: skills, error } = await supabase
+  const { data: skills, error } = await serviceClient
     .from('skills')
     .select('*')
     .order('created_at', { ascending: false })

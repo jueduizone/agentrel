@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
-import { supabase } from '@/lib/supabase'
+import { serviceClient } from '@/lib/supabase'
 import type { Skill } from '@/lib/types'
 import { Navbar } from '@/components/navbar'
 import { FeedbackForm } from './FeedbackForm'
@@ -38,7 +38,7 @@ export default async function SkillDetailPage({
   const { id } = await params
   const skillId = id.join('/')
 
-  const { data, error } = await supabase
+  const { data, error } = await serviceClient
     .from('skills')
     .select('*')
     .eq('id', skillId)

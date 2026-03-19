@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import { Package } from 'lucide-react'
-import { supabase } from '@/lib/supabase'
+import { serviceClient } from '@/lib/supabase'
 import type { Bundle } from '@/lib/types'
 import { Navbar } from '@/components/navbar'
 
 export default async function BundlesPage() {
-  const { data: bundles, error } = await supabase
+  const { data: bundles, error } = await serviceClient
     .from('bundles')
     .select('*')
     .order('created_at', { ascending: false })
