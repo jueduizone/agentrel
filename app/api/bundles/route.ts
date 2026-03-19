@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { serviceClient } from '@/lib/supabase'
 
 export async function GET() {
-  const { data, error } = await supabase
+  const { data, error } = await serviceClient
     .from('bundles')
     .select('*')
     .order('created_at', { ascending: false })

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { supabase, serviceClient } from '@/lib/supabase'
 import type { SkillsListResponse } from '@/lib/types'
 
 export async function GET(request: NextRequest) {
@@ -12,7 +12,7 @@ export async function GET(request: NextRequest) {
   const limit = Math.min(parseInt(searchParams.get('limit') ?? '20'), 100)
   const offset = parseInt(searchParams.get('offset') ?? '0')
 
-  let query = supabase
+  let query = serviceClient
     .from('skills')
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })

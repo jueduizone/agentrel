@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { serviceClient } from '@/lib/supabase'
 
 export async function GET(
   request: NextRequest,
@@ -9,7 +9,7 @@ export async function GET(
   const skillId = id.join('/')
   const format = request.nextUrl.searchParams.get('format')
 
-  const { data, error } = await supabase
+  const { data, error } = await serviceClient
     .from('skills')
     .select('*')
     .eq('id', skillId)

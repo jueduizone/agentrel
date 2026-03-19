@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { serviceClient } from '@/lib/supabase'
 import type { Bundle, Skill } from '@/lib/types'
 
 export async function GET(
@@ -8,7 +8,7 @@ export async function GET(
 ) {
   const { id } = await params
 
-  const { data: bundle, error } = await supabase
+  const { data: bundle, error } = await serviceClient
     .from('bundles')
     .select('*')
     .eq('id', id)
@@ -21,7 +21,7 @@ export async function GET(
   const b = bundle as Bundle
 
   // Fetch expanded skill details
-  const { data: skills } = await supabase
+  const { data: skills } = await serviceClient
     .from('skills')
     .select('*')
     .in('id', b.skills)
