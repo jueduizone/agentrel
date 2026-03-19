@@ -17,20 +17,11 @@ function ecosystemClass(eco: string) {
   return map[eco.toLowerCase()] ?? 'bg-gray-100 text-gray-700 border-gray-200'
 }
 
-function sourceClass(src: string) {
-  const map: Record<string, string> = {
-    official: 'bg-green-100 text-green-700 border-green-200',
-    community: 'bg-blue-100 text-blue-700 border-blue-200',
-    'ai-generated': 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  }
-  return map[src] ?? 'bg-gray-100 text-gray-700 border-gray-200'
-}
-
-function confidenceIcon(confidence: string, source: string) {
-  if (source === 'ai-generated') return '🤖'
-  if (source === 'community') return '👥'
-  if (confidence === 'high') return '✅'
-  return '👥'
+const SOURCE_BADGE: Record<string, { label: string; className: string }> = {
+  official:       { label: '🏛️ Official',  className: 'bg-blue-100 text-blue-700 border border-blue-200' },
+  verified:       { label: '✅ Verified',   className: 'bg-green-100 text-green-700 border border-green-200' },
+  community:      { label: '👥 Community',  className: 'bg-gray-100 text-gray-600 border border-gray-200' },
+  'ai-generated': { label: '🤖 AI Draft',  className: 'bg-yellow-100 text-yellow-700 border border-yellow-200' },
 }
 
 const ALL_ECOSYSTEMS = ['ethereum', 'solana', 'aptos', 'sui', 'ton', 'cosmos', 'polkadot']
@@ -206,9 +197,6 @@ export function SkillsClient({ skills, initialEcosystem, initialType, initialSou
                   <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
                     {skill.id}
                   </span>
-                  <span className="text-base" title={`Confidence: ${skill.confidence} | Source: ${skill.source}`}>
-                    {confidenceIcon(skill.confidence, skill.source)}
-                  </span>
                 </div>
 
                 {/* Name */}
@@ -226,9 +214,15 @@ export function SkillsClient({ skills, initialEcosystem, initialType, initialSou
                   <span className={`rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${ecosystemClass(skill.ecosystem)}`}>
                     {skill.ecosystem}
                   </span>
-                  <span className={`rounded-full border px-2 py-0.5 text-xs font-medium ${sourceClass(skill.source)}`}>
-                    {skill.source}
-                  </span>
+                  {SOURCE_BADGE[skill.source] ? (
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${SOURCE_BADGE[skill.source].className}`}>
+                      {SOURCE_BADGE[skill.source].label}
+                    </span>
+                  ) : (
+                    <span className="rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
+                      {skill.source}
+                    </span>
+                  )}
                   {skill.tags?.slice(0, 2).map((tag) => (
                     <span key={tag} className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
                       {tag}

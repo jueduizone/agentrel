@@ -21,13 +21,11 @@ function ecosystemClass(eco: string) {
   return map[eco.toLowerCase()] ?? 'bg-gray-100 text-gray-700 border-gray-200'
 }
 
-function sourceClass(src: string) {
-  const map: Record<string, string> = {
-    official: 'bg-green-100 text-green-700 border-green-200',
-    community: 'bg-blue-100 text-blue-700 border-blue-200',
-    'ai-generated': 'bg-yellow-100 text-yellow-700 border-yellow-200',
-  }
-  return map[src] ?? 'bg-gray-100 text-gray-700 border-gray-200'
+const SOURCE_BADGE: Record<string, { label: string; className: string }> = {
+  official:       { label: '🏛️ Official',  className: 'bg-blue-100 text-blue-700 border border-blue-200' },
+  verified:       { label: '✅ Verified',   className: 'bg-green-100 text-green-700 border border-green-200' },
+  community:      { label: '👥 Community',  className: 'bg-gray-100 text-gray-600 border border-gray-200' },
+  'ai-generated': { label: '🤖 AI Draft',  className: 'bg-yellow-100 text-yellow-700 border border-yellow-200' },
 }
 
 export default async function SkillDetailPage({
@@ -73,9 +71,6 @@ export default async function SkillDetailPage({
                 <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize ${ecosystemClass(skill.ecosystem)}`}>
                   {skill.ecosystem}
                 </span>
-                <span className={`rounded-full border px-2.5 py-0.5 text-xs font-medium ${sourceClass(skill.source)}`}>
-                  {skill.source}
-                </span>
                 <span className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
                   {skill.type}
                 </span>
@@ -86,6 +81,17 @@ export default async function SkillDetailPage({
                 )}
               </div>
               <h1 className="text-3xl font-bold text-black">{skill.name}</h1>
+              <div className="mt-2">
+                {SOURCE_BADGE[skill.source] ? (
+                  <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${SOURCE_BADGE[skill.source].className}`}>
+                    {SOURCE_BADGE[skill.source].label}
+                  </span>
+                ) : (
+                  <span className="inline-flex rounded-full border border-gray-200 bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+                    {skill.source}
+                  </span>
+                )}
+              </div>
               <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                 {skill.version && <span>v{skill.version}</span>}
                 {skill.maintainer && <span>by {skill.maintainer}</span>}
