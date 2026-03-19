@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase, serviceClient } from '@/lib/supabase'
+import { serviceClient } from '@/lib/supabase'
 import type { SkillsListResponse } from '@/lib/types'
 
 export async function GET(request: NextRequest) {

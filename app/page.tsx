@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { Github, ArrowRight, Zap, RefreshCw, FileText } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
-import { supabase } from '@/lib/supabase'
+import { serviceClient as supabase } from '@/lib/supabase'
 
 const ECOSYSTEMS = [
   { name: 'Ethereum', color: 'bg-blue-100 text-blue-700 border border-blue-200' },
