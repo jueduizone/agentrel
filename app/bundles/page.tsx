@@ -62,7 +62,6 @@ export default async function BundlesPage() {
                           key={skillId}
                           href={`/skills/${skillId}`}
                           className="rounded-full border border-border bg-muted/30 px-2 py-0.5 font-mono text-xs text-foreground hover:bg-muted transition-colors"
-                          onClick={(e) => e.stopPropagation()}
                         >
                           {skillId}
                         </Link>
