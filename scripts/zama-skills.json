@@ -1,0 +1,45 @@
+[
+  {
+    "id": "zama/fhevm-dev-guide",
+    "name": "Zama fhEVM 开发指南：全同态加密智能合约",
+    "description": "Use when user asks about Zama, fhEVM, FHE smart contracts, confidential contracts, writing encrypted Solidity, TFHE library, or building privacy-preserving dApps with homomorphic encryption.",
+    "ecosystem": "zama",
+    "type": "guide",
+    "source": "official-docs",
+    "confidence": "high",
+    "tags": [
+      "zama",
+      "fhe",
+      "fhevm",
+      "homomorphic-encryption",
+      "confidential-contracts",
+      "privacy",
+      "solidity",
+      "hardhat"
+    ],
+    "version": "1.0.0",
+    "time_sensitivity": "stable",
+    "content": "# Zama fhEVM 开发指南\n\n## 核心概念\n\nZama 的 FHEVM（Fully Homomorphic Encryption VM）让智能合约可以直接在加密数据上计算，数据全程不解密。\n\n核心特性：\n- 合约操作加密状态，链上永远看不到明文\n- 兼容 Solidity + Hardhat/Foundry\n- 支持加密整数运算（euint8/euint32/euint256）、加密布尔值（ebool）、加密地址（eaddress）\n- 通过 ACL（访问控制列表）精细控制谁可以解密哪些数据\n\n适用场景：\n- 私密投票（投票结果加密，计票后才可见）\n- 隐私 DEX（订单簿全加密，防止 MEV）\n- 保密竞标（出价加密，揭晓前不可见）\n- 医疗数据合约（隐私计算）\n\n## 安装\n\n```bash\n# 使用官方 Hardhat 模板（推荐）\nnpx create-fhevm-hardhat-project my-project\ncd my-project && npm install\n\n# 或手动安装\nnpm install fhevm\n```\n\n## 第一个保密合约\n\n普通 ERC-20 对比：\n\n```solidity\n// 普通 ERC-20（余额公开可见）\ncontract Token {\n  mapping(address => uint256) public balances;  // 任何人都能查\n}\n\n// FHEVM 保密 ERC-20（余额加密）\nimport \"fhevm/lib/TFHE.sol\";\nimport \"fhevm/config/ZamaFHEVMConfig.sol\";\n\ncontract EncryptedToken is SepoliaZamaFHEVMConfig {\n  mapping(address => euint64) private balances;  // euint64 = 加密的 uint64\n\n  function transfer(address to, einput encryptedAmount, bytes calldata inputProof) public {\n    // encryptedAmount 是用户客户端加密后的数值\n    euint64 amount = TFHE.asEuint64(encryptedAmount, inputProof);\n\n    // 条件：当前余额 >= 转账金额（全程在加密域内比较）\n    ebool canTransfer = TFHE.le(amount, balances[msg.sender]);\n\n    // select = 加密版三目运算：if canTransfer then amount else 0\n    euint64 transferValue = TFHE.select(canTransfer, amount, TFHE.asEuint64(0));\n\n    balances[msg.sender] = TFHE.sub(balances[msg.sender], transferValue);\n    balances[to] = TFHE.add(balances[to], transferValue);\n\n    // 授权 to 可以查看自己的余额\n    TFHE.allow(balances[to], to);\n    TFHE.allow(balances[msg.sender], msg.sender);\n  }\n}\n```\n\n## 加密类型\n\n| 类型 | 说明 | 对应明文 |\n|------|------|---------|\n| ebool | 加密布尔值 | bool |\n| euint8/16/32/64/128/256 | 加密无符号整数 | uint8...uint256 |\n| eaddress | 加密地址 | address |\n| ebytes64/128/256 | 加密字节 | bytes |\n\n## TFHE 核心操作\n\n```solidity\n// 算术\neuint64 c = TFHE.add(a, b);\neuint64 d = TFHE.sub(a, b);\neuint64 e = TFHE.mul(a, b);\n\n// 比较（返回 ebool）\nebool eq = TFHE.eq(a, b);\nebool lt = TFHE.lt(a, b);\nebool le = TFHE.le(a, b);\n\n// 逻辑\nebool and = TFHE.and(x, y);\nebool or = TFHE.or(x, y);\nebool not = TFHE.not(x);\n\n// 条件选择（加密版三目）\neuint64 result = TFHE.select(condition, trueVal, falseVal);\n\n// 类型转换\neuint64 val = TFHE.asEuint64(encryptedInput, inputProof);  // 从用户输入\neuint64 const = TFHE.asEuint64(100);  // 从明文常量\n```\n\n## 访问控制（ACL）\n\n谁可以解密哪个加密值，必须显式授权：\n\n```solidity\n// 授权某个地址可以解密\nTFHE.allow(encryptedValue, userAddress);\nTFHE.allow(encryptedValue, address(this));  // 合约自己\n\n// 授权所有人（公开解密，慎用）\nTFHE.allowTransient(encryptedValue, tx.origin);\n\n// 链下查询余额（需要 Gateway 解密）\n// 只有被授权的地址才能查到明文\n```\n\n## 解密流程\n\n```\n链上：操作全在加密域 → 结果存为 euint\n链下：用户调 Gateway 解密接口 → Gateway 验证 ACL → 返回明文\n```\n\n```typescript\n// Relayer SDK（前端解密）\nimport { createInstance } from \"fhevmjs\"\n\nconst instance = await createInstance({ network: window.ethereum })\n\n// 查询加密余额\nconst encryptedBalance = await token.balances(userAddress)\nconst clearBalance = await instance.decrypt(tokenAddress, encryptedBalance)\nconsole.log(\"Balance:\", clearBalance)\n```\n\n## 测试（本地 Mock）\n\n```typescript\n// Hardhat 测试：用 MockFHEVM 加速\nimport { createInstances } from \"../instance\"\n\nit(\"confidential transfer\", async () => {\n  const { alice, bob } = await getAccounts()\n  const instance = await createInstances(this.tokenAddress, ethers, alice)\n\n  // 加密输入\n  const encryptedAmount = instance.encrypt64(100n)\n\n  // 调用合约\n  await token.connect(alice).transfer(\n    bob.address,\n    encryptedAmount.handles[0],\n    encryptedAmount.inputProof\n  )\n\n  // 解密验证\n  const aliceBal = await instance.decrypt(tokenAddress, await token.balances(alice.address))\n  expect(aliceBal).to.equal(900n)\n})\n```\n\n## 部署网络\n\n| 网络 | Chain ID | 支持状态 |\n|------|---------|---------|\n| Ethereum Sepolia | 11155111 | 测试网 |\n| Zama Devnet | - | 开发测试 |\n| 主网 | - | 即将上线 |\n\n## 参考资源\n\n官方文档：docs.zama.ai/protocol\n快速开始模板：github.com/zama-ai/fhevm-hardhat-template\n社区论坛：community.zama.ai/c/fhevm\nDiscord：discord.com/invite/zama\nBounty 平台：bounty.zama.ai"
+  },
+  {
+    "id": "zama/fhe-concepts",
+    "name": "全同态加密（FHE）核心概念：Zama TFHE 原理",
+    "description": "Use when user asks about what FHE is, how fully homomorphic encryption works, difference between FHE and ZK proofs, TFHE vs other FHE schemes, or why to use FHE for blockchain privacy.",
+    "ecosystem": "zama",
+    "type": "technical-doc",
+    "source": "community",
+    "confidence": "high",
+    "tags": [
+      "fhe",
+      "zama",
+      "tfhe",
+      "homomorphic-encryption",
+      "privacy",
+      "zk-comparison",
+      "cryptography"
+    ],
+    "version": "1.0.0",
+    "time_sensitivity": "stable",
+    "content": "# 全同态加密（FHE）核心概念\n\n## 什么是 FHE\n\n全同态加密（Fully Homomorphic Encryption）：在不解密的情况下，对密文直接进行计算，结果解密后与对明文计算的结果相同。\n\n比喻：给你一个锁着的保险箱，你不用知道密码，却能改变里面的数字（加减乘除），箱子还是锁着的，只有密钥持有者才知道结果。\n\n核心公式：Encrypt(a) op Encrypt(b) = Encrypt(a op b)\n\n## FHE vs ZK Proof\n\n| 维度 | ZK Proof | FHE |\n|------|---------|-----|\n| 解决的问题 | 证明\"我知道某个值\"，不泄露值本身 | 在加密数据上直接计算 |\n| 链上状态 | 可以是明文（只证明有效性）| 始终是密文 |\n| 隐私对象 | 证明者的输入 | 所有参与方的数据 |\n| 适用场景 | 合规证明、身份、余额证明 | 私密计算、隐私 DEX |\n| 计算开销 | 证明生成较重 | 加密运算较重 |\n\n简单记忆：ZK 证明\"我有\"，FHE 让\"算在密文上\"。两者互补，不是替代关系。\n\n## Zama 的 TFHE\n\nTFHE（Fast Fully Homomorphic Encryption over the Torus）是目前最快的 FHE 方案，由 Zama 开源实现。\n\n优势：\n- 布尔电路和整数运算均支持\n- 支持任意函数（通过程序化引导 Bootstrapping）\n- 延迟比其他方案低 10-100x\n\n限制：\n- 仍比明文运算慢（当前约慢 1000x，持续优化中）\n- 不支持浮点数（需要定点数模拟）\n- 密文比明文大很多（64bit 明文 → ~1KB 密文）\n\n## Zama 产品生态\n\nTFHE-rs：Rust 实现的核心 FHE 库（github.com/zama-ai/tfhe-rs）\nFHEVM：在 EVM 上运行 FHE 的智能合约框架\nConcrete：Python/ML 场景的 FHE 编译器\nConcrete-ML：scikit-learn 兼容的隐私 ML 框架\n\n## 隐私合约典型场景\n\n私密投票：每票加密投出，合约直接累加密文，结束后解密总票数，过程中任何人无法知道中间计票结果。\n\n隐私 DEX：订单簿全部用 FHE 加密，链上无法看到订单方向/价格，消除前置交易和夹心攻击（MEV）。\n\n保密竞标：所有出价加密上链，合约比较密文找最高出价，揭晓前任何人不知道他人出价。\n\n合规 DeFi：用户证明余额满足条件（KYC/AML），但不暴露具体余额。\n\n## 开发者门槛\n\n需要了解的知识：\n- 基础 Solidity（必须）\n- 加密类型系统（euint/ebool/eaddress）\n- ACL 访问控制逻辑\n- 前端 Relayer SDK 解密流程\n\n不需要了解：\n- FHE 底层数学（TFHE-rs 已封装）\n- Bootstrapping 机制\n- 密钥管理（由 Zama 网络处理）"
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "monad/dev-guide",
+    "name": "Monad 开发指南：EVM 兼容高性能 L1",
+    "description": "Use when user asks about developing on Monad, Monad vs Ethereum differences, deploying contracts to Monad, Monad gas pricing, or Monad tooling.",
+    "ecosystem": "monad",
+    "type": "guide",
+    "source": "official-docs",
+    "confidence": "high",
+    "tags": [
+      "monad",
+      "evm",
+      "parallel-execution",
+      "l1",
+      "foundry",
+      "viem"
+    ],
+    "version": "1.0.0",
+    "time_sensitivity": "stable",
+    "content": "# Monad 开发指南\n\n## 核心特性\n\nMonad 是 EVM 兼容的高性能 Layer-1，2025年11月主网上线。\n\n关键指标：10,000 TPS、400ms 出块、800ms 最终确定性\n核心技术：MonadBFT 共识 + 并行执行 + JIT 编译 + MonadDb\n开发体验：完全 EVM 字节码兼容，现有 Solidity 合约直接部署，无需修改\n\n## 网络信息\n\nMainnet: Chain ID 143, RPC https://rpc.monad.xyz, 区块浏览器 monadscan.com\nTestnet: Chain ID 10143, RPC https://testnet-rpc.monad.xyz, 水龙头 faucet.monad.xyz\n\nHardhat 配置：\n```\nnetworks: {\n  monad: { url: \"https://rpc.monad.xyz\", chainId: 143 },\n  monadTestnet: { url: \"https://testnet-rpc.monad.xyz\", chainId: 10143 }\n}\n```\n\nviem >= 2.40.0 原生支持：import { monad } from 'viem/chains'\n\n## Monad vs Ethereum 关键差异\n\n### Gas 计费（最重要！）\n\nEthereum：实际扣费 = gas_price x gas_used（未用退回）\nMonad：实际扣费 = gas_price x gas_LIMIT（按上限全扣，不退）\n\n这是并行执行的设计约束，防 DoS。影响：设置合理 gas limit，不要随意设超高值。\n\n### 合约大小\n\nMonad 最大合约 128KB（Ethereum 是 24KB），大型合约无需 Diamond 切割。\n\n### Opcode 重定价\n\n部分 opcode gas 费用与 Ethereum 不同。必须用 Monad Foundry fork 本地测试。\n\n### EIP-7702\n\n原生支持账户抽象 EIP-7702，EOA 可临时委托给合约执行。\n\n## 工具链\n\nFoundry：必须用 Monad Foundry fork（github.com/monad-crypto/monad-foundry）\nHardhat：直接支持，改 network 配置即可\nviem：原生支持（>= 2.40.0）\nTenderly：支持，最佳调试工具\nSafe：支持多签钱包\nMonadscan：Etherscan 出品，支持合约验证\n\n### 安装 Monad Foundry\n\n```\ncurl -L https://raw.githubusercontent.com/monad-crypto/monad-foundry/main/install.sh | bash\n# 使用方式与标准 Foundry 完全相同\nforge build && forge test\nforge script Deploy.s.sol --rpc-url https://rpc.monad.xyz --broadcast\n```\n\n## 部署合约\n\n```\nforge create src/MyContract.sol:MyContract --rpc-url https://rpc.monad.xyz --private-key $PK\nforge verify-contract $ADDR src/MyContract.sol:MyContract --verifier etherscan --verifier-url https://api.monadscan.com/api --chain-id 143\n```\n\n## 并行执行对开发者的影响\n\nMonad 并行执行但保证最终状态与顺序执行一致（乐观并行，冲突时回滚重试）。\nSolidity 合约逻辑无需修改。\n状态依赖严重的合约（AMM）自然串行化，无法获得并行加速。\n无状态/弱状态依赖的合约（transfer、mint）可充分并行，性能大幅提升。\n\n## 生态基础设施\n\nRPC：QuickNode / Alchemy / Infura（均支持）\nOracle：Pyth / Chainlink（已部署）\nNFT：Manifold（已支持）\nBlock Explorers：Monadscan（by Etherscan）、MonadVision（by Blockvision）、Socialscan"
+  },
+  {
+    "id": "monad/network-config",
+    "name": "Monad 网络配置参考",
+    "description": "Use when user needs Monad chain ID, RPC URL, block explorer, network parameters, or how to add Monad to MetaMask.",
+    "ecosystem": "monad",
+    "type": "technical-doc",
+    "source": "official-docs",
+    "confidence": "high",
+    "tags": [
+      "monad",
+      "chain-id",
+      "rpc",
+      "network",
+      "metamask",
+      "config"
+    ],
+    "version": "1.0.0",
+    "time_sensitivity": "stable",
+    "content": "# Monad 网络配置\n\n## Mainnet\n\nChain ID: 143\nCurrency: MON\nRPC: https://rpc.monad.xyz\nBackup RPC: https://monad.drpc.org\nBlock Explorer 1: https://monadscan.com\nBlock Explorer 2: https://monadvision.com\nBlock Explorer 3: https://monad.socialscan.io\n\n## Testnet\n\nChain ID: 10143\nCurrency: MON\nRPC: https://testnet-rpc.monad.xyz\nBlock Explorer: https://testnet.monadscan.com\nFaucet: https://faucet.monad.xyz\n\n## MetaMask 添加\n\n设置 -> 网络 -> 添加网络 -> 手动，填写 Mainnet 参数。\n\n## 代码配置\n\nviem: import { monad, monadTestnet } from 'viem/chains' (>= 2.40.0)\n\nwagmi:\n```\nimport { monad } from 'viem/chains'\nconst config = createConfig({ chains: [monad], transports: { [monad.id]: http() } })\n```\n\nethers.js:\n```\nconst provider = new ethers.JsonRpcProvider(\"https://rpc.monad.xyz\", { chainId: 143, name: \"monad\" })\n```\n\nHardhat:\n```\nmonad: { url: \"https://rpc.monad.xyz\", chainId: 143, accounts: [PRIVATE_KEY] }\n```"
+  }
+]

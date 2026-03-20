@@ -1,6 +1,6 @@
 const SUPABASE_URL = 'https://zkpeutvzmrfhlzpsbyhr.supabase.co'
 const SERVICE_KEY =
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InprcGV1dHZ6bXJmaGx6cHNieWhyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mjk1MTI0MSwiZXhwIjoyMDg4NTI3MjQxfQ.DtvWVp2SrwNrfR503XjPUiW_H_T4GRrHqCTnjMZb9hI'
+  'process.env.SUPABASE_SERVICE_KEY'
 
 const WAGMI_CONTENT = `---
 id: ethereum/wagmi-v2

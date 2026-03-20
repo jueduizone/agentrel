@@ -1,0 +1,117 @@
+[
+  {
+    "id": "dev-tooling/hardhat-vs-foundry",
+    "name": "Hardhat vs Foundry 选型指南",
+    "description": "Use when user asks about choosing between Hardhat and Foundry, when to use Hardhat vs Foundry, or differences between EVM development frameworks.",
+    "ecosystem": "ethereum",
+    "type": "dev-tooling",
+    "source": "community",
+    "confidence": "high",
+    "tags": [
+      "hardhat",
+      "foundry",
+      "forge",
+      "testing",
+      "dev-tools",
+      "evm"
+    ],
+    "content": "# Hardhat vs Foundry 选型指南\n\n## 核心差异一览\n\n| 维度 | Hardhat | Foundry |\n|------|---------|---------|\n| **语言** | JavaScript/TypeScript | Rust + Solidity 测试 |\n| **测试方式** | JS 写测试（ethers/viem）| Solidity 写测试（forge-std）|\n| **速度** | 较慢（JS 运行时）| 极快（Rust 编译，并发执行）|\n| **Fuzz 测试** | 需要插件 | 内置，一行开启 |\n| **调试** | console.log，可 fork 主网 | forge debug，trace 级别 |\n| **插件生态** | 成熟（hardhat-deploy/upgrades）| 成长中 |\n| **学习曲线** | 低（会 JS 即可）| 中（需了解 Solidity 测试）|\n| **脚本部署** | JS/TS 脚本 | Solidity Script（forge script）|\n| **社区** | 更大，文档更全 | 快速增长，Paradigm 主导 |\n\n## 选 Foundry 的场景\n\n```bash\n# 快速安装\ncurl -L https://foundry.paradigm.xyz | bash && foundryup\n\n# 新建项目\nforge init my-project && cd my-project\n\n# 测试（比 Hardhat 快 10-100x）\nforge test\nforge test -vvv\nforge test --match-test testFuzz\n\n# Fuzz 测试：函数接受参数即自动 fuzz\n# function testFuzz_transfer(uint256 amount) public { ... }\n\n# Fork 主网测试\nforge test --fork-url https://eth-mainnet.alchemyapi.io/v2/KEY\n\n# Gas 报告\nforge test --gas-report\n```\n\n**选 Foundry 如果：**\n- 纯合约项目，无复杂前端集成\n- 需要大量 fuzz/invariant 测试\n- 在乎 CI 时间（测试速度）\n- 团队熟悉 Solidity\n\n## 选 Hardhat 的场景\n\n```bash\nnpm install --save-dev hardhat && npx hardhat init\n\n# hardhat-deploy（推荐）\nnpm install --save-dev hardhat-deploy\n\n# OZ Upgrades 插件\nnpm install @openzeppelin/hardhat-upgrades\n```\n\n**选 Hardhat 如果：**\n- 全栈项目，前端需要 artifacts/typechain\n- 使用 hardhat-deploy 做复杂部署流程\n- 需要 OpenZeppelin Upgrades 插件\n- 团队 JS/TS 背景\n\n## 混合使用（成熟项目最佳实践）\n\n很多协议同时用两者：Foundry 做单元/fuzz 测试（速度快），Hardhat 做部署脚本（生态丰富）。\n\n```\nmy-project/\n├── foundry.toml       # Foundry 配置\n├── hardhat.config.ts  # Hardhat 配置\n├── src/               # 合约（共用）\n├── test/              # Foundry 测试（.t.sol）\n└── scripts/           # Hardhat 部署脚本（.ts）\n```\n\n## 关键命令速查\n\n```bash\n# Foundry\nforge build && forge test\nforge script Deploy.s.sol --rpc-url $RPC --broadcast\ncast call $ADDR \"balanceOf(address)(uint256)\" $USER\ncast send $ADDR \"transfer(address,uint256)\" $TO $AMT --private-key $KEY\n\n# Hardhat\nnpx hardhat compile && npx hardhat test\nnpx hardhat run scripts/deploy.ts --network mainnet\nnpx hardhat verify --network mainnet $ADDR\n```"
+  },
+  {
+    "id": "dev-tooling/ethers-vs-viem",
+    "name": "ethers.js vs viem vs wagmi 选型指南",
+    "description": "Use when user asks about choosing between ethers.js, viem, and wagmi for Ethereum frontend development, or differences between Web3 JavaScript libraries.",
+    "ecosystem": "ethereum",
+    "type": "dev-tooling",
+    "source": "community",
+    "confidence": "high",
+    "tags": [
+      "ethers",
+      "viem",
+      "wagmi",
+      "web3js",
+      "frontend",
+      "typescript",
+      "react"
+    ],
+    "content": "# ethers.js vs viem vs wagmi 选型指南\n\n## 定位\n\n| 库 | 定位 | 适用 |\n|----|------|------|\n| **ethers.js v6** | 全功能 EVM 库，历史最悠久 | 后端脚本、Node.js 工具 |\n| **viem** | 轻量、类型安全、高性能 | 现代前端/后端，替代 ethers |\n| **wagmi** | React Hooks 封装（基于 viem）| React DApp 前端首选 |\n| **web3.js** | 最老的库，逐渐被淘汰 | 仅维护旧项目 |\n\n## 为什么 viem 正在替代 ethers\n\nBundle size：viem ~35KB vs ethers ~280KB（gzip 后）\nTree-shaking：按需引入，unused code 不打包\n类型安全：ABI 类型自动推导，IDE 补全更准\n性能：同等请求下速度更快\n\n```typescript\n// ethers v6\nconst provider = new ethers.JsonRpcProvider(RPC_URL)\nconst balance = await provider.getBalance(address)\n\n// viem（同等功能，更轻量）\nimport { createPublicClient, http } from 'viem'\nimport { mainnet } from 'viem/chains'\nconst client = createPublicClient({ chain: mainnet, transport: http(RPC_URL) })\nconst balance = await client.getBalance({ address })\n```\n\n## wagmi 完整示例（React DApp）\n\n```bash\nnpm install wagmi viem @tanstack/react-query\n```\n\n```tsx\n// wagmi config\nimport { createConfig, http } from 'wagmi'\nimport { mainnet, base, arbitrum } from 'wagmi/chains'\nimport { injected, walletConnect } from 'wagmi/connectors'\n\nexport const config = createConfig({\n  chains: [mainnet, base, arbitrum],\n  connectors: [injected(), walletConnect({ projectId: 'YOUR_ID' })],\n  transports: { [mainnet.id]: http(), [base.id]: http(), [arbitrum.id]: http() },\n})\n\n// Hooks 使用\nimport { useAccount, useBalance, useReadContract, useWriteContract } from 'wagmi'\n\nfunction MyDApp() {\n  const { address, isConnected } = useAccount()\n  const { data: balance } = useBalance({ address })\n  const { data: tokenBal } = useReadContract({\n    address: TOKEN_ADDRESS, abi: ERC20_ABI,\n    functionName: 'balanceOf', args: [address!],\n    query: { enabled: !!address }\n  })\n  const { writeContract, isPending } = useWriteContract()\n  return (\n    <button onClick={() => writeContract({\n      address: TOKEN_ADDRESS, abi: ERC20_ABI,\n      functionName: 'transfer', args: [recipient, amount]\n    })} disabled={isPending}>Transfer</button>\n  )\n}\n```\n\n## 决策树\n\n你的项目是什么？\n- React DApp 前端 → wagmi（Hooks 封装，开箱即用）\n- Next.js/纯前端，不想用 Hooks → viem\n- Node.js 后端脚本/CLI → viem 或 ethers v6\n- 维护旧项目（ethers v5）→ 继续用，不急迁移\n- 维护旧项目（web3.js）→ 新功能用 viem\n\n## npm 下载量（2024）\n\n- ethers: ~2.5M/week（仍最多，增速放缓）\n- viem: ~2M/week（增速最快）\n- wagmi: ~700K/week（快速增长）\n- web3.js: ~500K/week（下降中）"
+  },
+  {
+    "id": "solana/program-model",
+    "name": "Solana 程序开发基础：Account Model & PDA",
+    "description": "Use when user asks about Solana program development basics, Solana account model, how Solana differs from EVM, rent, PDAs, or getting started with Solana smart contract development.",
+    "ecosystem": "solana",
+    "type": "guide",
+    "source": "community",
+    "confidence": "high",
+    "tags": [
+      "solana",
+      "program",
+      "account-model",
+      "pda",
+      "rent",
+      "spl",
+      "anchor",
+      "beginner"
+    ],
+    "content": "# Solana 程序开发基础\n\n## Solana vs EVM 核心差异\n\n| 概念 | EVM（以太坊）| Solana |\n|------|------------|--------|\n| **智能合约** | Contract（代码+状态合一）| Program（只有代码）+ Account（只有状态）|\n| **状态存储** | 合约内部 storage | 独立 Account（租金制）|\n| **并发** | 顺序执行 | 并行（AccountSet 不重叠即可并行）|\n| **费用** | gas | transaction fee + rent |\n| **代币标准** | ERC-20 | SPL Token（单一官方标准）|\n\n## Account 模型\n\nSolana 上万物皆 Account：\n\n普通账户（用户钱包）：lamports(余额) + data(空) + owner(System Program) + executable(false)\nProgram Account：data(BPF字节码) + executable(true)\nData Account：data(自定义序列化数据) + owner(你的程序) — 只有 owner 程序可修改\n\n### Rent（账户租金）\n\n账户必须保持 rent-exempt（存足够的 SOL），否则被垃圾回收。\n128 bytes ≈ 0.00204 SOL，1KB ≈ 0.00714 SOL。\n\n```bash\nsolana rent 128  # 计算 rent-exempt 金额\n```\n\n## PDA（Program Derived Address）\n\nPDA 是程序控制的账户地址，没有私钥，只有程序能签名。\n\n```rust\n// Anchor 中定义 PDA 账户\n#[account(\n  init, payer = user, space = 8 + 32 + 8,\n  seeds = [b\"vault\", user.key().as_ref()],\n  bump\n)]\npub vault: Account<'info, Vault>,\n\n// 链下派生 PDA\nlet (pda, bump) = Pubkey::find_program_address(\n  &[b\"vault\", user_pubkey.as_ref()], &program_id\n);\n```\n\nPDA 常见用途：Token vault 托管、用户状态存储、跨程序调用签名。\n\n## Anchor 框架快速上手\n\n```bash\ncargo install --git https://github.com/coral-xyz/anchor avm --locked\navm install latest && avm use latest\nanchor init my-program && cd my-program\nanchor test  # 编译 + 本地测试\n```\n\n```rust\nuse anchor_lang::prelude::*;\ndeclare_id!(\"YourProgramId\");\n\n#[program]\npub mod counter {\n  use super::*;\n  pub fn initialize(ctx: Context<Initialize>) -> Result<()> {\n    ctx.accounts.counter.count = 0; Ok(())\n  }\n  pub fn increment(ctx: Context<Increment>) -> Result<()> {\n    ctx.accounts.counter.count += 1; Ok(())\n  }\n}\n\n#[derive(Accounts)]\npub struct Initialize<'info> {\n  #[account(init, payer = user, space = 8 + 8)]\n  pub counter: Account<'info, Counter>,\n  #[account(mut)] pub user: Signer<'info>,\n  pub system_program: Program<'info, System>,\n}\n\n#[derive(Accounts)]\npub struct Increment<'info> {\n  #[account(mut)] pub counter: Account<'info, Counter>,\n}\n\n#[account]\npub struct Counter { pub count: u64 }\n```\n\n## SPL Token\n\n每个用户+每种代币 = 独立 Token Account（ATA）。\n\n```typescript\nimport { getOrCreateAssociatedTokenAccount, transfer } from \"@solana/spl-token\"\nconst ata = await getOrCreateAssociatedTokenAccount(connection, payer, mintAddress, ownerAddress)\nawait transfer(connection, payer, senderATA.address, recipientATA.address, owner, 1000n)\n```\n\n## 常见错误速查\n\n| 错误 | 原因 | 解决 |\n|------|------|------|\n| AccountNotFound | 账户未初始化 | 先 init 账户 |\n| InsufficientFunds | lamports 不足 | 确保 rent-exempt |\n| ConstraintMut | 未标记 mut | 加 mut 约束 |\n| InvalidAccountOwner | 账户归属错误 | 检查账户 owner |\n| AccountAlreadyInitialized | 重复 init | 改用 init_if_needed |"
+  },
+  {
+    "id": "ethereum/l2-dev-guide",
+    "name": "L2 开发指南：Arbitrum / Optimism / zkSync / Base",
+    "description": "Use when user asks about developing on L2 networks, differences between L2s for developers, deploying contracts to Arbitrum, zkSync, Optimism or Base, or L2-specific gotchas.",
+    "ecosystem": "ethereum",
+    "type": "guide",
+    "source": "community",
+    "confidence": "high",
+    "tags": [
+      "l2",
+      "arbitrum",
+      "optimism",
+      "zksync",
+      "base",
+      "rollup",
+      "op-stack",
+      "scaling"
+    ],
+    "content": "# L2 开发指南\n\n## L2 类型\n\nOptimistic Rollups（乐观，7天提款期）：Arbitrum One、Optimism、Base\nZK Rollups（零知识，快速提款）：zkSync Era、Polygon zkEVM、Scroll、Starknet\n\n## Arbitrum（最兼容 EVM）\n\n几乎与以太坊主网完全相同。主要差异：\n\n```typescript\n// block.number 返回 L1 近似区块号\n// 用 ArbSys 获取真实 L2 块号\nconst arbSys = new ethers.Contract(\n  \"0x0000000000000000000000000000000000000064\",\n  [\"function arbBlockNumber() view returns (uint256)\"], provider\n)\nconst l2Block = await arbSys.arbBlockNumber()\n```\n\n```typescript\n// hardhat.config.ts\nnetworks: {\n  arbitrum: { url: \"https://arb1.arbitrum.io/rpc\", chainId: 42161, accounts: [PK] }\n}\n```\n\n## Optimism / Base（OP Stack）\n\n完全 EVM 等价，部署与主网相同。\n\n```typescript\nnetworks: {\n  base: { url: \"https://mainnet.base.org\", chainId: 8453 },\n  \"base-sepolia\": { url: \"https://sepolia.base.org\", chainId: 84532 }\n}\n```\n\n## zkSync Era（差异最大）\n\n```bash\nnpm install zksync-ethers @matterlabs/hardhat-zksync\n```\n\n```typescript\n// 必须用 zksync-ethers，不能直接用 ethers\nimport { Provider, Wallet } from \"zksync-ethers\"\nconst provider = new Provider(\"https://mainnet.era.zksync.io\")\n\n// hardhat.config.ts 必须加 zksync: true\nnetworks: {\n  zkSyncMainnet: { url: \"https://mainnet.era.zksync.io\", ethNetwork: \"mainnet\", zksync: true, chainId: 324 }\n}\n```\n\n不支持 tx.origin；原生账户抽象；支持自定义 Paymaster（代付 gas）。\n\n## 跨链 Bridge（Arbitrum SDK）\n\n```typescript\nimport { EthBridger, getL2Network } from \"@arbitrum/sdk\"\nconst ethBridger = new EthBridger(await getL2Network(l2Provider))\n// L1 → L2（约 10-15 分钟）\nawait ethBridger.deposit({ amount: ethers.parseEther(\"0.01\"), l1Signer, l2Provider })\n// L2 → L1（需等 7 天挑战期）\nawait ethBridger.withdraw({ amount: ethers.parseEther(\"0.01\"), l2Signer, destinationAddress })\n```\n\n## 测试网速查\n\n| L2 | 测试网 ChainID | 水龙头 |\n|----|--------------|--------|\n| Arbitrum | Sepolia 421614 | faucet.triangleplatform.com |\n| Optimism | Sepolia 11155420 | app.optimism.io/faucet |\n| Base | Sepolia 84532 | faucet.quicknode.com |\n| zkSync | Sepolia 300 | faucet.quicknode.com |\n\n## 工具推荐\n\nTenderly：全部主流 L2，最好用的调试工具\nAlchemy/Infura：均支持主流 L2\nBlockscout：各 L2 均有区块浏览器实例"
+  },
+  {
+    "id": "near/dev-guide",
+    "name": "NEAR Protocol 开发指南",
+    "description": "Use when user asks about NEAR development, NEAR smart contracts, Rust or JavaScript contracts on NEAR, NEAR account model, Aurora EVM, or getting started with NEAR blockchain.",
+    "ecosystem": "near",
+    "type": "guide",
+    "source": "community",
+    "confidence": "high",
+    "tags": [
+      "near",
+      "rust",
+      "javascript",
+      "near-sdk",
+      "aurora",
+      "account-model",
+      "storage-staking"
+    ],
+    "content": "# NEAR Protocol 开发指南\n\n## NEAR 核心特点\n\n- 账户可读名称：alice.near（字符串，非十六进制）\n- 子账户：app.alice.near 是 alice.near 的子账户\n- Storage Staking：存储需质押 NEAR（1 NEAR = 10KB）\n- 异步跨合约调用：通过 Promise，非阻塞\n- Aurora：NEAR 上的 EVM 链，Solidity 直接跑\n- 低 gas：交易费 < $0.001\n\n## Rust 合约\n\n```bash\nrustup target add wasm32-unknown-unknown\ncargo install cargo-near near-cli-rs\ncargo near new my-contract && cd my-contract\n```\n\n```rust\nuse near_sdk::{near, store::LookupMap, AccountId};\n\n#[near(contract_state)]\npub struct Contract {\n  owner: AccountId,\n  balances: LookupMap<AccountId, u128>,\n}\n\n#[near]\nimpl Contract {\n  #[init]\n  pub fn new(owner: AccountId) -> Self {\n    Self { owner, balances: LookupMap::new(b\"b\") }\n  }\n\n  #[payable]\n  pub fn deposit(&mut self) {\n    let amount = near_sdk::env::attached_deposit().as_yoctonear();\n    let caller = near_sdk::env::predecessor_account_id();\n    let bal = self.balances.get(&caller).unwrap_or(&0);\n    self.balances.insert(caller, bal + amount);\n  }\n\n  pub fn get_balance(&self, account_id: AccountId) -> u128 {\n    self.balances.get(&account_id).copied().unwrap_or(0)\n  }\n}\n```\n\n```bash\n# 编译部署\ncargo near build\nnear contract deploy my-account.testnet use-file ./target/near/my-contract.wasm without-init-call network-config testnet\n```\n\n## JavaScript SDK（前端）\n\n```typescript\nimport { connect, keyStores, WalletConnection } from \"near-api-js\"\nconst near = await connect({\n  networkId: \"mainnet\", nodeUrl: \"https://rpc.mainnet.near.org\",\n  walletUrl: \"https://app.mynearwallet.com\",\n  keyStore: new keyStores.BrowserLocalStorageKeyStore()\n})\nconst wallet = new WalletConnection(near, \"my-app\")\nif (!wallet.isSignedIn()) wallet.requestSignIn({ contractId: \"my-contract.near\" })\n\n// view call（免费）\nconst result = await (await near.account(\"my-contract.near\")).viewFunction({\n  contractId: \"my-contract.near\", methodName: \"get_balance\",\n  args: { account_id: wallet.getAccountId() }\n})\n\n// 写合约（需签名）\nawait wallet.account().functionCall({\n  contractId: \"my-contract.near\", methodName: \"deposit\", args: {},\n  attachedDeposit: BigInt(\"1000000000000000000000000\"), // 1 NEAR\n  gas: BigInt(\"30000000000000\")  // 30 TGas\n})\n```\n\n## Storage Staking 注意\n\n1 字节 ≈ 0.00001 NEAR，1KB ≈ 0.01 NEAR。让用户支付自己的存储成本：\n\n```rust\n#[payable]\npub fn register_user(&mut self) {\n  let deposit = near_sdk::env::attached_deposit().as_yoctonear();\n  near_sdk::require!(deposit >= 100_000_000_000_000_000_000_000u128, \"Need 0.1 NEAR for storage\");\n}\n```\n\n## Aurora（NEAR 上的 EVM）\n\n完全 EVM 兼容，Chain ID: 1313161554，RPC: https://mainnet.aurora.dev\nRainbow Bridge 连接 NEAR 和 Ethereum。直接用 Hardhat/Foundry 部署。"
+  },
+  {
+    "id": "protocols/openzeppelin-advanced",
+    "name": "OpenZeppelin 进阶模式：升级 / 治理 / 访问控制",
+    "description": "Use when user asks about OpenZeppelin upgradeable contracts, TransparentProxy vs UUPS, governance with Governor, TimelockController, AccessControl roles, or OpenZeppelin advanced patterns.",
+    "ecosystem": "ethereum",
+    "type": "guide",
+    "source": "community",
+    "confidence": "high",
+    "tags": [
+      "openzeppelin",
+      "upgradeable",
+      "uups",
+      "transparent-proxy",
+      "governor",
+      "timelock",
+      "access-control"
+    ],
+    "content": "# OpenZeppelin 进阶模式\n\n## 可升级合约：UUPS vs Transparent Proxy\n\n| 维度 | Transparent Proxy | UUPS |\n|------|------------------|------|\n| 升级函数位置 | Proxy 合约 | 实现合约 |\n| Gas（用户调用）| 略高 | 更低 |\n| 推荐 | 简单项目 | 新项目首选 |\n\n```bash\nnpm install @openzeppelin/contracts-upgradeable\nnpm install --save-dev @openzeppelin/hardhat-upgrades\n```\n\n```solidity\nimport \"@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol\";\nimport \"@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol\";\nimport \"@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol\";\n\ncontract MyContractV1 is Initializable, UUPSUpgradeable, OwnableUpgradeable {\n  uint256 public value;\n  uint256[49] private __gap;  // 预留 storage 空间\n\n  function initialize(address owner) public initializer {\n    __Ownable_init(owner);\n    __UUPSUpgradeable_init();\n  }\n\n  function _authorizeUpgrade(address) internal override onlyOwner {}\n}\n```\n\n```typescript\n// 部署\nconst proxy = await upgrades.deployProxy(MyContract, [ownerAddress], { kind: \"uups\" })\n// 升级\nawait upgrades.upgradeProxy(await proxy.getAddress(), MyContractV2)\n// 验证兼容性\nawait upgrades.validateUpgrade(proxyAddress, MyContractV2)\n```\n\n升级安全原则：只追加 storage 变量，不改已有顺序；实现合约构造函数调用 _disableInitializers()。\n\n## AccessControl（角色权限）\n\n```solidity\nimport \"@openzeppelin/contracts/access/AccessControl.sol\";\ncontract MyProtocol is AccessControl {\n  bytes32 public constant MINTER_ROLE = keccak256(\"MINTER_ROLE\");\n  constructor(address admin) {\n    _grantRole(DEFAULT_ADMIN_ROLE, admin);\n    _grantRole(MINTER_ROLE, admin);\n  }\n  function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) { ... }\n}\n// contract.grantRole(MINTER_ROLE, newMinter)  — 需要 DEFAULT_ADMIN_ROLE\n```\n\n## TimelockController（延时执行）\n\n```solidity\nTimelockController timelock = new TimelockController(\n  172800,     // 2 天延时\n  proposers,  // 谁可以提案（通常是 multisig）\n  executors,  // address(0) = 任何人可执行\n  address(0)  // 无 admin（去中心化）\n);\nmyContract.transferOwnership(address(timelock));\n// 之后操作：提案 → 等 2 天 → 执行\n```\n\n## Governor（链上治理）\n\n```solidity\ncontract MyGovernor is Governor, GovernorSettings, GovernorCountingSimple, GovernorVotes, GovernorTimelockControl {\n  constructor(IVotes token, TimelockController timelock)\n    Governor(\"MyGovernor\")\n    GovernorSettings(7200, 50400, 0)  // 延迟/投票期/提案门槛（blocks）\n    GovernorVotes(token)\n    GovernorTimelockControl(timelock) {}\n  function quorum(uint256) public pure override returns (uint256) { return 4e18; }\n}\n```\n\n```typescript\n// 治理流程：提案 → 投票 → 队列 → 执行\nawait governor.propose([target], [0], [calldata], \"description\")\nawait governor.castVote(proposalId, 1)  // 1=赞成\nawait governor.queue([target], [0], [calldata], descHash)\nawait governor.execute([target], [0], [calldata], descHash)\n```\n\n## 常用 OZ 组件速查\n\nERC20Permit + ERC20Votes（治理代币）\nERC721URIStorage + ERC721Royalty（NFT）\nReentrancyGuard、Pausable（安全）\nMerkleProof（白名单验证）\nECDSA（签名验证）"
+  }
+]
