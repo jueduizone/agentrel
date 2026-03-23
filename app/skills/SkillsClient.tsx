@@ -1,239 +1,169 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import Link from 'next/link'
 import type { Skill } from '@/lib/types'
 
 function ecosystemClass(eco: string) {
   const map: Record<string, string> = {
-    solana: 'bg-purple-100 text-purple-700 border-purple-200',
+    monad:    'bg-purple-100 text-purple-700 border-purple-200',
+    solana:   'bg-fuchsia-100 text-fuchsia-700 border-fuchsia-200',
     ethereum: 'bg-blue-100 text-blue-700 border-blue-200',
-    aptos: 'bg-teal-100 text-teal-700 border-teal-200',
-    sui: 'bg-sky-100 text-sky-700 border-sky-200',
-    ton: 'bg-cyan-100 text-cyan-700 border-cyan-200',
-    cosmos: 'bg-indigo-100 text-indigo-700 border-indigo-200',
-    polkadot: 'bg-pink-100 text-pink-700 border-pink-200',
+    aptos:    'bg-teal-100 text-teal-700 border-teal-200',
+    sui:      'bg-sky-100 text-sky-700 border-sky-200',
+    arbitrum: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+    base:     'bg-blue-50 text-blue-600 border-blue-100',
+    optimism: 'bg-red-100 text-red-700 border-red-200',
+    polygon:  'bg-violet-100 text-violet-700 border-violet-200',
+    starknet: 'bg-orange-100 text-orange-700 border-orange-200',
+    zksync:   'bg-gray-100 text-gray-700 border-gray-200',
   }
   return map[eco.toLowerCase()] ?? 'bg-gray-100 text-gray-700 border-gray-200'
 }
 
-const SOURCE_BADGE: Record<string, { label: string; className: string }> = {
-  official:       { label: '🏛️ Official',  className: 'bg-blue-100 text-blue-700 border border-blue-200' },
-  verified:       { label: '✅ Verified',   className: 'bg-green-100 text-green-700 border border-green-200' },
-  community:      { label: '👥 Community',  className: 'bg-gray-100 text-gray-600 border border-gray-200' },
-  'ai-generated': { label: '🤖 AI Draft',  className: 'bg-yellow-100 text-yellow-700 border border-yellow-200' },
-}
-
-const ALL_ECOSYSTEMS = ['ethereum', 'solana', 'aptos', 'sui', 'ton', 'cosmos', 'polkadot']
-const ALL_TYPES = ['technical-doc', 'grant-guide', 'security-audit', 'tutorial', 'reference']
-const ALL_SOURCES = ['official', 'community', 'ai-generated']
-
 type Props = {
   skills: Skill[]
   initialEcosystem?: string
-  initialType?: string
-  initialSource?: string
   initialQ?: string
 }
 
-export function SkillsClient({ skills, initialEcosystem, initialType, initialSource, initialQ }: Props) {
+export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
   const [search, setSearch] = useState(initialQ ?? '')
-  const [selectedEcosystems, setSelectedEcosystems] = useState<string[]>(
-    initialEcosystem ? [initialEcosystem] : []
-  )
-  const [selectedTypes, setSelectedTypes] = useState<string[]>(
-    initialType ? [initialType] : []
-  )
-  const [selectedSources, setSelectedSources] = useState<string[]>(
-    initialSource ? [initialSource] : []
-  )
+  const [selectedEcosystem, setSelectedEcosystem] = useState(initialEcosystem ?? 'all')
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+
+  // Extract unique ecosystems from data, sorted by count
+  const ecosystems = useMemo(() => {
+    const counts = skills.reduce<Record<string, number>>((acc, s) => {
+      acc[s.ecosystem] = (acc[s.ecosystem] ?? 0) + 1
+      return acc
+    }, {})
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .map(([eco]) => eco)
+  }, [skills])
 
   const filtered = useMemo(() => {
     return skills.filter((s) => {
-      if (selectedEcosystems.length && !selectedEcosystems.includes(s.ecosystem)) return false
-      if (selectedTypes.length && !selectedTypes.includes(s.type)) return false
-      if (selectedSources.length && !selectedSources.includes(s.source)) return false
+      if (selectedEcosystem !== 'all' && s.ecosystem !== selectedEcosystem) return false
       if (search) {
         const q = search.toLowerCase()
-        const inName = s.name.toLowerCase().includes(q)
-        const inTags = s.tags?.some((t) => t.toLowerCase().includes(q))
-        const inId = s.id.toLowerCase().includes(q)
-        if (!inName && !inTags && !inId) return false
+        if (
+          !s.name.toLowerCase().includes(q) &&
+          !s.id.toLowerCase().includes(q) &&
+          !(s.tags?.some((t) => t.toLowerCase().includes(q)))
+        ) return false
       }
       return true
     })
-  }, [skills, search, selectedEcosystems, selectedTypes, selectedSources])
+  }, [skills, search, selectedEcosystem])
 
-  function toggleFilter(list: string[], setList: (v: string[]) => void, value: string) {
-    setList(list.includes(value) ? list.filter((x) => x !== value) : [...list, value])
+  function getSkillUrl(skill: Skill): string {
+    // Extract URL from end of content, or fallback to cryptoskills raw URL
+    const match = skill.content?.match(/https?:\/\/\S+SKILL\.md\S*/i)
+    if (match) return match[0].trim()
+    return `https://raw.githubusercontent.com/0xinit/cryptoskills/main/skills/${skill.id.split('/').pop()}/SKILL.md`
   }
 
-  // Compute available ecosystems from actual data
-  const availableEcosystems = [...new Set(skills.map((s) => s.ecosystem))]
+  async function handleCopy(e: React.MouseEvent, skill: Skill) {
+    e.preventDefault()
+    const url = getSkillUrl(skill)
+    await navigator.clipboard.writeText(url)
+    setCopiedId(skill.id)
+    setTimeout(() => setCopiedId(null), 2000)
+  }
 
   return (
-    <div className="flex gap-8">
-      {/* Sidebar */}
-      <aside className="w-48 shrink-0">
-        <div className="sticky top-20 space-y-6">
-          {/* Ecosystem */}
-          <div>
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Ecosystem
-            </h3>
-            <div className="space-y-1">
-              {(availableEcosystems.length ? availableEcosystems : ALL_ECOSYSTEMS).map((eco) => (
-                <button
-                  key={eco}
-                  onClick={() => toggleFilter(selectedEcosystems, setSelectedEcosystems, eco)}
-                  className={`flex w-full items-center justify-between rounded px-2 py-1 text-left text-sm transition-colors ${
-                    selectedEcosystems.includes(eco)
-                      ? 'bg-black text-white'
-                      : 'hover:bg-muted text-foreground'
-                  }`}
-                >
-                  <span className="capitalize">{eco}</span>
-                  {selectedEcosystems.includes(eco) && (
-                    <span className="text-xs">✓</span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Type */}
-          <div>
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Type
-            </h3>
-            <div className="space-y-1">
-              {ALL_TYPES.map((t) => (
-                <button
-                  key={t}
-                  onClick={() => toggleFilter(selectedTypes, setSelectedTypes, t)}
-                  className={`flex w-full items-center justify-between rounded px-2 py-1 text-left text-xs transition-colors ${
-                    selectedTypes.includes(t)
-                      ? 'bg-black text-white'
-                      : 'hover:bg-muted text-foreground'
-                  }`}
-                >
-                  {t}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Source */}
-          <div>
-            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-              Source
-            </h3>
-            <div className="space-y-1">
-              {ALL_SOURCES.map((src) => (
-                <button
-                  key={src}
-                  onClick={() => toggleFilter(selectedSources, setSelectedSources, src)}
-                  className={`flex w-full items-center justify-between rounded px-2 py-1 text-left text-xs transition-colors ${
-                    selectedSources.includes(src)
-                      ? 'bg-black text-white'
-                      : 'hover:bg-muted text-foreground'
-                  }`}
-                >
-                  {src}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Clear filters */}
-          {(selectedEcosystems.length > 0 || selectedTypes.length > 0 || selectedSources.length > 0) && (
-            <button
-              onClick={() => {
-                setSelectedEcosystems([])
-                setSelectedTypes([])
-                setSelectedSources([])
-              }}
-              className="text-xs text-muted-foreground underline-offset-2 hover:underline"
-            >
-              Clear filters
-            </button>
-          )}
-        </div>
-      </aside>
-
-      {/* Main */}
-      <div className="flex-1 min-w-0">
-        {/* Search */}
-        <div className="mb-6">
-          <input
-            type="search"
-            placeholder="Search skills by name, id, or tags..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="h-9 w-full rounded-lg border border-input bg-transparent px-3 py-1 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
-          />
-        </div>
-
-        {/* Results count */}
-        <p className="mb-4 text-sm text-muted-foreground">
-          {filtered.length} skill{filtered.length !== 1 ? 's' : ''} found
-        </p>
-
-        {/* Grid */}
-        {filtered.length === 0 ? (
-          <div className="rounded-xl border border-border p-12 text-center text-muted-foreground">
-            No skills found. Try adjusting your filters.
-          </div>
-        ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((skill) => (
-              <Link
-                key={skill.id}
-                href={`/skills/${skill.id}`}
-                className="group flex flex-col rounded-xl border border-border p-4 transition-colors hover:border-black hover:bg-muted/30"
+    <div>
+      {/* Search + Filter bar */}
+      <div className="mb-6 space-y-3">
+        <input
+          type="search"
+          placeholder="Search skills..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="h-9 w-full max-w-sm rounded-lg border border-input bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
+        />
+        <div className="flex flex-wrap gap-2">
+          <button
+            onClick={() => setSelectedEcosystem('all')}
+            className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+              selectedEcosystem === 'all'
+                ? 'bg-black text-white'
+                : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
+            }`}
+          >
+            All ({skills.length})
+          </button>
+          {ecosystems.map((eco) => {
+            const count = skills.filter((s) => s.ecosystem === eco).length
+            return (
+              <button
+                key={eco}
+                onClick={() => setSelectedEcosystem(eco === selectedEcosystem ? 'all' : eco)}
+                className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
+                  selectedEcosystem === eco
+                    ? 'bg-black text-white'
+                    : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
+                }`}
               >
-                {/* ID badge */}
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground">
+                {eco} ({count})
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+      <p className="mb-4 text-sm text-muted-foreground">
+        {filtered.length} skill{filtered.length !== 1 ? 's' : ''} · click to copy URL
+      </p>
+
+      {filtered.length === 0 ? (
+        <div className="rounded-xl border border-border p-12 text-center text-muted-foreground">
+          No skills found.
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((skill) => {
+            const copied = copiedId === skill.id
+            return (
+              <button
+                key={skill.id}
+                onClick={(e) => handleCopy(e, skill)}
+                className={`group flex flex-col rounded-xl border p-4 text-left transition-all ${
+                  copied
+                    ? 'border-green-400 bg-green-50'
+                    : 'border-border hover:border-black hover:bg-muted/30'
+                }`}
+              >
+                {/* Header row */}
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground truncate">
                     {skill.id}
+                  </span>
+                  <span className={`shrink-0 text-xs font-medium transition-colors ${copied ? 'text-green-600' : 'text-muted-foreground group-hover:text-black'}`}>
+                    {copied ? '✓ Copied' : 'Copy'}
                   </span>
                 </div>
 
                 {/* Name */}
-                <h3 className="mb-2 font-medium text-black group-hover:text-black">
+                <h3 className="mb-1.5 font-medium text-black">
                   {skill.name}
                 </h3>
 
                 {/* Description */}
                 <p className="mb-3 flex-1 text-xs text-muted-foreground line-clamp-2">
-                  {skill.content?.replace(/^---[\s\S]*?---\s*/m, '').replace(/#{1,6}\s/g, '').slice(0, 100)}...
+                  {skill.content?.replace(/^---[\s\S]*?---\s*/m, '').replace(/#{1,6}\s/g, '').replace(/\n/g, ' ').slice(0, 120)}
                 </p>
 
-                {/* Badges */}
-                <div className="flex flex-wrap gap-1.5">
-                  <span className={`rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${ecosystemClass(skill.ecosystem)}`}>
-                    {skill.ecosystem}
-                  </span>
-                  {SOURCE_BADGE[skill.source] ? (
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${SOURCE_BADGE[skill.source].className}`}>
-                      {SOURCE_BADGE[skill.source].label}
-                    </span>
-                  ) : (
-                    <span className="rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                      {skill.source}
-                    </span>
-                  )}
-                  {skill.tags?.slice(0, 2).map((tag) => (
-                    <span key={tag} className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </div>
+                {/* Ecosystem badge */}
+                <span className={`self-start rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${ecosystemClass(skill.ecosystem)}`}>
+                  {skill.ecosystem}
+                </span>
+              </button>
+            )
+          })}
+        </div>
+      )}
     </div>
   )
 }
