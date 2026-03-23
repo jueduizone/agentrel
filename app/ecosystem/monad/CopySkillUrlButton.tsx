@@ -12,13 +12,17 @@ export function CopySkillUrlButton({ url }: { url: string }) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  // Extract a short display label from the URL
+  const displayUrl = url.replace('https://raw.githubusercontent.com/', 'github:').replace(/\/main\/.*/, '').replace('https://monskills.vercel.app/', 'monskills/')
+
   return (
     <button
       onClick={handleCopy}
-      className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-black hover:text-foreground"
+      title={url}
+      className="flex w-full items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-black hover:text-foreground overflow-hidden"
     >
-      {copied ? <Check className="h-3 w-3 text-green-600" /> : <Copy className="h-3 w-3" />}
-      {copied ? 'Copied!' : 'Copy Skill URL'}
+      {copied ? <Check className="h-3 w-3 shrink-0 text-green-600" /> : <Copy className="h-3 w-3 shrink-0" />}
+      <span className="truncate font-mono">{copied ? 'Copied!' : url}</span>
     </button>
   )
 }
