@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
+import Link from 'next/link'
 import type { Skill } from '@/lib/types'
 
 function ecosystemClass(eco: string) {
@@ -58,10 +59,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
   }, [skills, search, selectedEcosystem])
 
   function getSkillUrl(skill: Skill): string {
-    // Extract URL from end of content, or fallback to cryptoskills raw URL
-    const match = skill.content?.match(/https?:\/\/\S+SKILL\.md\S*/i)
-    if (match) return match[0].trim()
-    return `https://raw.githubusercontent.com/0xinit/cryptoskills/main/skills/${skill.id.split('/').pop()}/SKILL.md`
+    return `https://agentrel.vercel.app/api/skills/${skill.id}.md`
   }
 
   async function handleCopy(e: React.MouseEvent, skill: Skill) {
@@ -126,10 +124,10 @@ export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
           {filtered.map((skill) => {
             const copied = copiedId === skill.id
             return (
-              <button
+              <Link
                 key={skill.id}
-                onClick={(e) => handleCopy(e, skill)}
-                className={`group flex flex-col rounded-xl border p-4 text-left transition-all ${
+                href={`/skills/${skill.id}`}
+                className={`group flex flex-col rounded-xl border p-4 text-left transition-all no-underline ${
                   copied
                     ? 'border-green-400 bg-green-50'
                     : 'border-border hover:border-black hover:bg-muted/30'
@@ -140,9 +138,12 @@ export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
                   <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground truncate">
                     {skill.id}
                   </span>
-                  <span className={`shrink-0 text-xs font-medium transition-colors ${copied ? 'text-green-600' : 'text-muted-foreground group-hover:text-black'}`}>
-                    {copied ? '✓ Copied' : 'Copy'}
-                  </span>
+                  <button
+                    onClick={(e) => handleCopy(e, skill)}
+                    className={`shrink-0 text-xs font-medium transition-colors px-1.5 py-0.5 rounded hover:bg-gray-100 ${copied ? 'text-green-600' : 'text-muted-foreground'}`}
+                  >
+                    {copied ? '✓ Copied' : 'Copy URL'}
+                  </button>
                 </div>
 
                 {/* Name */}
@@ -159,7 +160,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
                 <span className={`self-start rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${ecosystemClass(skill.ecosystem)}`}>
                   {skill.ecosystem}
                 </span>
-              </button>
+              </Link>
             )
           })}
         </div>

@@ -6,8 +6,11 @@ export async function GET(
   { params }: { params: Promise<{ id: string[] }> }
 ) {
   const { id } = await params
+  const lastSegment = id[id.length - 1]
+  const isMdRequest = lastSegment.endsWith('.md')
+  if (isMdRequest) id[id.length - 1] = lastSegment.slice(0, -3)
   const skillId = id.join('/')
-  const format = request.nextUrl.searchParams.get('format')
+  const format = isMdRequest ? 'raw' : request.nextUrl.searchParams.get('format')
 
   const { data, error } = await serviceClient
     .from('skills')
