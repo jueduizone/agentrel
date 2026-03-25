@@ -151,7 +151,7 @@ export default async function HomePage() {
         <p className="mb-6 text-muted-foreground">在你的 Agent 中添加一个 Skill，立即提升准确度</p>
         <div className="mx-auto max-w-xl rounded-lg border border-border bg-muted/30 p-4 font-mono text-sm">
           <span className="text-muted-foreground">$ </span>
-          <span>npx skills add agentrel/solana/web3js-v2</span>
+          <span>curl https://agentrel.vercel.app/api/skills/solana/web3js-v2.md</span>
         </div>
       </section>
 

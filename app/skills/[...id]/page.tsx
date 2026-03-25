@@ -47,7 +47,7 @@ export default async function SkillDetailPage({
   }
 
   const skill = data as Skill
-  const installCmd = `npx skills add agentrel/${skill.id}`
+  const installCmd = `curl https://agentrel.vercel.app/api/skills/${skill.id}.md`
 
   return (
     <div className="min-h-screen bg-white">
@@ -112,9 +112,9 @@ export default async function SkillDetailPage({
           {/* Sidebar */}
           <aside className="w-72 shrink-0">
             <div className="sticky top-20 space-y-4">
-              {/* Install */}
+              {/* Usage */}
               <div className="rounded-xl border border-border p-4">
-                <h3 className="mb-3 font-medium text-black">Install</h3>
+                <h3 className="mb-3 font-medium text-black">Usage</h3>
                 <div className="mb-2 rounded-lg border border-border bg-muted/30 p-3">
                   <code className="block font-mono text-xs text-foreground break-all">
                     {installCmd}
@@ -127,12 +127,12 @@ export default async function SkillDetailPage({
               <div className="rounded-xl border border-border p-4">
                 <h3 className="mb-3 font-medium text-black">Raw</h3>
                 <a
-                  href={`/api/skills/${skill.id}?format=raw`}
+                  href={`https://agentrel.vercel.app/api/skills/${skill.id}.md`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-center w-full rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-black hover:text-foreground"
                 >
-                  curl /api/skills/{skill.id}?format=raw
+                  curl …/{skill.id}.md
                 </a>
               </div>
 

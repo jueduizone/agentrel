@@ -31,7 +31,7 @@ export default async function BundlesPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             {(bundles as Bundle[]).map((bundle) => {
-              const installCmd = `npx skills add agentrel/bundle/${bundle.id}`
+              const installCmd = `curl https://agentrel.vercel.app/api/skills/bundle/${bundle.id}.md`
               return (
                 <div
                   key={bundle.id}
