@@ -79,7 +79,7 @@ export default function ZamaEcosystemPage() {
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-3">
             <img
-              src="https://avatars.githubusercontent.com/u/97560310"
+              src="/logos/zama.png"
               alt="Zama"
               className="h-10 w-10 rounded-xl object-cover"
             />
@@ -91,7 +91,7 @@ export default function ZamaEcosystemPage() {
 
           {/* Social links */}
           <div className="mt-4 flex items-center gap-4 text-sm">
-            <a href="https://zama.ai" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors">
+            <a href="https://zama.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors">
               <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" /></svg>
               zama.ai
             </a>
@@ -111,7 +111,6 @@ export default function ZamaEcosystemPage() {
               { label: 'Technology', value: 'FHE (TFHE scheme)' },
               { label: 'Language', value: 'Solidity' },
               { label: 'Network', value: 'Ethereum / Sepolia' },
-              { label: 'License', value: 'BSD-3-Clause' },
             ].map((stat) => (
               <div
                 key={stat.label}
@@ -216,7 +215,7 @@ export default function ZamaEcosystemPage() {
             Copy a Skill URL and fetch it from your AI agent to provide accurate, up-to-date context
             for building on Zama. Skills are maintained by{' '}
             <a
-              href="https://zama.ai"
+              href="https://zama.org"
               target="_blank"
               rel="noopener noreferrer"
               className="text-foreground hover:underline underline-offset-2"
