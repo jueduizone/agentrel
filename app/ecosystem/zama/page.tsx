@@ -1,8 +1,29 @@
+'use client'
+
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { serviceClient } from '@/lib/supabase'
-import type { Skill } from '@/lib/types'
+import { createClient } from '@supabase/supabase-js'
 import { Navbar } from '@/components/navbar'
 import { CopySkillUrlButton } from './CopySkillUrlButton'
+
+const browserClient = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+)
+
+interface Skill {
+  id: string
+  name: string
+  name_zh?: string | null
+  ecosystem: string
+  type: string
+  source: string
+  confidence: string
+  version: string
+  tags: string[]
+  content: string
+  description_zh?: string | null
+}
 
 function extractSkillUrl(content: string): string | null {
   const match = content.match(/Skill URL:\s*(https?:\/\/\S+)/)
@@ -10,7 +31,6 @@ function extractSkillUrl(content: string): string | null {
 }
 
 function getDescription(content: string): string {
-  // Strip frontmatter and first heading, return first meaningful paragraph
   const stripped = content
     .replace(/^---[\s\S]*?---\s*/m, '')
     .replace(/^#{1,6}\s.*/gm, '')
@@ -28,27 +48,56 @@ const SOURCE_BADGE: Record<string, { label: string; className: string }> = {
   'ai-generated': { label: '🤖 AI Draft', className: 'bg-yellow-100 text-yellow-700 border border-yellow-200' },
 }
 
-export default async function ZamaEcosystemPage() {
-  const { data: skills } = await serviceClient
-    .from('skills')
-    .select('*')
-    .eq('ecosystem', 'Zama')
-    .order('created_at', { ascending: true })
+export default function ZamaEcosystemPage() {
+  const [skills, setSkills] = useState<Skill[]>([])
+  const [lang, setLang] = useState<'en' | 'zh'>('en')
 
-  const zamaSkills: Skill[] = skills ?? []
+  useEffect(() => {
+    browserClient
+      .from('skills')
+      .select('*')
+      .eq('ecosystem', 'Zama')
+      .order('created_at', { ascending: true })
+      .then(({ data }) => setSkills(data ?? []))
+  }, [])
 
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
       <div className="mx-auto max-w-6xl px-4 py-8">
-        {/* Breadcrumb */}
-        <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
-          <Link href="/ecosystem" className="hover:text-foreground transition-colors">
-            Ecosystems
-          </Link>
-          <span>/</span>
-          <span className="text-foreground font-medium">Zama</span>
-        </nav>
+        {/* Breadcrumb + Language Toggle */}
+        <div className="mb-6 flex items-center justify-between">
+          <nav className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Link href="/ecosystem" className="hover:text-foreground transition-colors">
+              Ecosystems
+            </Link>
+            <span>/</span>
+            <span className="text-foreground font-medium">Zama</span>
+          </nav>
+
+          <div className="flex items-center gap-1 rounded-lg border border-border p-0.5">
+            <button
+              onClick={() => setLang('en')}
+              className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
+                lang === 'en'
+                  ? 'bg-black text-white'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              EN
+            </button>
+            <button
+              onClick={() => setLang('zh')}
+              className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
+                lang === 'zh'
+                  ? 'bg-black text-white'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              中文
+            </button>
+          </div>
+        </div>
 
         {/* Header */}
         <div className="mb-10">
@@ -86,7 +135,7 @@ export default async function ZamaEcosystemPage() {
           <h2 className="text-xl font-semibold text-black">
             Skills{' '}
             <span className="ml-1 rounded-full bg-muted px-2 py-0.5 text-sm font-normal text-muted-foreground">
-              {zamaSkills.length}
+              {skills.length}
             </span>
           </h2>
           <Link
@@ -97,15 +146,18 @@ export default async function ZamaEcosystemPage() {
           </Link>
         </div>
 
-        {zamaSkills.length === 0 ? (
+        {skills.length === 0 ? (
           <div className="rounded-xl border border-border p-12 text-center text-muted-foreground">
             No skills found for Zama.
           </div>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {zamaSkills.map((skill) => {
+            {skills.map((skill) => {
               const skillUrl = extractSkillUrl(skill.content)
-              const description = getDescription(skill.content)
+              const description = lang === 'zh' && skill.description_zh
+                ? skill.description_zh
+                : getDescription(skill.content)
+              const displayName = lang === 'zh' && skill.name_zh ? skill.name_zh : skill.name
               const sourceBadge = SOURCE_BADGE[skill.source]
 
               return (
@@ -132,7 +184,7 @@ export default async function ZamaEcosystemPage() {
                   {/* Name */}
                   <Link href={`/skills/${skill.id}`}>
                     <h3 className="mb-2 font-medium text-black hover:text-red-700 transition-colors">
-                      {skill.name}
+                      {displayName}
                     </h3>
                   </Link>
 
