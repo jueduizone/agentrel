@@ -13,6 +13,16 @@ const ecosystems = [
     dotColor: 'bg-purple-500',
   },
   {
+    id: 'zama',
+    name: 'Zama',
+    description: 'Fully Homomorphic Encryption for the EVM. Build confidential smart contracts with fhEVM.',
+    href: '/ecosystem/zama',
+    available: true,
+    stats: ['FHE', 'Solidity', 'On-chain Privacy'],
+    color: 'bg-red-100 text-red-700 border-red-200',
+    dotColor: 'bg-red-500',
+  },
+  {
     id: 'ethereum',
     name: 'Ethereum',
     description: 'The original smart contract platform. Skills coming soon.',
