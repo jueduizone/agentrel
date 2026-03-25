@@ -3,6 +3,7 @@
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import type { Skill } from '@/lib/types'
+import { useLang } from '@/context/LanguageContext'
 
 function ecosystemClass(eco: string) {
   const map: Record<string, string> = {
@@ -31,6 +32,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
   const [search, setSearch] = useState(initialQ ?? '')
   const [selectedEcosystem, setSelectedEcosystem] = useState(initialEcosystem ?? 'all')
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const { lang } = useLang()
 
   // Extract unique ecosystems from data, sorted by count
   const ecosystems = useMemo(() => {
@@ -148,12 +150,14 @@ export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
 
                 {/* Name */}
                 <h3 className="mb-1.5 font-medium text-black">
-                  {skill.name}
+                  {lang === 'zh' && skill.name_zh ? skill.name_zh : skill.name}
                 </h3>
 
                 {/* Description */}
                 <p className="mb-3 flex-1 text-xs text-muted-foreground line-clamp-2">
-                  {skill.content?.replace(/^---[\s\S]*?---\s*/m, '').replace(/#{1,6}\s/g, '').replace(/\n/g, ' ').slice(0, 120)}
+                  {lang === 'zh' && skill.description_zh
+                    ? skill.description_zh
+                    : skill.content?.replace(/^---[\s\S]*?---\s*/m, '').replace(/#{1,6}\s/g, '').replace(/\n/g, ' ').slice(0, 120)}
                 </p>
 
                 {/* Ecosystem badge */}

@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 import { Navbar } from '@/components/navbar'
 import { CopySkillUrlButton } from './CopySkillUrlButton'
+import { useLang } from '@/context/LanguageContext'
 
 const browserClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -50,7 +51,7 @@ const SOURCE_BADGE: Record<string, { label: string; className: string }> = {
 
 export default function ZamaEcosystemPage() {
   const [skills, setSkills] = useState<Skill[]>([])
-  const [lang, setLang] = useState<'en' | 'zh'>('en')
+  const { lang } = useLang()
 
   useEffect(() => {
     browserClient
@@ -65,39 +66,14 @@ export default function ZamaEcosystemPage() {
     <div className="min-h-screen bg-white">
       <Navbar />
       <div className="mx-auto max-w-6xl px-4 py-8">
-        {/* Breadcrumb + Language Toggle */}
-        <div className="mb-6 flex items-center justify-between">
-          <nav className="flex items-center gap-2 text-sm text-muted-foreground">
-            <Link href="/ecosystem" className="hover:text-foreground transition-colors">
-              Ecosystems
-            </Link>
-            <span>/</span>
-            <span className="text-foreground font-medium">Zama</span>
-          </nav>
-
-          <div className="flex items-center gap-1 rounded-lg border border-border p-0.5">
-            <button
-              onClick={() => setLang('en')}
-              className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
-                lang === 'en'
-                  ? 'bg-black text-white'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              EN
-            </button>
-            <button
-              onClick={() => setLang('zh')}
-              className={`rounded px-3 py-1 text-xs font-medium transition-colors ${
-                lang === 'zh'
-                  ? 'bg-black text-white'
-                  : 'text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              中文
-            </button>
-          </div>
-        </div>
+        {/* Breadcrumb */}
+        <nav className="mb-6 flex items-center gap-2 text-sm text-muted-foreground">
+          <Link href="/ecosystem" className="hover:text-foreground transition-colors">
+            Ecosystems
+          </Link>
+          <span>/</span>
+          <span className="text-foreground font-medium">Zama</span>
+        </nav>
 
         {/* Header */}
         <div className="mb-10">

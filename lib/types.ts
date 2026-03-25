@@ -1,6 +1,7 @@
 export type Skill = {
   id: string
   name: string
+  name_zh?: string | null
   ecosystem: string
   type: string
   time_sensitivity: string
@@ -12,6 +13,7 @@ export type Skill = {
   maintainer: string | null
   content: string
   tags: string[]
+  description_zh?: string | null
   created_at: string
   updated_at: string
 }
