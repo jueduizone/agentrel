@@ -79,7 +79,7 @@ export default function ZamaEcosystemPage() {
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-3">
             <img
-              src="/logos/zama.png"
+              src="/logos/zama.webp"
               alt="Zama"
               className="h-10 w-10 rounded-xl object-cover"
             />
