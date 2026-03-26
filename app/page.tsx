@@ -4,16 +4,6 @@ import { Navbar } from '@/components/navbar'
 import { serviceClient as supabase } from '@/lib/supabase'
 import { HomeCopyButton } from './HomeCopyButton'
 
-const ECOSYSTEMS = [
-  { name: 'Ethereum', color: 'bg-blue-100 text-blue-700 border border-blue-200' },
-  { name: 'Solana', color: 'bg-purple-100 text-purple-700 border border-purple-200' },
-  { name: 'Aptos', color: 'bg-teal-100 text-teal-700 border border-teal-200' },
-  { name: 'Sui', color: 'bg-sky-100 text-sky-700 border border-sky-200' },
-  { name: 'TON', color: 'bg-cyan-100 text-cyan-700 border border-cyan-200' },
-  { name: 'Cosmos', color: 'bg-indigo-100 text-indigo-700 border border-indigo-200' },
-  { name: 'Polkadot', color: 'bg-pink-100 text-pink-700 border border-pink-200' },
-]
-
 const SCENARIOS = [
   {
     icon: '💻',
@@ -41,7 +31,7 @@ const SCENARIOS = [
   },
 ]
 
-const INSTALL_CMD = 'npx skills add agentrel/monad-dev'
+const INSTALL_CMD = 'curl https://agentrel.vercel.app/api/skills/monad/network-config.md'
 
 async function getStats() {
   const [{ count: skillsCount }, { data: ecosystemRows }] = await Promise.all([
@@ -51,10 +41,21 @@ async function getStats() {
 
   const uniqueEcosystems = new Set((ecosystemRows ?? []).map((r) => r.ecosystem)).size
 
+  // Build ecosystem list with counts, sorted by count desc
+  const countMap: Record<string, number> = {}
+  ;(ecosystemRows ?? []).forEach((r) => {
+    countMap[r.ecosystem] = (countMap[r.ecosystem] ?? 0) + 1
+  })
+  const ecosystemList = Object.entries(countMap)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 12)
+    .map(([name, count]) => ({ name, count }))
+
   return {
     skills: skillsCount ?? 0,
     ecosystems: uniqueEcosystems,
     contributors: 42,
+    ecosystemList,
   }
 }
 
@@ -185,15 +186,17 @@ export default async function HomePage() {
       {/* Ecosystem */}
       <section className="border-t border-border bg-muted/30">
         <div className="mx-auto max-w-6xl px-4 py-16 text-center">
-          <h2 className="mb-8 text-2xl font-bold text-black">Supported Ecosystems</h2>
+          <h2 className="mb-2 text-2xl font-bold text-black">Supported Ecosystems</h2>
+          <p className="mb-8 text-sm text-muted-foreground">Click to browse skills by ecosystem</p>
           <div className="flex flex-wrap items-center justify-center gap-3">
-            {ECOSYSTEMS.map((eco) => (
+            {stats.ecosystemList.map((eco) => (
               <Link
                 key={eco.name}
                 href={`/skills?ecosystem=${eco.name.toLowerCase()}`}
-                className={`rounded-full px-4 py-1.5 text-sm font-medium transition-opacity hover:opacity-80 ${eco.color}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-1.5 text-sm font-medium text-foreground transition-all hover:border-black hover:shadow-sm"
               >
                 {eco.name}
+                <span className="rounded-full bg-muted px-1.5 py-0.5 text-xs text-muted-foreground">{eco.count}</span>
               </Link>
             ))}
           </div>
