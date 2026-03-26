@@ -63,6 +63,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
   const { lang } = useLang()
 
   // 搜索建议（防抖 300ms，调 /api/skills/search）
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (search.length < 2) { setSuggestions([]); return }
     const timer = setTimeout(async () => {
