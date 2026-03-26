@@ -136,7 +136,7 @@ export default async function SkillDetailPage({
                     {installCmd}
                   </code>
                 </div>
-                <CopyButton text={installCmd} />
+                <CopyButton text={installCmd} skillId={skill.id} />
               </div>
 
               {/* Raw */}

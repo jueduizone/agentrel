@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import type { Skill } from '@/lib/types'
 import { useLang } from '@/context/LanguageContext'
+import { sendGAEvent } from '@next/third-parties/google'
 
 function healthClass(score: number) {
   if (score >= 85) return 'text-green-600 bg-green-50'
@@ -96,6 +97,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
     await navigator.clipboard.writeText(url)
     setCopiedId(skill.id)
     setTimeout(() => setCopiedId(null), 2000)
+    sendGAEvent('event', 'skill_copy', { skill_id: skill.id, ecosystem: skill.ecosystem })
   }
 
   return (

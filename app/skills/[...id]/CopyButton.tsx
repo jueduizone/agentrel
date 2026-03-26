@@ -2,14 +2,18 @@
 
 import { useState } from 'react'
 import { Copy, Check } from 'lucide-react'
+import { sendGAEvent } from '@next/third-parties/google'
 
-export function CopyButton({ text }: { text: string }) {
+export function CopyButton({ text, skillId }: { text: string; skillId?: string }) {
   const [copied, setCopied] = useState(false)
 
   async function handleCopy() {
     await navigator.clipboard.writeText(text)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+    if (skillId) {
+      sendGAEvent('event', 'skill_install', { skill_id: skillId })
+    }
   }
 
   return (
