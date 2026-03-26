@@ -25,13 +25,13 @@ const SCENARIOS = [
     icon: '🏆',
     title: 'Join a Hackathon',
     desc: 'Hackathon tracks + chain bundles',
-    href: '/bundles?type=hackathon',
+    href: '/bundles',
   },
   {
     icon: '💰',
     title: 'Apply for a Grant',
     desc: 'Grant guides + success stories',
-    href: '/skills?type=grant-guide',
+    href: '/skills?type=grant',
   },
   {
     icon: '🔒',
@@ -107,7 +107,7 @@ export default async function HomePage() {
             <Link
               key={s.href}
               href={s.href}
-              className="flex flex-col rounded-xl border border-border p-4 transition-all hover:border-black hover:shadow-sm no-underline cursor-pointer"
+              className="flex flex-col rounded-xl border border-border p-4 transition-all hover:border-black hover:shadow-md active:scale-95 active:bg-gray-50 no-underline cursor-pointer group"
             >
               <span className="mb-2 text-2xl">{s.icon}</span>
               <span className="mb-1 font-medium text-black text-sm">{s.title}</span>

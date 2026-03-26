@@ -47,11 +47,13 @@ type Props = {
   skills: Skill[]
   initialEcosystem?: string
   initialQ?: string
+  initialType?: string
 }
 
-export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
+export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }: Props) {
   const [search, setSearch] = useState(initialQ ?? '')
   const [selectedEcosystem, setSelectedEcosystem] = useState(initialEcosystem ?? 'all')
+  const [selectedType, setSelectedType] = useState(initialType ?? 'all')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const { lang } = useLang()
 
@@ -69,6 +71,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
   const filtered = useMemo(() => {
     return skills.filter((s) => {
       if (selectedEcosystem !== 'all' && s.ecosystem !== selectedEcosystem) return false
+      if (selectedType !== 'all' && s.type !== selectedType) return false
       if (search) {
         const q = search.toLowerCase()
         if (
@@ -79,7 +82,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
       }
       return true
     })
-  }, [skills, search, selectedEcosystem])
+  }, [skills, search, selectedEcosystem, selectedType])
 
   function getSkillUrl(skill: Skill): string {
     return `https://agentrel.vercel.app/api/skills/${skill.id}.md`
@@ -132,6 +135,19 @@ export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
             )
           })}
         </div>
+
+        {/* Type filter row */}
+        {selectedType !== 'all' && (
+          <div className="flex flex-wrap gap-2">
+            <span className="self-center text-xs text-muted-foreground">Type:</span>
+            <button
+              onClick={() => setSelectedType('all')}
+              className="rounded-full border border-black bg-black px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-gray-800"
+            >
+              {selectedType} ✕
+            </button>
+          </div>
+        )}
       </div>
 
       <p className="mb-4 text-sm text-muted-foreground">

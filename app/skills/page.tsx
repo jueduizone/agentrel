@@ -6,9 +6,9 @@ import { SkillsClient } from './SkillsClient'
 export default async function SkillsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ ecosystem?: string; q?: string }>
+  searchParams: Promise<{ ecosystem?: string; q?: string; type?: string }>
 }) {
-  const { ecosystem, q } = await searchParams
+  const { ecosystem, q, type } = await searchParams
 
   const { data: skills, error } = await serviceClient
     .from('skills')
@@ -34,6 +34,7 @@ export default async function SkillsPage({
           skills={initialSkills}
           initialEcosystem={ecosystem}
           initialQ={q}
+          initialType={type}
         />
       </div>
     </div>
