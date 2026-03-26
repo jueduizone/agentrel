@@ -54,6 +54,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
   const [search, setSearch] = useState(initialQ ?? '')
   const [selectedEcosystem, setSelectedEcosystem] = useState(initialEcosystem ?? 'all')
   const [selectedType, setSelectedType] = useState(initialType ?? 'all')
+  const [selectedSource, setSelectedSource] = useState('all')
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const { lang } = useLang()
 
@@ -72,6 +73,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
     return skills.filter((s) => {
       if (selectedEcosystem !== 'all' && s.ecosystem !== selectedEcosystem) return false
       if (selectedType !== 'all' && s.type !== selectedType) return false
+      if (selectedSource !== 'all' && s.source !== selectedSource) return false
       if (search) {
         const q = search.toLowerCase()
         if (
@@ -82,7 +84,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
       }
       return true
     })
-  }, [skills, search, selectedEcosystem, selectedType])
+  }, [skills, search, selectedEcosystem, selectedType, selectedSource])
 
   function getSkillUrl(skill: Skill): string {
     return `https://agentrel.vercel.app/api/skills/${skill.id}.md`
@@ -148,6 +150,32 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
             </button>
           </div>
         )}
+
+        {/* Source filter row */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="self-center text-xs text-muted-foreground">{lang === 'zh' ? '来源：' : 'Source:'}</span>
+          {(['all', 'official', 'verified', 'community', 'ai-generated'] as const).map((src) => {
+            const label = src === 'all'
+              ? (lang === 'zh' ? '全部' : 'All')
+              : src === 'official' ? '🏛️ Official'
+              : src === 'verified' ? '✅ Verified'
+              : src === 'community' ? '👥 Community'
+              : '🤖 AI Draft'
+            return (
+              <button
+                key={src}
+                onClick={() => setSelectedSource(src)}
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  selectedSource === src
+                    ? 'bg-black text-white'
+                    : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
+                }`}
+              >
+                {label}
+              </button>
+            )
+          })}
+        </div>
       </div>
 
       <p className="mb-4 text-sm text-muted-foreground">
@@ -204,12 +232,12 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                   </span>
                   {skill.health_score != null && (
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${healthClass(skill.health_score)}`}>
-                      健康度 {skill.health_score}%
+                      {lang === 'zh' ? `健康度 ${skill.health_score}%` : `Health ${skill.health_score}%`}
                     </span>
                   )}
                   {(skill.install_count ?? 0) > 0 && (
                     <span className="text-xs text-muted-foreground">
-                      ⚡ {formatInstallCount(skill.install_count!)} 次
+                      ⚡ {formatInstallCount(skill.install_count!)}{lang === 'zh' ? ' 次' : ''}
                     </span>
                   )}
                   {skill.last_verified_at && (
