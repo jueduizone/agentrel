@@ -15,7 +15,7 @@ const SCENARIOS = [
     icon: '🏆',
     title: 'Join a Hackathon',
     desc: 'Hackathon tracks + chain bundles',
-    href: '/bundles',
+    href: '/skills?type=hackathon-guide',
   },
   {
     icon: '💰',
