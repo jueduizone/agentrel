@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import type { Skill } from '@/lib/types'
 import { useLang } from '@/context/LanguageContext'
@@ -57,7 +57,35 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
   const [selectedType, setSelectedType] = useState(initialType ?? 'all')
   const [selectedSource, setSelectedSource] = useState('all')
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [suggestions, setSuggestions] = useState<Skill[]>([])
+  const [showSuggestions, setShowSuggestions] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
   const { lang } = useLang()
+
+  // 搜索建议（防抖 300ms，调 /api/skills/search）
+  useEffect(() => {
+    if (search.length < 2) { setSuggestions([]); return }
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/skills/search?q=${encodeURIComponent(search)}&limit=5`)
+        const json = await res.json()
+        setSuggestions(json.data ?? [])
+        setShowSuggestions(true)
+      } catch { setSuggestions([]) }
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [search])
+
+  // 点击外部关闭建议
+  useEffect(() => {
+    function onClick(e: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false)
+      }
+    }
+    document.addEventListener('mousedown', onClick)
+    return () => document.removeEventListener('mousedown', onClick)
+  }, [])
 
   // Extract unique ecosystems from data, sorted by count
   const ecosystems = useMemo(() => {
@@ -104,13 +132,32 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
     <div>
       {/* Search + Filter bar */}
       <div className="mb-6 space-y-3">
-        <input
-          type="search"
-          placeholder="Search skills..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="h-9 w-full max-w-sm rounded-lg border border-input bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
-        />
+        <div ref={searchRef} className="relative w-full max-w-sm">
+          <input
+            type="search"
+            placeholder="Search skills..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setShowSuggestions(true) }}
+            onFocus={() => search.length >= 2 && setShowSuggestions(true)}
+            className="h-9 w-full rounded-lg border border-input bg-transparent px-3 text-sm outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50"
+          />
+          {/* Search suggestions dropdown */}
+          {showSuggestions && suggestions.length > 0 && (
+            <div className="absolute top-10 left-0 z-50 w-full rounded-lg border border-border bg-white shadow-md">
+              {suggestions.map((s) => (
+                <Link
+                  key={s.id}
+                  href={`/skills/${s.id}`}
+                  onClick={() => { setSearch(s.name); setShowSuggestions(false) }}
+                  className="flex items-center justify-between px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
+                >
+                  <span className="truncate text-foreground">{s.name}</span>
+                  <span className="ml-2 flex-shrink-0 text-xs text-muted-foreground capitalize">{s.ecosystem}</span>
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
         <div className="flex flex-wrap gap-2">
           <button
             onClick={() => setSelectedEcosystem('all')}

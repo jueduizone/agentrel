@@ -185,6 +185,37 @@ export default async function SkillDetailPage({
 
               {/* Feedback */}
               <FeedbackForm skillId={skill.id} />
+
+              {/* Contribute */}
+              <div className="mt-4 rounded-xl border border-dashed border-border p-4">
+                <p className="mb-3 text-xs font-medium text-muted-foreground uppercase tracking-wider">Contribute</p>
+                <div className="flex flex-col gap-2">
+                  <a
+                    href={`https://github.com/jueduizone/agentrel/issues/new?title=Fix+request:+${encodeURIComponent(skill.id)}&body=**Skill:**+${encodeURIComponent(skill.id)}%0A%0A**Issue:**%0A%0A**Suggested+fix:**`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-red-300 hover:text-red-600"
+                  >
+                    🐛 Report an error
+                  </a>
+                  <a
+                    href={`https://github.com/jueduizone/agentrel/tree/main/skills`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-black hover:text-foreground"
+                  >
+                    ✏️ Improve this skill
+                  </a>
+                  <a
+                    href="https://github.com/jueduizone/agentrel/blob/main/CONTRIBUTING.md"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-black hover:text-foreground"
+                  >
+                    📖 Contribution guide
+                  </a>
+                </div>
+              </div>
             </div>
           </aside>
         </div>
