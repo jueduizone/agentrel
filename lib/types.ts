@@ -14,6 +14,13 @@ export type Skill = {
   content: string
   tags: string[]
   description_zh?: string | null
+  health_score?: number
+  install_count?: number
+  last_verified_at?: string | null
+  error_count?: number
+  access?: 'free' | 'pro' | 'partner'
+  preview_lines?: number
+  partner_id?: string | null
   created_at: string
   updated_at: string
 }

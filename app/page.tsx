@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Github, ArrowRight, Zap, RefreshCw, FileText } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import { serviceClient as supabase } from '@/lib/supabase'
+import { HomeCopyButton } from './HomeCopyButton'
 
 const ECOSYSTEMS = [
   { name: 'Ethereum', color: 'bg-blue-100 text-blue-700 border border-blue-200' },
@@ -12,6 +13,35 @@ const ECOSYSTEMS = [
   { name: 'Cosmos', color: 'bg-indigo-100 text-indigo-700 border border-indigo-200' },
   { name: 'Polkadot', color: 'bg-pink-100 text-pink-700 border border-pink-200' },
 ]
+
+const SCENARIOS = [
+  {
+    icon: '💻',
+    title: 'Build a dApp',
+    desc: 'Pick skills by chain for development',
+    href: '/skills?type=technical-doc',
+  },
+  {
+    icon: '🏆',
+    title: 'Join a Hackathon',
+    desc: 'Hackathon tracks + chain bundles',
+    href: '/bundles?type=hackathon',
+  },
+  {
+    icon: '💰',
+    title: 'Apply for a Grant',
+    desc: 'Grant guides + success stories',
+    href: '/skills?type=grant-guide',
+  },
+  {
+    icon: '🔒',
+    title: 'Security Audit',
+    desc: 'Contract vulnerabilities + checklists',
+    href: '/skills?type=security',
+  },
+]
+
+const INSTALL_CMD = 'npx skills add agentrel/monad-dev'
 
 async function getStats() {
   const [{ count: skillsCount }, { data: ecosystemRows }] = await Promise.all([
@@ -42,13 +72,10 @@ export default async function HomePage() {
           Open Source · Free for Developers
         </div>
         <h1 className="mt-6 text-5xl font-bold tracking-tight text-black md:text-6xl">
-          Web3 开发者的
-          <br />
-          <span className="text-muted-foreground">AI Context 基础设施</span>
+          Web3 AI Skills
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-          Skills 平台，让你的 AI Agent 真正懂 Web3。修复幻觉，紧跟生态动态，
-          获取准确的 Web3 上下文。
+        <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
+          Give your AI agent real Web3 context
         </p>
         <div className="mt-8 flex items-center justify-center gap-4">
           <Link
@@ -70,6 +97,34 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* Scenario cards */}
+      <section className="mx-auto max-w-6xl px-4 pb-12">
+        <h2 className="mb-6 text-center text-xl font-semibold text-black">
+          What are you building?
+        </h2>
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {SCENARIOS.map((s) => (
+            <Link
+              key={s.href}
+              href={s.href}
+              className="flex flex-col rounded-xl border border-border p-4 transition-all hover:border-black hover:shadow-sm no-underline cursor-pointer"
+            >
+              <span className="mb-2 text-2xl">{s.icon}</span>
+              <span className="mb-1 font-medium text-black text-sm">{s.title}</span>
+              <span className="text-xs text-muted-foreground">{s.desc}</span>
+            </Link>
+          ))}
+        </div>
+
+        {/* Quick install */}
+        <div className="mt-8 mx-auto max-w-xl">
+          <div className="flex items-center justify-between rounded-lg border border-border bg-gray-900 px-4 py-3">
+            <code className="font-mono text-sm text-gray-100">{INSTALL_CMD}</code>
+            <HomeCopyButton text={INSTALL_CMD} />
+          </div>
+        </div>
+      </section>
+
       {/* Stats */}
       <section className="border-y border-border bg-muted/30">
         <div className="mx-auto max-w-6xl px-4 py-12">
@@ -80,11 +135,11 @@ export default async function HomePage() {
             </div>
             <div>
               <div className="text-4xl font-bold text-black">{stats.ecosystems || 7}</div>
-              <div className="mt-1 text-sm text-muted-foreground">生态覆盖</div>
+              <div className="mt-1 text-sm text-muted-foreground">Ecosystems</div>
             </div>
             <div>
               <div className="text-4xl font-bold text-black">{stats.contributors}</div>
-              <div className="mt-1 text-sm text-muted-foreground">社区贡献者</div>
+              <div className="mt-1 text-sm text-muted-foreground">Contributors</div>
             </div>
           </div>
         </div>
@@ -92,36 +147,36 @@ export default async function HomePage() {
 
       {/* Features */}
       <section className="mx-auto max-w-6xl px-4 py-20">
-        <h2 className="mb-12 text-center text-3xl font-bold text-black">为什么选择 AgentRel</h2>
+        <h2 className="mb-12 text-center text-3xl font-bold text-black">Why AgentRel</h2>
         <div className="grid gap-6 md:grid-cols-3">
           <div className="rounded-xl border border-border p-6">
             <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-red-100">
               <Zap className="h-5 w-5 text-red-600" />
             </div>
-            <h3 className="mb-2 font-semibold text-black">AI 幻觉修复</h3>
+            <h3 className="mb-2 font-semibold text-black">Fix AI Hallucinations</h3>
             <p className="text-sm text-muted-foreground">
-              针对最常见的 AI 错误（如 Solana web3.js v1 vs v2，ethers v5 vs v6）提供精准修正，
-              让你的 Agent 不再生成过时代码。
+              Targeted corrections for the most common AI mistakes (Solana web3.js v1 vs v2,
+              ethers v5 vs v6). Stop your agent from generating outdated code.
             </p>
           </div>
           <div className="rounded-xl border border-border p-6">
             <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
               <RefreshCw className="h-5 w-5 text-blue-600" />
             </div>
-            <h3 className="mb-2 font-semibold text-black">实时生态动态</h3>
+            <h3 className="mb-2 font-semibold text-black">Real-time Ecosystem Updates</h3>
             <p className="text-sm text-muted-foreground">
-              跟踪多链生态的最新变化，SDK 升级、API 变动、最佳实践更新，
-              第一时间反映到你的 Agent 上下文中。
+              Track changes across multi-chain ecosystems — SDK upgrades, API changes, and
+              best-practice updates reflected in your agent context immediately.
             </p>
           </div>
           <div className="rounded-xl border border-border p-6">
             <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
               <FileText className="h-5 w-5 text-green-600" />
             </div>
-            <h3 className="mb-2 font-semibold text-black">Grant 申请指南</h3>
+            <h3 className="mb-2 font-semibold text-black">Grant Application Guides</h3>
             <p className="text-sm text-muted-foreground">
-              涵盖各大生态 Grant 计划的申请要求、评审标准和成功案例，
-              帮助你的 Agent 提供精准的融资建议。
+              Covers grant program requirements, review criteria, and success stories across
+              major ecosystems to help your agent give accurate funding advice.
             </p>
           </div>
         </div>
@@ -130,7 +185,7 @@ export default async function HomePage() {
       {/* Ecosystem */}
       <section className="border-t border-border bg-muted/30">
         <div className="mx-auto max-w-6xl px-4 py-16 text-center">
-          <h2 className="mb-8 text-2xl font-bold text-black">支持的生态</h2>
+          <h2 className="mb-8 text-2xl font-bold text-black">Supported Ecosystems</h2>
           <div className="flex flex-wrap items-center justify-center gap-3">
             {ECOSYSTEMS.map((eco) => (
               <Link
@@ -142,16 +197,6 @@ export default async function HomePage() {
               </Link>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="mx-auto max-w-6xl px-4 py-20 text-center">
-        <h2 className="mb-4 text-3xl font-bold text-black">快速开始</h2>
-        <p className="mb-6 text-muted-foreground">在你的 Agent 中添加一个 Skill，立即提升准确度</p>
-        <div className="mx-auto max-w-xl rounded-lg border border-border bg-muted/30 p-4 font-mono text-sm">
-          <span className="text-muted-foreground">$ </span>
-          <span>curl https://agentrel.vercel.app/api/skills/solana/web3js-v2.md</span>
         </div>
       </section>
 

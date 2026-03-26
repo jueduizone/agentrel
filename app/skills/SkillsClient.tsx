@@ -5,6 +5,27 @@ import Link from 'next/link'
 import type { Skill } from '@/lib/types'
 import { useLang } from '@/context/LanguageContext'
 
+function healthClass(score: number) {
+  if (score >= 85) return 'text-green-600 bg-green-50'
+  if (score >= 60) return 'text-yellow-600 bg-yellow-50'
+  return 'text-red-600 bg-red-50'
+}
+
+function timeAgo(dateStr: string): string {
+  const diff = Date.now() - new Date(dateStr).getTime()
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  if (days === 0) return '今天'
+  if (days === 1) return '昨天'
+  if (days < 30) return `${days}天前`
+  const months = Math.floor(days / 30)
+  return `${months}个月前`
+}
+
+function formatInstallCount(n: number): string {
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, '')}k`
+  return n.toString()
+}
+
 function ecosystemClass(eco: string) {
   const map: Record<string, string> = {
     monad:    'bg-purple-100 text-purple-700 border-purple-200',
@@ -160,10 +181,27 @@ export function SkillsClient({ skills, initialEcosystem, initialQ }: Props) {
                     : skill.content?.replace(/^---[\s\S]*?---\s*/m, '').replace(/#{1,6}\s/g, '').replace(/\n/g, ' ').slice(0, 120)}
                 </p>
 
-                {/* Ecosystem badge */}
-                <span className={`self-start rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${ecosystemClass(skill.ecosystem)}`}>
-                  {skill.ecosystem}
-                </span>
+                {/* Bottom row: ecosystem + health signals */}
+                <div className="flex flex-wrap items-center gap-2 mt-auto pt-2">
+                  <span className={`rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${ecosystemClass(skill.ecosystem)}`}>
+                    {skill.ecosystem}
+                  </span>
+                  {skill.health_score != null && (
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${healthClass(skill.health_score)}`}>
+                      健康度 {skill.health_score}%
+                    </span>
+                  )}
+                  {(skill.install_count ?? 0) > 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      ⚡ {formatInstallCount(skill.install_count!)} 次
+                    </span>
+                  )}
+                  {skill.last_verified_at && (
+                    <span className="text-xs text-muted-foreground">
+                      🔄 {timeAgo(skill.last_verified_at)}
+                    </span>
+                  )}
+                </div>
               </Link>
             )
           })}
