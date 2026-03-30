@@ -1,0 +1,36 @@
+{
+  "judge_model": "gpt-4o-mini",
+  "faithfulness_enabled": false,
+  "timestamp": "2026-03-30T20:56:14.887297",
+  "mode": "incremental",
+  "skill_ids_filter": "ethereum/defi-math",
+  "total_questions": 2,
+  "avg_control": 4.5,
+  "avg_test": 5.0,
+  "delta": 0.5,
+  "by_category": {
+    "DeFi 精确参数": {
+      "control": 4.5,
+      "test": 5.0,
+      "n": 2
+    }
+  },
+  "results": [
+    {
+      "id": "PP01",
+      "category": "DeFi 精确参数",
+      "skill_id": "ethereum/defi-math",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "PP02",
+      "category": "DeFi 精确参数",
+      "skill_id": "ethereum/defi-math",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    }
+  ]
+}

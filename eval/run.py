@@ -24,6 +24,10 @@ parser.add_argument("--questions-file", type=str, default=MD_PATH)
 parser.add_argument("--output", type=str, default="")
 parser.add_argument("--judge-model", type=str, default="claude",
                     help="Judge model: 'claude' (CLI) or 'gpt-4o-mini' (Zenmux)")
+parser.add_argument("--runs", type=int, default=1,
+                    help="Number of eval runs per question (final score = median)")
+parser.add_argument("--answerer", choices=["claude-cli", "zenmux"], default="claude-cli",
+                    help="Answerer model: claude-cli (default) or zenmux API")
 parser.add_argument("--faithfulness", action="store_true",
                     help="Add faithfulness scoring (is answer grounded in Skill?)")
 
@@ -117,7 +121,7 @@ def extract_relevant_section(skill_content: str, question: str, max_chars: int =
 # ── Answerer: claude CLI or Anthropic API ────────────────────────────────────
 def ask_claude_cli(prompt):
     result = subprocess.run([CLAUDE_CLI, "--print"], input=prompt,
-                            capture_output=True, text=True, timeout=120)
+                            capture_output=True, text=True, timeout=180)
     return result.stdout.strip()
 
 
@@ -137,8 +141,35 @@ def ask_anthropic_api(prompt, api_key):
     return msg.content[0].text.strip()
 
 
-def get_answerer(api_key=None):
-    """Return answerer function: prefer CLI, fallback to Zenmux API."""
+
+def ask_zenmux(prompt, system=""):
+    """Use Zenmux Anthropic-compatible API as answerer (no rate limit issues)."""
+    import anthropic, time as _time
+    key = os.environ.get("ZENMUX_API_KEY",
+        "sk-ss-v1-196d706809b60c6ccf68e30afa1a711ce1b834674822781bd972b3885ab640e0")
+    client = anthropic.Anthropic(api_key=key, base_url="https://zenmux.ai/api/anthropic")
+    full_prompt = f"<system>\n{system}\n</system>\n\n{prompt}" if system else prompt
+    for attempt in range(3):
+        try:
+            resp = client.messages.create(
+                model="claude-sonnet-4-6",
+                max_tokens=800,
+                messages=[{"role": "user", "content": full_prompt}],
+            )
+            _time.sleep(0.5)  # small delay to avoid rate limits
+            return resp.content[0].text.strip()
+        except Exception as e:
+            if attempt < 2:
+                _time.sleep(3 * (attempt + 1))
+            else:
+                return f"[ERROR] {e}"
+    return "[ERROR] max retries"
+
+
+def get_answerer(api_key=None, answerer_type="claude-cli"):
+    """Return answerer function based on --answerer arg."""
+    if answerer_type == "zenmux":
+        return ask_zenmux
     if os.path.exists(CLAUDE_CLI):
         return ask_claude_cli
     elif api_key:
@@ -224,7 +255,7 @@ Output ONLY the final integer on the last line."""
 def main():
     args = parser.parse_args()
     api_key = os.environ.get("ZENMUX_API_KEY", "")
-    answerer_fn = get_answerer(api_key or None)
+    answerer_fn = get_answerer(api_key or None, answerer_type=args.answerer)
 
     all_questions = parse_questions(args.questions_file)
     skill_map = build_skill_map(all_questions)
@@ -261,13 +292,13 @@ def main():
 
     print(f"Judge: {judge_model}" + (" + faithfulness" if do_faithfulness else ""))
 
+    num_runs = args.runs
+
     for q in questions:
         sid = q["skill_id"]
         if sid not in skill_cache:
             skill_cache[sid] = fetch_skill(sid)
         skill = skill_cache[sid]
-
-        ans_ctrl = answerer_fn(q["question"])
 
         # Choose inject strategy per question
         strategy = q.get("inject_strategy", "slice")
@@ -282,21 +313,33 @@ def main():
             "Answer based on this documentation when relevant."
         ) if skill_context else ""
         test_input = f"<system>\n{sys_prompt}\n</system>\n\n{q['question']}" if sys_prompt else q["question"]
-        ans_test = answerer_fn(test_input)
 
-        sc = judge(q["question"], ans_ctrl, q["ground_truth"], answerer_fn, judge_model)
-        st = judge(q["question"], ans_test, q["ground_truth"], answerer_fn, judge_model)
+        # Run multiple times and take median to reduce Judge noise
+        sc_runs, st_runs = [], []
+        for run_i in range(num_runs):
+            ans_ctrl = answerer_fn(q["question"])
+            ans_test = answerer_fn(test_input)
+            _sc = judge(q["question"], ans_ctrl, q["ground_truth"], answerer_fn, judge_model)
+            _st = judge(q["question"], ans_test, q["ground_truth"], answerer_fn, judge_model)
+            sc_runs.append(_sc)
+            st_runs.append(_st)
+
+        import statistics
+        sc = round(statistics.median(sc_runs))
+        st = round(statistics.median(st_runs))
 
         # Faithfulness scoring (test group only — does test answer stick to Skill?)
         faith_score = None
         if do_faithfulness and skill:
-            faith_score = faithfulness_score(q["question"], ans_test, skill, answerer_fn, judge_model)
+            ans_test_last = answerer_fn(test_input)
+            faith_score = faithfulness_score(q["question"], ans_test_last, skill, answerer_fn, judge_model)
 
+        runs_str = f" ({sc_runs}→{st_runs})" if num_runs > 1 else ""
         delta = f"+{st-sc}" if st > sc else ("=" if st == sc else str(st-sc))
         faith_str = f" faith={faith_score}" if faith_score is not None else ""
         strat_str = f" [{q.get('inject_strategy','slice')}]"
         cat_short = q["category"][:28]
-        print(f"{q['id']:<5} {cat_short:<28} {sc:>5} {st:>5} {delta:>3}{faith_str}{strat_str}")
+        print(f"{q['id']:<5} {cat_short:<28} {sc:>5} {st:>5} {delta:>3}{faith_str}{strat_str}{runs_str}")
 
         results.append({
             "id": q["id"], "category": q["category"], "skill_id": sid,

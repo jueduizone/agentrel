@@ -1,0 +1,110 @@
+{
+  "judge_model": "gpt-4o-mini",
+  "faithfulness_enabled": false,
+  "timestamp": "2026-03-30T20:51:45.718810",
+  "mode": "full",
+  "skill_ids_filter": null,
+  "total_questions": 10,
+  "avg_control": 0.0,
+  "avg_test": 0.0,
+  "delta": 0.0,
+  "by_category": {
+    "DeFi 精确参数": {
+      "control": 0.0,
+      "test": 0.0,
+      "n": 3
+    },
+    "合约地址精确题（AI 必然幻觉）": {
+      "control": 0.0,
+      "test": 0.0,
+      "n": 4
+    },
+    "时效性精确数字题": {
+      "control": 0.0,
+      "test": 0.0,
+      "n": 3
+    }
+  },
+  "results": [
+    {
+      "id": "PP01",
+      "category": "DeFi 精确参数",
+      "skill_id": "ethereum/defi-math",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 0
+    },
+    {
+      "id": "PP02",
+      "category": "DeFi 精确参数",
+      "skill_id": "ethereum/defi-math",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 0
+    },
+    {
+      "id": "PP03",
+      "category": "DeFi 精确参数",
+      "skill_id": "ethereum/gas-optimization",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 0
+    },
+    {
+      "id": "PP04",
+      "category": "合约地址精确题（AI 必然幻觉）",
+      "skill_id": "standards/erc-account-standards",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 0
+    },
+    {
+      "id": "PP05",
+      "category": "合约地址精确题（AI 必然幻觉）",
+      "skill_id": "standards/erc-account-standards",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 0
+    },
+    {
+      "id": "PP06",
+      "category": "合约地址精确题（AI 必然幻觉）",
+      "skill_id": "monad/addresses",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 0
+    },
+    {
+      "id": "PP07",
+      "category": "合约地址精确题（AI 必然幻觉）",
+      "skill_id": "monad/addresses",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 0
+    },
+    {
+      "id": "PP08",
+      "category": "时效性精确数字题",
+      "skill_id": "grants/solana-active",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 0
+    },
+    {
+      "id": "PP09",
+      "category": "时效性精确数字题",
+      "skill_id": "hackathon/active-events",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 0
+    },
+    {
+      "id": "PP10",
+      "category": "时效性精确数字题",
+      "skill_id": "grants/gitcoin-overview",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 0
+    }
+  ]
+}
