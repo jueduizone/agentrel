@@ -10,6 +10,37 @@ from datetime import datetime
 from pathlib import Path
 
 AGENTREL_BASE = "https://agentrel.vercel.app/api/skills"
+
+# ── Source tier mapping ───────────────────────────────────────────────────────
+TIER_MAP: dict[str, str] = {
+    'official': 'official',
+    'official-docs': 'official',
+    'community': 'community',
+    'generated': 'generated',
+    'verified': 'verified',
+}
+
+SUPABASE_URL = "https://zkpeutvzmrfhlzpsbyhr.supabase.co"
+SUPABASE_KEY = os.environ.get(
+    "SUPABASE_SERVICE_KEY",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InprcGV1dHZ6bXJmaGx6cHNieWhyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mjk1MTI0MSwiZXhwIjoyMDg4NTI3MjQxfQ.DtvWVp2SrwNrfR503XjPUiW_H_T4GRrHqCTnjMZb9hI"
+)
+
+def fetch_skill_meta(skill_ids: list[str]) -> dict[str, str]:
+    """Fetch source field for skill ids from Supabase."""
+    if not skill_ids:
+        return {}
+    try:
+        ids_param = ",".join(f'"{sid}"' for sid in skill_ids)
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/skills?id=in.({ids_param})&select=id,source",
+            headers={"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}"},
+            timeout=10,
+        )
+        return {row["id"]: TIER_MAP.get(row.get("source"), "unknown") for row in r.json()} if r.ok else {}
+    except Exception:
+        return {}
+
 CLAUDE_CLI = "/home/bre/.npm-global/bin/claude"
 ZENMUX_OAI_URL = "https://zenmux.ai/api/v1/chat/completions"
 ZENMUX_KEY = os.environ.get("ZENMUX_API_KEY",
@@ -384,6 +415,20 @@ def main():
         },
         "results": results,
     }
+    # Source tier breakdown
+    unique_skills = list(set(r["skill_id"] for r in results))
+    tier_meta = fetch_skill_meta(unique_skills)
+    tier_results: dict[str, list] = {}
+    for r in results:
+        tier = tier_meta.get(r["skill_id"], "unknown")
+        tier_results.setdefault(tier, []).append((r["control_score"], r["test_score"]))
+    if tier_results:
+        print("\n📊 By Source Tier:")
+        for tier, scores in sorted(tier_results.items()):
+            tc = sum(s[0] for s in scores) / len(scores)
+            tt = sum(s[1] for s in scores) / len(scores)
+            print(f"  {tier:<12}: ctrl={tc:.2f} test={tt:.2f} δ={tt-tc:+.2f}  (n={len(scores)})")
+
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
     print(f"\nSaved: {out_path}")
