@@ -8,15 +8,13 @@ import {
 } from 'recharts'
 
 type Run = {
-  id: string
-  run_date: string
+  run_at: string
   judge_model: string
-  inject_mode: string
+  inject_strategy: string
   total_questions: number
   avg_control: number
   avg_test: number
   delta: number
-  label: string | null
 }
 
 type Result = {
@@ -40,7 +38,6 @@ type Props = {
     run: Run
     results: Result[]
     catStats: CatStat[]
-    allRuns: Run[]
   } | null
 }
 
@@ -111,7 +108,7 @@ export default function BenchmarkClient({ data }: Props) {
         {/* Hero stats */}
         <section className="mb-12">
           <div className="mb-2 text-xs font-semibold text-gray-400 tracking-widest uppercase">
-            Latest run · {run.run_date} · {run.total_questions} questions · Judge: {run.judge_model}
+            Latest run · {(run.run_at || '').slice(0, 10)} · {run.total_questions} questions · Judge: {run.judge_model}
           </div>
           <h1 className="text-4xl font-black text-gray-900 mb-2">
             With AgentRel Skills, AI accuracy improves

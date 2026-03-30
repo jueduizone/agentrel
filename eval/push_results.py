@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-push_results.py — Upload eval results JSON to Supabase eval_runs + eval_results tables
-Usage: python3 eval/push_results.py eval/results/2026-03-30-1638.json [--label v2.0-50q]
+push_results.py — Upload eval results JSON to Supabase eval_results table
+Usage:
+  python3 eval/push_results.py eval/results/2026-03-30-1638.json  # single file
+  python3 eval/push_results.py --all                               # import all JSONs
 """
 import argparse, json, os, sys
+from pathlib import Path
 import requests
 
 SUPABASE_URL = "https://zkpeutvzmrfhlzpsbyhr.supabase.co"
@@ -15,67 +18,82 @@ HEADERS = {
     "apikey": SERVICE_KEY,
     "Authorization": f"Bearer {SERVICE_KEY}",
     "Content-Type": "application/json",
-    "Prefer": "return=representation",
+    "Prefer": "return=minimal",
 }
+RESULTS_DIR = Path(__file__).parent / "results"
 
 
-def post(path, data):
-    r = requests.post(f"{SUPABASE_URL}/rest/v1/{path}", json=data, headers=HEADERS, timeout=15)
-    r.raise_for_status()
-    return r.json()
+def push_file(path: str, dry_run: bool = False) -> int:
+    """Push a single results JSON. Returns number of rows inserted."""
+    with open(path) as f:
+        data = json.load(f)
+
+    run_at = data.get("timestamp") or data.get("run_at", "2026-01-01T00:00:00Z")
+    judge_model = data.get("judge_model", "gpt-4o-mini").split("+")[-1].strip()
+    inject_strategy = "slice" if "slice" in str(path) else data.get("inject_mode", "full")
+
+    rows = []
+    for r in data.get("results", []):
+        rows.append({
+            "run_at": run_at,
+            "judge_model": judge_model,
+            "inject_strategy": inject_strategy,
+            "category": r.get("category", ""),
+            "question_id": r.get("id", ""),
+            "question_label": r.get("label", r.get("id", "")),
+            "control_score": r.get("control_score"),
+            "test_score": r.get("test_score"),
+            "faithfulness": r.get("faithfulness"),
+            "skill_id": r.get("skill_id", ""),
+            "skill_found": r.get("skill_found", True),
+        })
+
+    if not rows:
+        print(f"  [skip] {path}: no results")
+        return 0
+
+    if dry_run:
+        print(f"  [dry] {path}: would insert {len(rows)} rows (run_at={run_at[:19]})")
+        return len(rows)
+
+    # Batch insert
+    batch_size = 200
+    inserted = 0
+    for i in range(0, len(rows), batch_size):
+        batch = rows[i:i+batch_size]
+        r = requests.post(f"{SUPABASE_URL}/rest/v1/eval_results",
+                          json=batch, headers=HEADERS, timeout=15)
+        if r.ok:
+            inserted += len(batch)
+        else:
+            print(f"  [error] {r.status_code}: {r.text[:100]}")
+            return inserted
+
+    print(f"  ✅ {path}: inserted {inserted} rows")
+    return inserted
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("results_file")
-    parser.add_argument("--label", default="")
-    parser.add_argument("--notes", default="")
+    parser.add_argument("file", nargs="?", help="Single results JSON file to upload")
+    parser.add_argument("--all", action="store_true", help="Import all JSONs from eval/results/")
+    parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
-    with open(args.results_file) as f:
-        data = json.load(f)
+    if args.all:
+        files = sorted(RESULTS_DIR.glob("*.json"))
+        print(f"Importing {len(files)} files from {RESULTS_DIR}...")
+        total = 0
+        for f in files:
+            total += push_file(str(f), dry_run=args.dry_run)
+        print(f"\nTotal: {total} rows {'(dry-run)' if args.dry_run else 'inserted'}")
+    elif args.file:
+        push_file(args.file, dry_run=args.dry_run)
+    else:
+        parser.print_help()
+        sys.exit(1)
 
-    run_date = data.get("timestamp", "")[:10] or "2026-01-01"
-
-    # Insert run
-    run_payload = {
-        "run_date": run_date,
-        "judge_model": data.get("judge_model", "gpt-4o-mini").split("+")[-1].strip(),
-        "inject_mode": "slice" if "slice" in args.results_file else "full",
-        "total_questions": data["total_questions"],
-        "avg_control": data["avg_control"],
-        "avg_test": data["avg_test"],
-        "label": args.label or None,
-        "notes": args.notes or None,
-    }
-    print(f"Inserting run: {run_payload['run_date']} / {run_payload['total_questions']}q …")
-    run_resp = post("eval_runs", run_payload)
-    run_id = run_resp[0]["id"]
-    print(f"  → run_id: {run_id}")
-
-    # Insert results
-    result_rows = []
-    for r in data["results"]:
-        result_rows.append({
-            "run_id": run_id,
-            "question_id": r["id"],
-            "category": r["category"],
-            "skill_id": r["skill_id"],
-            "skill_found": r.get("skill_found", True),
-            "control_score": r["control_score"],
-            "test_score": r["test_score"],
-            "faithfulness": r.get("faithfulness"),
-        })
-
-    # Batch insert (max 1000 per request)
-    batch_size = 200
-    for i in range(0, len(result_rows), batch_size):
-        batch = result_rows[i:i+batch_size]
-        post("eval_results", batch)
-        print(f"  Inserted rows {i+1}–{i+len(batch)}")
-
-    print(f"\n✅ Done. Run {run_id} saved with {len(result_rows)} results.")
-    print(f"   View at: https://agentrel.vercel.app/benchmark")
+    print(f"\nView at: https://agentrel.vercel.app/benchmark")
 
 
 if __name__ == "__main__":
