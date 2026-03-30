@@ -38,7 +38,7 @@ jobs:
 
       - name: Run eval
         env:
-          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ZENMUX_API_KEY: ${{ secrets.ZENMUX_API_KEY }}
         run: |
           # Determine skill IDs: push event uses detected, workflow_dispatch uses input
           if [ "${{ github.event_name }}" = "push" ]; then

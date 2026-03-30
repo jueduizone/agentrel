@@ -70,9 +70,14 @@ def ask_claude_cli(prompt):
 
 def ask_anthropic_api(prompt, api_key):
     import anthropic
-    client = anthropic.Anthropic(api_key=api_key)
+    # Zenmux uses Anthropic-compatible API at a custom base_url
+    # Header: x-api-key (standard Anthropic SDK maps api_key to this header)
+    client = anthropic.Anthropic(
+        api_key=api_key,
+        base_url="https://zenmux.ai/api/anthropic",  # Zenmux Anthropic-compatible endpoint
+    )
     msg = client.messages.create(
-        model="claude-sonnet-4-5",
+        model="claude-sonnet-4-6",   # Zenmux model name
         max_tokens=500,
         messages=[{"role": "user", "content": prompt}]
     )
@@ -80,14 +85,14 @@ def ask_anthropic_api(prompt, api_key):
 
 
 def get_answerer(api_key=None):
-    """Return answerer function: prefer CLI, fallback to API."""
+    """Return answerer function: prefer CLI, fallback to Zenmux API."""
     if os.path.exists(CLAUDE_CLI):
         return ask_claude_cli
     elif api_key:
         def fn(prompt): return ask_anthropic_api(prompt, api_key)
         return fn
     else:
-        raise RuntimeError("No answerer available: claude CLI not found and ANTHROPIC_API_KEY not set")
+        raise RuntimeError("No answerer available: claude CLI not found and ZENMUX_API_KEY not set")
 
 
 # ── Judge ────────────────────────────────────────────────────────────────────
@@ -115,7 +120,7 @@ Think briefly, then output ONLY the final integer on the last line."""
 # ── Main ─────────────────────────────────────────────────────────────────────
 def main():
     args = parser.parse_args()
-    api_key = os.environ.get("ANTHROPIC_API_KEY", "")
+    api_key = os.environ.get("ZENMUX_API_KEY", "")
     answerer_fn = get_answerer(api_key or None)
 
     all_questions = parse_questions(args.questions_file)
