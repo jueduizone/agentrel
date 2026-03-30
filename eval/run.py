@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 """
-AgentRel Eval v5 — 支持 --skill-ids 增量参数
-Answerer + Judge: local claude CLI（本地）或 Anthropic API（CI 环境）
+AgentRel Eval v6 — --skill-ids, --judge-model, --faithfulness
+Answerer: local claude CLI or Zenmux Anthropic API
+Judge: pluggable (claude CLI, GPT-4o-mini via Zenmux, etc.)
 """
 import argparse, re, json, os, requests, subprocess
 from collections import defaultdict
@@ -10,16 +11,21 @@ from pathlib import Path
 
 AGENTREL_BASE = "https://agentrel.vercel.app/api/skills"
 CLAUDE_CLI = "/home/bre/.npm-global/bin/claude"
+ZENMUX_OAI_URL = "https://zenmux.ai/api/v1/chat/completions"
+ZENMUX_KEY = os.environ.get("ZENMUX_API_KEY",
+    "sk-ss-v1-196d706809b60c6ccf68e30afa1a711ce1b834674822781bd972b3885ab640e0")
 MD_PATH = "/home/bre/.openclaw/workspace-prd-bot/agentrel-eval-questions.md"
 RESULTS_DIR = Path(__file__).parent / "results"
 
 # ── Arg parse ────────────────────────────────────────────────────────────────
 parser = argparse.ArgumentParser(description="AgentRel Eval")
-parser.add_argument("--skill-ids", type=str, default="",
-                    help="Comma-separated skill IDs to filter (e.g. monad/network-config,monad/dev-guide)")
+parser.add_argument("--skill-ids", type=str, default="")
 parser.add_argument("--questions-file", type=str, default=MD_PATH)
-parser.add_argument("--output", type=str, default="",
-                    help="Output JSON path (default: eval/results/YYYY-MM-DD-HHMM.json)")
+parser.add_argument("--output", type=str, default="")
+parser.add_argument("--judge-model", type=str, default="claude",
+                    help="Judge model: 'claude' (CLI) or 'gpt-4o-mini' (Zenmux)")
+parser.add_argument("--faithfulness", action="store_true",
+                    help="Add faithfulness scoring (is answer grounded in Skill?)")
 
 # ── Parse questions ──────────────────────────────────────────────────────────
 def parse_questions(md_path):
@@ -96,7 +102,30 @@ def get_answerer(api_key=None):
 
 
 # ── Judge ────────────────────────────────────────────────────────────────────
-def judge(question, answer, ground_truth, answerer_fn):
+def _call_gpt(prompt: str) -> str:
+    """Call GPT-4o-mini via Zenmux OpenAI-compatible endpoint."""
+    try:
+        r = requests.post(
+            ZENMUX_OAI_URL,
+            headers={"Authorization": f"Bearer {ZENMUX_KEY}", "Content-Type": "application/json"},
+            json={"model": "openai/gpt-4o-mini", "messages": [{"role": "user", "content": prompt}],
+                  "max_tokens": 20, "temperature": 0},
+            timeout=30,
+        )
+        r.raise_for_status()
+        return r.json()["choices"][0]["message"]["content"].strip()
+    except Exception as e:
+        return f"[ERROR] {e}"
+
+
+def _extract_score(txt: str) -> int:
+    nums = re.findall(r'[0-5]', (txt.split('\n')[-1] if txt else ''))
+    if not nums:
+        nums = re.findall(r'[0-5]', txt)
+    return int(nums[-1]) if nums else 3
+
+
+def judge(question, answer, ground_truth, answerer_fn, judge_model="claude"):
     prompt = f"""You are a strict Web3 technical judge. Score this answer 0-5.
 
 Ground truth: {ground_truth}
@@ -110,11 +139,38 @@ Rules:
 - All key facts match ground truth → 4 or 5
 
 Think briefly, then output ONLY the final integer on the last line."""
-    txt = answerer_fn(prompt)
-    nums = re.findall(r'[0-5]', (txt.split('\n')[-1] if txt else ''))
-    if not nums:
-        nums = re.findall(r'[0-5]', txt)
-    return int(nums[-1]) if nums else 3
+    if judge_model == "gpt-4o-mini":
+        return _extract_score(_call_gpt(prompt))
+    else:
+        return _extract_score(answerer_fn(prompt))
+
+
+def faithfulness_score(question, answer, skill_content, answerer_fn, judge_model="claude") -> int:
+    """Score 0-5: how much of the answer is grounded in skill_content (not hallucinated).
+    5 = all claims traceable to skill; 0 = answer ignores/contradicts skill or makes up facts."""
+    if not skill_content:
+        return -1  # N/A — no skill content to compare against
+    prompt = f"""You are evaluating whether an AI answer is grounded in provided documentation.
+
+Documentation (Skill content):
+{skill_content[:3000]}
+
+Question: {question}
+Answer to evaluate: {answer[:500]}
+
+Score 0-5 for FAITHFULNESS (not accuracy):
+5 = every factual claim in the answer can be traced to the documentation
+4 = mostly grounded, one minor unsupported claim
+3 = half grounded, half from outside the docs
+2 = mostly outside the docs (AI using training data, not the skill)
+1 = answer contradicts or ignores the docs entirely
+0 = pure hallucination with no connection to docs
+
+Output ONLY the final integer on the last line."""
+    if judge_model == "gpt-4o-mini":
+        return _extract_score(_call_gpt(prompt))
+    else:
+        return _extract_score(answerer_fn(prompt))
 
 
 # ── Main ─────────────────────────────────────────────────────────────────────
@@ -152,6 +208,12 @@ def main():
     print(f"\n{'ID':<5} {'Category':<28} {'Ctrl':>5} {'Test':>5} {'Δ':>3}")
     print("-" * 48)
 
+    # parse args here so judge_model and faithfulness are available in loop
+    judge_model = args.judge_model
+    do_faithfulness = args.faithfulness
+
+    print(f"Judge: {judge_model}" + (" + faithfulness" if do_faithfulness else ""))
+
     for q in questions:
         sid = q["skill_id"]
         if sid not in skill_cache:
@@ -167,16 +229,23 @@ def main():
         test_input = f"<system>\n{sys_prompt}\n</system>\n\n{q['question']}" if sys_prompt else q["question"]
         ans_test = answerer_fn(test_input)
 
-        sc = judge(q["question"], ans_ctrl, q["ground_truth"], answerer_fn)
-        st = judge(q["question"], ans_test, q["ground_truth"], answerer_fn)
+        sc = judge(q["question"], ans_ctrl, q["ground_truth"], answerer_fn, judge_model)
+        st = judge(q["question"], ans_test, q["ground_truth"], answerer_fn, judge_model)
+
+        # Faithfulness scoring (test group only — does test answer stick to Skill?)
+        faith_score = None
+        if do_faithfulness and skill:
+            faith_score = faithfulness_score(q["question"], ans_test, skill, answerer_fn, judge_model)
 
         delta = f"+{st-sc}" if st > sc else ("=" if st == sc else str(st-sc))
+        faith_str = f" faith={faith_score}" if faith_score is not None else ""
         cat_short = q["category"][:28]
-        print(f"{q['id']:<5} {cat_short:<28} {sc:>5} {st:>5} {delta:>3}")
+        print(f"{q['id']:<5} {cat_short:<28} {sc:>5} {st:>5} {delta:>3}{faith_str}")
 
         results.append({
             "id": q["id"], "category": q["category"], "skill_id": sid,
             "skill_found": bool(skill), "control_score": sc, "test_score": st,
+            **({"faithfulness": faith_score} if faith_score is not None else {}),
         })
         category_results[q["category"]].append((sc, st))
 
@@ -199,6 +268,8 @@ def main():
     ts = datetime.now().strftime("%Y-%m-%d-%H%M")
     out_path = args.output if args.output else str(RESULTS_DIR / f"{ts}.json")
     output = {
+        "judge_model": judge_model,
+        "faithfulness_enabled": do_faithfulness,
         "timestamp": datetime.now().isoformat(),
         "mode": "incremental" if args.skill_ids else "full",
         "skill_ids_filter": args.skill_ids or None,
