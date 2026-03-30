@@ -67,6 +67,45 @@ def fetch_skill(skill_id):
     return ""
 
 
+def extract_relevant_section(skill_content: str, question: str, max_chars: int = 2000) -> str:
+    """Split skill by ## headings, return the most question-relevant section(s)."""
+    if not skill_content:
+        return ""
+
+    # Split into sections: [intro, section1, section2, ...]
+    raw_sections = re.split(r'\n(?=## )', skill_content)
+    if len(raw_sections) <= 1:
+        # No headings — just truncate
+        return skill_content[:max_chars]
+
+    # Score each section by keyword overlap with question
+    q_words = set(re.findall(r'\b\w{3,}\b', question.lower()))
+
+    def score_section(s: str) -> int:
+        s_words = set(re.findall(r'\b\w{3,}\b', s.lower()))
+        return len(q_words & s_words)
+
+    scored = sorted(enumerate(raw_sections), key=lambda x: score_section(x[1]), reverse=True)
+
+    # Take the intro (always include first 300 chars) + top 1-2 sections
+    intro = raw_sections[0][:300] if raw_sections[0] else ""
+    result = intro
+    for idx, sec in scored[:2]:
+        if idx == 0:
+            continue  # already included intro
+        candidate = "\n## " + sec if not sec.startswith("## ") else "\n" + sec
+        if len(result) + len(candidate) <= max_chars:
+            result += candidate
+        else:
+            # Truncate the section to fit
+            remaining = max_chars - len(result)
+            if remaining > 200:
+                result += candidate[:remaining]
+            break
+
+    return result.strip()
+
+
 # ── Answerer: claude CLI or Anthropic API ────────────────────────────────────
 def ask_claude_cli(prompt):
     result = subprocess.run([CLAUDE_CLI, "--print"], input=prompt,
@@ -223,7 +262,8 @@ def main():
         ans_ctrl = answerer_fn(q["question"])
 
         sys_prompt = (
-            f"Use this Web3 documentation as your primary reference:\n\n{skill}\n\n"
+            f"Use this Web3 documentation as your reference:\n\n"
+            f"{extract_relevant_section(skill, q['question'])}\n\n"
             "Answer based on this documentation when relevant."
         ) if skill else ""
         test_input = f"<system>\n{sys_prompt}\n</system>\n\n{q['question']}" if sys_prompt else q["question"]

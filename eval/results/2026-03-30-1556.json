@@ -1,0 +1,56 @@
+{
+  "judge_model": "gpt-4o-mini",
+  "faithfulness_enabled": true,
+  "timestamp": "2026-03-30T15:56:24.220251",
+  "mode": "incremental",
+  "skill_ids_filter": "monad/network-config,monad/dev-guide",
+  "total_questions": 4,
+  "avg_control": 2.25,
+  "avg_test": 4.75,
+  "delta": 2.5,
+  "by_category": {
+    "链配置参数题（有固定正确答案）": {
+      "control": 2.25,
+      "test": 4.75,
+      "n": 4
+    }
+  },
+  "results": [
+    {
+      "id": "Q08",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5,
+      "faithfulness": 5
+    },
+    {
+      "id": "Q09",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 4,
+      "faithfulness": 5
+    },
+    {
+      "id": "Q10",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5,
+      "faithfulness": 5
+    },
+    {
+      "id": "Q11",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5,
+      "faithfulness": 5
+    }
+  ]
+}
