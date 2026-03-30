@@ -1,0 +1,157 @@
+{
+  "avg_control": 3.8,
+  "avg_test": 4.33,
+  "delta": 0.53,
+  "results": [
+    {
+      "id": "Q01",
+      "label": "ethers v6 Provider",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5,
+      "control_answer": "在 ethers v6 中，`Web3Provider` 被移除，改用 `BrowserProvider`：\n\n```typescript\nimport { BrowserProvider, JsonRpcSigner } from \"ethers\";\n\nasync function connectMetaMask(): Promise<JsonRpcSigner> {\n  if (!window",
+      "test_answer": "ethers v6 中连接 MetaMask 的正确写法：\n\n```typescript\nimport { ethers } from \"ethers\";\n\nasync function connectMetaMask() {\n  // v6: 使用 BrowserProvider（替代 v5 的 Web3Provider）\n  const provider = new ethers.Browse"
+    },
+    {
+      "id": "Q02",
+      "label": "ethers v6 BigNumber",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5,
+      "control_answer": "## ethers v6 中的大数运算\n\n**不，`ethers.BigNumber.from('100')` 在 v6 中已失效。**\n\nethers v6 完全移除了 `BigNumber` 类，改用 JavaScript 原生的 **`BigInt`**。\n\n---\n\n### 主要变化对比\n\n| 操作 | ethers v5 | ethers v6 |\n|------|-----------",
+      "test_answer": "## ethers v6 中的大数运算\n\n**不**，`ethers.BigNumber.from('100')` 在 v6 中已被移除。ethers v6 完全弃用了 `BigNumber`，改用 JavaScript 原生 `BigInt`。\n\n### 对比\n\n```typescript\n// v5（v6 中无效）\nconst amount = ethers.BigNumber.from(\"1"
+    },
+    {
+      "id": "Q03",
+      "label": "wagmi v2 配置",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5,
+      "control_answer": "wagmi v2 中配置方式发生了重大变化：\n\n## `configureChains` 已被移除\n\nv1 的 `configureChains` 在 v2 中**不再存在**。\n\n---\n\n## v2 初始化方式：`createConfig`\n\n```typescript\nimport { createConfig, http } from 'wagmi'\nimport { mainnet, s",
+      "test_answer": "## wagmi v2 配置初始化\n\n`configureChains` 在 v2 中**已被移除**。v2 使用全新的配置方式：\n\n```typescript\nimport { createConfig, http, WagmiProvider } from \"wagmi\";\nimport { mainnet, polygon } from \"wagmi/chains\";\nimport { Qu"
+    },
+    {
+      "id": "Q04",
+      "label": "Solana web3.js v2",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5,
+      "control_answer": "在 Solana web3.js v2 中，使用 `createSolanaRpc` 创建 RPC 连接（API 完全重写，与 v1 的 `Connection` 类不同）：\n\n## 基本用法\n\n```typescript\nimport { createSolanaRpc } from '@solana/web3.js';\n\n// 连接到主网\nconst rpc = createSolanaRpc",
+      "test_answer": "在 Solana web3.js v2 中，`Connection` 类已废弃，改用 `createSolanaRpc`：\n\n```typescript\nimport { createSolanaRpc } from '@solana/web3.js';\n\nconst rpc = createSolanaRpc('https://api.mainnet-beta.solana.com');\n```"
+    },
+    {
+      "id": "Q05",
+      "label": "Monad 网络参数",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5,
+      "control_answer": "我没有网络访问权限来查询最新信息。根据我知识截止日期（2025年8月）的已知信息：\n\n**Monad Testnet**\n- **Chain ID:** `10143`\n- **RPC Endpoint:** `https://testnet-rpc.monad.xyz`\n- **Currency Symbol:** MON\n- **Block Explorer:** `https://testn",
+      "test_answer": "Monad Testnet 的配置如下：\n\n- **Chain ID**: `10143`\n- **RPC Endpoint**: `https://testnet-rpc.monad.xyz`"
+    },
+    {
+      "id": "Q06",
+      "label": "Monad viem 集成",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5,
+      "control_answer": "这个项目里没有 viem。根据我的知识（截止到 2025 年 8 月），Monad **mainnet 尚未发布**，当时还在 testnet 阶段。以下是我能给出的准确信息：\n\n---\n\n## Monad Testnet（已确认可用）\n\nviem 从 **v2.x** 起在 `viem/chains` 中收录了 Monad testnet：\n\n```bash\nnpm install viem\n`",
+      "test_answer": "viem >= 2.40.0 原生支持 Monad，直接从 `viem/chains` 导入：\n\n```typescript\nimport { createPublicClient, http } from 'viem'\nimport { monad } from 'viem/chains'\n\nconst client = createPublicClient({\n  chain: monad,\n"
+    },
+    {
+      "id": "Q07",
+      "label": "ERC-4337 核心组件",
+      "skill_id": "standards/erc-account-standards",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 3,
+      "control_answer": "## ERC-4337 账户抽象核心组件\n\n### 1. UserOperation\n用户操作对象（替代普通交易），包含字段：\n- `sender` — 智能合约钱包地址\n- `nonce` — 防重放\n- `initCode` — 首次部署钱包用\n- `callData` — 实际执行的调用数据\n- `callGasLimit` / `verificationGasLimit` / `preVe",
+      "test_answer": "## ERC-4337 账户抽象核心组件\n\n### 架构流程\n\n```\n用户 → UserOperation → Bundler → EntryPoint → Smart Account → Paymaster(可选)\n```\n\n### 核心组件\n\n**1. UserOperation（用户操作结构体）**\n替代传统交易，包含：\n- `sender` — 智能账户地址\n- `nonce` — 防重"
+    },
+    {
+      "id": "Q08",
+      "label": "EIP-712 签名",
+      "skill_id": "standards/erc-signature-standards",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5,
+      "control_answer": "EIP-712 域分隔符（Domain Separator）由以下字段构成：\n\n```solidity\nstruct EIP712Domain {\n    string  name;              // 协议/dApp 名称，如 \"MyToken\"\n    string  version;           // 当前版本，如 \"1\"\n    uint256 chainId;    ",
+      "test_answer": "根据 EIP-712 文档，域分隔符（Domain Separator）包含以下字段：\n\n| 字段 | 类型 | 说明 |\n|------|------|------|\n| `name` | `string` | 合约/应用名称 |\n| `version` | `string` | 版本字符串 |\n| `chainId` | `uint256` | EIP-155 链 ID，防止跨链重放 |\n| "
+    },
+    {
+      "id": "Q09",
+      "label": "Zama fhEVM 加密类型",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5,
+      "control_answer": "## Zama fhEVM 中的加密类型\n\n### 基本加密类型\n\n在 Zama fhEVM 中，`euint64` 和 `ebool` 是**加密数据类型**（Encrypted Types），基于全同态加密（FHE）实现：\n\n| 类型 | 说明 | 明文对应类型 |\n|------|------|-------------|\n| `ebool` | 加密布尔值 | `bool` |\n| `eu",
+      "test_answer": "## fhEVM 加密类型\n\n### 基本类型\n\n| 类型 | 说明 |\n|------|------|\n| `euint8/16/32/64/128/256` | 加密无符号整数（不同位宽） |\n| `ebool` | 加密布尔值 |\n| `eaddress` | 加密地址 |\n\n这些类型是**密文句柄（ciphertext handles）**，链上存储的是加密后的值，明文永远不会出现在链上。"
+    },
+    {
+      "id": "Q10",
+      "label": "Gitcoin Grants GG24",
+      "skill_id": "grants/gitcoin-overview",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4,
+      "control_answer": "我没有权限使用网络搜索，无法实时查询 GG24 的最新信息。\n\n根据我的训练数据（截至 2025 年 8 月）：\n\n- **GG24** 是 Gitcoin Grants 第 24 轮，具体资金规模和截止时间在每轮公告时确定，通常通过 Gitcoin 官方渠道发布。\n\n建议直接查阅以下来源获取准确信息：\n\n- **Gitcoin 官网**: [grants.gitcoin.co](https://",
+      "test_answer": "提供的文档中没有包含 GG24 的具体资金规模和申请截止时间——文档仅说明这是一个通过 Gitcoin 二次方资金机制运作的社区资助轮次。\n\n如果你需要准确信息，建议直接查看：\n- Gitcoin 官网：https://grants.gitcoin.co/\n- Gitcoin 官方 Twitter/X 或 Discord 公告"
+    },
+    {
+      "id": "Q11",
+      "label": "Immunefi 漏洞提交",
+      "skill_id": "bounty/immunefi-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3,
+      "control_answer": "根据 Immunefi 的要求，提交严重（Critical）漏洞报告时必须包含以下内容：\n\n## 必要内容\n\n**1. 影响声明 (Impact Statement)**\n清晰描述攻击者可以实现什么目标，需具体说明业务影响，例如：\n- 资金损失\n- 协议操纵\n- 数据泄露\n\n**2. 根因分析 (Root Cause Analysis)**\n解释漏洞的底层技术原因，需引用：\n- 具体的智能合约函数",
+      "test_answer": "根据 Immunefi 的报告格式要求，提交漏洞报告时必须包含以下内容：\n\n## 必要组成部分\n\n1. **影响说明 (Impact Statement)**\n   - 明确描述攻击者可利用漏洞实现什么目标\n   - 具体说明业务影响：资金损失、协议操纵、数据暴露等\n\n2. **根本原因分析 (Root Cause Analysis)**\n   - 解释漏洞的底层技术原因\n   - 引用具体的智能"
+    },
+    {
+      "id": "Q12",
+      "label": "Solana Anchor PDA",
+      "skill_id": "protocols/solana-anchor-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4,
+      "control_answer": "在 Anchor 框架中，PDA（Program Derived Address）通过 `seeds` 参数推导，核心是 `#[account(seeds = [...], bump)]` 约束。\n\n## 基本推导方式\n\n```rust\nuse anchor_lang::prelude::*;\n\ndeclare_id!(\"YourProgramId...\");\n\n#[program]\npub mo",
+      "test_answer": "## Anchor 框架中用 Seeds 推导 PDA 地址\n\n### 1. 程序内定义 PDA Account\n\n在 `#[derive(Accounts)]` 中用 `seeds` + `bump` 约束：\n\n```rust\nuse anchor_lang::prelude::*;\n\ndeclare_id!(\"Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsL"
+    },
+    {
+      "id": "Q13",
+      "label": "重入攻击防护",
+      "skill_id": "security/smart-contract-vulnerabilities",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3,
+      "control_answer": "## OpenZeppelin ReentrancyGuard 导入与使用\n\n### 安装\n\n```bash\nnpm install @openzeppelin/contracts\n# 或\nforge install OpenZeppelin/openzeppelin-contracts\n```\n\n### 导入方式\n\n**Hardhat / npm 项目：**\n```solidity\nimport",
+      "test_answer": "## OpenZeppelin ReentrancyGuard 导入方式\n\n### 安装\n\n```bash\n# Foundry\nforge install OpenZeppelin/openzeppelin-contracts\n\n# Hardhat / npm\nnpm install @openzeppelin/contracts\n```\n\n### 导入与使用\n\n```solidity\n// SP"
+    },
+    {
+      "id": "Q14",
+      "label": "Proxy 初始化漏洞",
+      "skill_id": "security/initialization-proxy",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5,
+      "control_answer": "## UUPS 代理合约中 `initializer` 修饰符的作用\n\n### 背景：为什么需要 `initialize()`\n\nUUPS（Universal Upgradeable Proxy Standard）代理合约使用 `delegatecall`，逻辑合约的代码在代理合约的存储上下文中执行。\n\n**构造函数在代理模式下失效**：逻辑合约的 `constructor` 只在逻辑合约自身的存",
+      "test_answer": "## 为什么 `initialize()` 必须加 `initializer` modifier？\n\n### 核心原因\n\nUUPS 代理合约**没有构造函数**（构造函数的代码不会存入部署字节码），所以用 `initialize()` 替代构造函数做一次性初始化。`initializer` modifier 的作用就是**强制它只能执行一次**。\n\nOpenZeppelin 的 `Initiali"
+    },
+    {
+      "id": "Q15",
+      "label": "Oracle 操纵防护",
+      "skill_id": "security/oracle-price-manipulation",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 3,
+      "control_answer": "## 使用 Uniswap V2 Spot Price 作为价格预言机的风险\n\n### 核心风险：价格操纵（Price Manipulation）\n\nUniswap V2 的 spot price 是即时计算的：\n\n```\nprice = reserve1 / reserve0\n```\n\n任何人都可以在**单笔交易**中大幅改变储备量，从而操纵价格。\n\n---\n\n### 攻击场景：闪电贷攻击（Fl",
+      "test_answer": "## 使用 Uniswap V2 Spot Price 作为预言机的风险\n\n### 核心问题：闪电贷操纵\n\nUniswap V2 的 spot price 本质上是当前池子的储备比例：\n\n```\nprice = reserve1 / reserve0\n```\n\n攻击者可以在**单笔交易**内用闪电贷操纵这个比例，流程如下：\n\n1. 闪电贷借出大量 ETH\n2. 用 ETH 砸池子，推高目标代币价格"
+    }
+  ]
+}

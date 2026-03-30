@@ -1,0 +1,63 @@
+name: AgentRel Eval
+
+on:
+  push:
+    paths:
+      - 'skills/**'
+  workflow_dispatch:
+    inputs:
+      skill_ids:
+        description: 'Comma-separated skill IDs to test (leave empty for full eval)'
+        required: false
+        default: ''
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install requests anthropic
+
+      - name: Detect changed skill IDs (on push)
+        if: github.event_name == 'push'
+        id: changed_skills
+        run: |
+          # Extract skill IDs from changed files under skills/
+          CHANGED=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} \
+            | grep '^skills/' \
+            | sed 's|^skills/||; s|\.md$||' \
+            | tr '\n' ',' | sed 's/,$//')
+          echo "skill_ids=$CHANGED" >> $GITHUB_OUTPUT
+          echo "Changed skills: $CHANGED"
+
+      - name: Run eval
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Determine skill IDs: push event uses detected, workflow_dispatch uses input
+          if [ "${{ github.event_name }}" = "push" ]; then
+            SKILL_IDS="${{ steps.changed_skills.outputs.skill_ids }}"
+          else
+            SKILL_IDS="${{ github.event.inputs.skill_ids }}"
+          fi
+
+          if [ -n "$SKILL_IDS" ]; then
+            echo "Incremental eval for: $SKILL_IDS"
+            python3 eval/run.py --skill-ids "$SKILL_IDS"
+          else
+            echo "Full eval (no skill filter)"
+            python3 eval/run.py
+          fi
+
+      - name: Upload results
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-results-${{ github.run_number }}
+          path: eval/results/
+          retention-days: 90
