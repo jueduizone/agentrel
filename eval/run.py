@@ -32,10 +32,10 @@ def parse_questions(md_path):
     with open(md_path) as f:
         content = f.read()
     questions = []
-    cat_pattern = r'## (?:📁\s*类别[一二三四五六七八九]：|[^\s#\n].{0,5}类别[：:]\s*)(.+)'
+    cat_pattern = r'## (?:📁\s*)?类别[一二三四五六七八九]?[：:]\s*(.+)'
     # q_pattern: capture optional 注入策略 field after Skill line
     q_pattern = (
-        r'### (Q[A-Z]?\d+)[^\n]*\n'
+        r'### ([A-Z]{1,3}\d+)[^\n]*\n'
         r'\*\*问题：\*\* (.+?)\n'
         r'\*\*标准答案：\*\* (.+?)\n'
         r'\*\*Skill：\*\* `([^`]+)`'
@@ -117,7 +117,7 @@ def extract_relevant_section(skill_content: str, question: str, max_chars: int =
 # ── Answerer: claude CLI or Anthropic API ────────────────────────────────────
 def ask_claude_cli(prompt):
     result = subprocess.run([CLAUDE_CLI, "--print"], input=prompt,
-                            capture_output=True, text=True, timeout=90)
+                            capture_output=True, text=True, timeout=120)
     return result.stdout.strip()
 
 

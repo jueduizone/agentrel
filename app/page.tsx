@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Github, ArrowRight, Zap, RefreshCw, FileText } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import { serviceClient as supabase } from '@/lib/supabase'
-import { HomeCopyButton } from './HomeCopyButton'
+import { InstallTabs } from './InstallTabs'
 
 const SCENARIOS = [
   {
@@ -31,7 +31,14 @@ const SCENARIOS = [
   },
 ]
 
-const INSTALL_CMD = 'curl https://agentrel.vercel.app/api/skills/monad/network-config.md'
+const INSTALL_EXAMPLES = [
+  { label: 'Ethereum', cmd: 'curl "https://agentrel.vercel.app/api/skills?ecosystem=ethereum&limit=5"' },
+  { label: 'Solana', cmd: 'curl "https://agentrel.vercel.app/api/skills?ecosystem=solana&limit=5"' },
+  { label: 'Monad', cmd: 'curl "https://agentrel.vercel.app/api/skills/monad/network-config.md"' },
+  { label: 'Security', cmd: 'curl "https://agentrel.vercel.app/api/skills?type=security&limit=5"' },
+  { label: 'Zama', cmd: 'curl "https://agentrel.vercel.app/api/skills/zama/fhevm-dev-guide.md"' },
+]
+const INSTALL_CMD = INSTALL_EXAMPLES[0].cmd
 
 async function getStats() {
   const [{ count: skillsCount }, { data: ecosystemRows }] = await Promise.all([
@@ -124,13 +131,8 @@ export default async function HomePage() {
           ))}
         </div>
 
-        {/* Quick install */}
-        <div className="mt-8 mx-auto max-w-xl">
-          <div className="flex items-center justify-between rounded-lg border border-border bg-gray-900 px-4 py-3">
-            <code className="font-mono text-sm text-gray-100">{INSTALL_CMD}</code>
-            <HomeCopyButton text={INSTALL_CMD} />
-          </div>
-        </div>
+        {/* Quick install — tab-based examples for 15+ ecosystems */}
+        <InstallTabs />
       </section>
 
       {/* Stats */}
