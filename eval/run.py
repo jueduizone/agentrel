@@ -32,11 +32,18 @@ def parse_questions(md_path):
     with open(md_path) as f:
         content = f.read()
     questions = []
-    cat_pattern = r'## 📁 类别[一二三四五六七八]：(.+)'
-    q_pattern = r'### (Q\d+)[^\n]*\n\*\*问题：\*\* (.+?)\n\*\*标准答案：\*\* (.+?)\n\*\*Skill：\*\* `([^`]+)`'
+    cat_pattern = r'## 📁 类别[一二三四五六七八九]：(.+)'
+    # q_pattern: capture optional 注入策略 field after Skill line
+    q_pattern = (
+        r'### (Q\d+)[^\n]*\n'
+        r'\*\*问题：\*\* (.+?)\n'
+        r'\*\*标准答案：\*\* (.+?)\n'
+        r'\*\*Skill：\*\* `([^`]+)`'
+        r'(?:\n\*\*注入策略：\*\* (\w+))?'  # optional inject_strategy field
+    )
     cats = [(m.start(), m.group(1).strip()) for m in re.finditer(cat_pattern, content)]
     for m in re.finditer(q_pattern, content, re.S):
-        qid, question, answer, skill_id = m.groups()
+        qid, question, answer, skill_id, inject_strategy = m.groups()
         pos = m.start()
         cat = next((c for s, c in reversed(cats) if s < pos), "unknown")
         questions.append({
@@ -44,6 +51,7 @@ def parse_questions(md_path):
             "question": question.strip(),
             "ground_truth": answer.strip(),
             "skill_id": skill_id.strip(),
+            "inject_strategy": (inject_strategy or "slice").lower(),  # default: slice
         })
     return questions
 
@@ -261,11 +269,18 @@ def main():
 
         ans_ctrl = answerer_fn(q["question"])
 
+        # Choose inject strategy per question
+        strategy = q.get("inject_strategy", "slice")
+        if strategy == "full":
+            skill_context = skill[:3000] if skill else ""
+        else:
+            skill_context = extract_relevant_section(skill, q["question"]) if skill else ""
+
         sys_prompt = (
             f"Use this Web3 documentation as your reference:\n\n"
-            f"{extract_relevant_section(skill, q['question'])}\n\n"
+            f"{skill_context}\n\n"
             "Answer based on this documentation when relevant."
-        ) if skill else ""
+        ) if skill_context else ""
         test_input = f"<system>\n{sys_prompt}\n</system>\n\n{q['question']}" if sys_prompt else q["question"]
         ans_test = answerer_fn(test_input)
 
@@ -279,8 +294,9 @@ def main():
 
         delta = f"+{st-sc}" if st > sc else ("=" if st == sc else str(st-sc))
         faith_str = f" faith={faith_score}" if faith_score is not None else ""
+        strat_str = f" [{q.get('inject_strategy','slice')}]"
         cat_short = q["category"][:28]
-        print(f"{q['id']:<5} {cat_short:<28} {sc:>5} {st:>5} {delta:>3}{faith_str}")
+        print(f"{q['id']:<5} {cat_short:<28} {sc:>5} {st:>5} {delta:>3}{faith_str}{strat_str}")
 
         results.append({
             "id": q["id"], "category": q["category"], "skill_id": sid,
