@@ -219,6 +219,58 @@ def main():
         if any(q["id"] in qids for q in questions):
             print(f"  {sid}: {qids}")
 
+    # ③ sessions_send summary to prd-bot
+    _send_eval_summary(output, out_path)
+
+
+def _send_eval_summary(output: dict, out_path: str):
+    """Send eval summary to prd-bot via openclaw session send."""
+    ts = output.get("timestamp", "")[:16].replace("T", " ")
+    mode = output.get("mode", "full")
+    n = output.get("total_questions", 0)
+    avg_c = output.get("avg_control", 0)
+    avg_t = output.get("avg_test", 0)
+    delta = output.get("delta", 0)
+
+    # Build per-result lines
+    lines = []
+    for r in output.get("results", []):
+        sc, st = r["control_score"], r["test_score"]
+        d = f"+{st-sc}" if st > sc else ("=" if st == sc else str(st-sc))
+        lines.append(f"{r['id']}: control={sc} test={st} {d}")
+
+    # Category summary
+    cat_lines = []
+    for cat, v in output.get("by_category", {}).items():
+        d = v["test"] - v["control"]
+        cat_lines.append(f"  {cat[:25]}: control={v['control']} test={v['test']} {d:+.2f}")
+
+    summary = (
+        f"[eval] {ts} | {mode} | {n} 题\n\n"
+        + "\n".join(lines)
+        + "\n\n分类：\n" + "\n".join(cat_lines)
+        + f"\n\n平均：control={avg_c:.2f} test={avg_t:.2f} 提升={delta:+.2f}\n"
+        + f"结果文件：{out_path}"
+    )
+
+    try:
+        # Use openclaw message send to deliver to the prd-bot session's Telegram group
+        result = subprocess.run(
+            [
+                "/home/bre/.npm-global/bin/openclaw", "message", "send",
+                "--channel", "telegram",
+                "--target", "-1003776690352",
+                "--message", f"🦞 [eval] {summary}",
+            ],
+            capture_output=True, text=True, timeout=15,
+        )
+        if result.returncode == 0:
+            print("\n✅ Summary sent to prd-bot")
+        else:
+            print(f"\n⚠️  session send failed: {result.stderr.strip()[:200]}")
+    except Exception as e:
+        print(f"\n⚠️  session send error: {e}")
+
 
 if __name__ == "__main__":
     main()

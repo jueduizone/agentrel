@@ -1,0 +1,34 @@
+{
+  "timestamp": "2026-03-30T15:15:17.890124",
+  "mode": "incremental",
+  "skill_ids_filter": "monad/network-config",
+  "total_questions": 2,
+  "avg_control": 4.0,
+  "avg_test": 5.0,
+  "delta": 1.0,
+  "by_category": {
+    "链配置参数题（有固定正确答案）": {
+      "control": 4.0,
+      "test": 5.0,
+      "n": 2
+    }
+  },
+  "results": [
+    {
+      "id": "Q08",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q09",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    }
+  ]
+}

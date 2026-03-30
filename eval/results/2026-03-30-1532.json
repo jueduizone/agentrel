@@ -1,0 +1,203 @@
+{
+  "timestamp": "2026-03-30T15:32:50.617137",
+  "mode": "full",
+  "skill_ids_filter": null,
+  "total_questions": 20,
+  "avg_control": 4.15,
+  "avg_test": 4.2,
+  "delta": 0.05,
+  "by_category": {
+    "SDK 冷门 Breaking Changes（比 v1.0 更难）": {
+      "control": 4.6,
+      "test": 4.8,
+      "n": 5
+    },
+    "新链参数（AI 零训练数据）": {
+      "control": 3.0,
+      "test": 3.2,
+      "n": 5
+    },
+    "安全漏洞精确题": {
+      "control": 5.0,
+      "test": 5.0,
+      "n": 4
+    },
+    "DeFi 数学精确题": {
+      "control": 4.5,
+      "test": 5.0,
+      "n": 2
+    },
+    "Grant / Hackathon 精确数字题": {
+      "control": 3.5,
+      "test": 2.5,
+      "n": 2
+    },
+    "多链工具选型题": {
+      "control": 4.5,
+      "test": 4.5,
+      "n": 2
+    }
+  },
+  "results": [
+    {
+      "id": "Q01",
+      "category": "SDK 冷门 Breaking Changes（比 v1.0 更难）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q02",
+      "category": "SDK 冷门 Breaking Changes（比 v1.0 更难）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q03",
+      "category": "SDK 冷门 Breaking Changes（比 v1.0 更难）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q04",
+      "category": "SDK 冷门 Breaking Changes（比 v1.0 更难）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "Q05",
+      "category": "SDK 冷门 Breaking Changes（比 v1.0 更难）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q06",
+      "category": "新链参数（AI 零训练数据）",
+      "skill_id": "monad/addresses",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "Q07",
+      "category": "新链参数（AI 零训练数据）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "Q08",
+      "category": "新链参数（AI 零训练数据）",
+      "skill_id": "cosmos/ibc-integration",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 3
+    },
+    {
+      "id": "Q09",
+      "category": "新链参数（AI 零训练数据）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 3
+    },
+    {
+      "id": "Q10",
+      "category": "新链参数（AI 零训练数据）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 2
+    },
+    {
+      "id": "Q11",
+      "category": "安全漏洞精确题",
+      "skill_id": "security/reentrancy-access-control",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q12",
+      "category": "安全漏洞精确题",
+      "skill_id": "security/arithmetic-precision",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q13",
+      "category": "安全漏洞精确题",
+      "skill_id": "security/reentrancy-access-control",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q14",
+      "category": "安全漏洞精确题",
+      "skill_id": "security/initialization-proxy",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q15",
+      "category": "DeFi 数学精确题",
+      "skill_id": "ethereum/defi-math",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q16",
+      "category": "DeFi 数学精确题",
+      "skill_id": "ethereum/l2-comparison",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q17",
+      "category": "Grant / Hackathon 精确数字题",
+      "skill_id": "grants/overview-solana",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "Q18",
+      "category": "Grant / Hackathon 精确数字题",
+      "skill_id": "bounty/ethglobal-hackathon-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 2
+    },
+    {
+      "id": "Q19",
+      "category": "多链工具选型题",
+      "skill_id": "dev-tooling/ethers-vs-viem",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q20",
+      "category": "多链工具选型题",
+      "skill_id": "dev-tooling/hardhat-vs-foundry",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    }
+  ]
+}
