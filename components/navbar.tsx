@@ -21,16 +21,11 @@ export function Navbar() {
             <Link href="/bundles" className="hover:text-foreground transition-colors">
               Bundles
             </Link>
-            <a
-              href="https://github.com/jueduizone/agentrel"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors"
-            >
-              Docs
-            </a>
-            <Link href="/api/skills" className="hover:text-foreground transition-colors">
-              API
+            <Link href="/benchmark" className="hover:text-foreground transition-colors">
+              Benchmark
+            </Link>
+            <Link href="/submit" className="hover:text-foreground transition-colors text-indigo-500 font-medium">
+              Submit Skill
             </Link>
           </div>
         </div>

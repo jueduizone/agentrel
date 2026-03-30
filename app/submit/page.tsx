@@ -1,0 +1,141 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import { ArrowLeft, CheckCircle, XCircle, Loader2 } from 'lucide-react'
+import { Navbar } from '@/components/navbar'
+
+type SubmitResult = {
+  skill_id?: string
+  name?: string
+  ecosystem?: string
+  tier?: string
+  url?: string
+  message?: string
+  error?: string
+}
+
+export default function SubmitSkillPage() {
+  const [url, setUrl] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [result, setResult] = useState<SubmitResult | null>(null)
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!url.trim()) return
+    setLoading(true)
+    setResult(null)
+    try {
+      const res = await fetch('/api/discover', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: url.trim() }),
+      })
+      const data = await res.json()
+      setResult(data)
+    } catch {
+      setResult({ error: 'Network error. Please try again.' })
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-white">
+      <Navbar />
+      <main className="max-w-2xl mx-auto px-6 py-16">
+        <div className="mb-8">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 mb-6">
+            <ArrowLeft size={16} />
+            Back to AgentRel
+          </Link>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Submit a Skill</h1>
+          <p className="text-gray-500 text-base">
+            Share a Web3 AI Skill with the community. Paste the direct URL to a{' '}
+            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">.md</code>{' '}
+            file with YAML frontmatter.
+          </p>
+        </div>
+
+        {/* Format guide */}
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 mb-8">
+          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Required format</p>
+          <pre className="text-xs text-gray-700 font-mono leading-relaxed">{`---
+name: My Web3 Skill
+ecosystem: ethereum
+type: technical-doc
+version: 1.0
+---
+
+# Content here...`}</pre>
+        </div>
+
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Skill URL
+            </label>
+            <input
+              type="url"
+              value={url}
+              onChange={e => setUrl(e.target.value)}
+              placeholder="https://example.com/my-skill.md"
+              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            disabled={loading || !url.trim()}
+            className="w-full bg-black text-white py-3 rounded-lg text-sm font-semibold hover:bg-black/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Submitting...
+              </>
+            ) : (
+              'Submit Skill'
+            )}
+          </button>
+        </form>
+
+        {/* Result */}
+        {result && (
+          <div className={`mt-6 rounded-xl p-5 border ${result.error ? 'bg-red-50 border-red-200' : 'bg-green-50 border-green-200'}`}>
+            <div className="flex items-start gap-3">
+              {result.error
+                ? <XCircle className="text-red-500 shrink-0 mt-0.5" size={20} />
+                : <CheckCircle className="text-green-600 shrink-0 mt-0.5" size={20} />
+              }
+              <div>
+                {result.error ? (
+                  <p className="text-sm text-red-700">{result.error}</p>
+                ) : (
+                  <>
+                    <p className="text-sm font-semibold text-green-800 mb-2">{result.message}</p>
+                    <div className="space-y-1 text-xs text-green-700">
+                      <p><span className="font-medium">Skill ID:</span> {result.skill_id}</p>
+                      <p><span className="font-medium">Ecosystem:</span> {result.ecosystem}</p>
+                      <p><span className="font-medium">Tier:</span> {result.tier}</p>
+                      {result.url && (
+                        <p>
+                          <span className="font-medium">Skill URL: </span>
+                          <a href={result.url} target="_blank" rel="noopener noreferrer"
+                            className="underline hover:no-underline break-all">
+                            {result.url}
+                          </a>
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
+  )
+}
