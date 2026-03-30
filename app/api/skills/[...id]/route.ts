@@ -65,11 +65,29 @@ export async function GET(
   const skillId = id.join('/')
   const format = isMdRequest ? 'raw' : request.nextUrl.searchParams.get('format')
 
-  const { data, error } = await serviceClient
+  let { data, error } = await serviceClient
     .from('skills')
     .select('*')
     .eq('id', skillId)
     .single()
+
+  // Fallback: if exact id not found, try matching by slug (last segment) within the given ecosystem prefix
+  // e.g. ethereum/scaffold-eth-2 → look for any id ending in /scaffold-eth-2 with ecosystem=ethereum
+  if (error || !data) {
+    const slug = id[id.length - 1]
+    const ecosystem = id[0]
+    const { data: fallback } = await serviceClient
+      .from('skills')
+      .select('*')
+      .eq('ecosystem', ecosystem)
+      .ilike('id', `%/${slug}`)
+      .limit(1)
+      .single()
+    if (fallback) {
+      data = fallback
+      error = null
+    }
+  }
 
   if (error || !data) {
     if (format === 'raw') return new NextResponse('# Skill not found\n', { status: 404 })

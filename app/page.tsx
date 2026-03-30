@@ -78,22 +78,29 @@ export default async function HomePage() {
         <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
           Give your AI agent real Web3 context
         </p>
-        <div className="mt-8 flex items-center justify-center gap-4">
+        <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Link
             href="/skills"
-            className="inline-flex items-center gap-2 rounded-lg bg-black px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-black/80"
+            className="inline-flex items-center gap-2 rounded-lg bg-black px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-black/80"
           >
             Browse Skills
             <ArrowRight className="h-4 w-4" />
           </Link>
+          <Link
+            href="/bundles"
+            className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
+          >
+            <Zap className="h-4 w-4" />
+            Get Bundles
+          </Link>
           <a
-            href="https://github.com/jueduizone/agentrel"
+            href="https://ian-docs.vercel.app/docs/agentforum"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+            className="inline-flex items-center gap-2 rounded-lg border border-border px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-muted"
           >
-            <Github className="h-4 w-4" />
-            View on GitHub
+            <FileText className="h-4 w-4" />
+            Product Docs
           </a>
         </div>
       </section>
