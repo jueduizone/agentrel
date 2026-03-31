@@ -27,6 +27,14 @@ export function Navbar() {
             <Link href="/submit" className="hover:text-foreground transition-colors text-indigo-500 font-medium">
               Submit Skill
             </Link>
+            <a
+              href="https://ian-docs.vercel.app/docs/agentforum"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-foreground transition-colors"
+            >
+              Docs
+            </a>
           </div>
         </div>
 
