@@ -45,7 +45,7 @@ export async function POST(
   const body = await request.json().catch(() => ({}))
   const { data: application, error } = await db
     .from('grant_applications')
-    .insert({ grant_id: grantId, user_id: user.id, pitch: (body.pitch as string) || null, reputation_snapshot: reputationSnapshot })
+    .insert({ grant_id: grantId, user_id: user.id, pitch: pitch, custom_fields: customFields, reputation_snapshot: reputationSnapshot })
     .select('id, status, created_at').single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
