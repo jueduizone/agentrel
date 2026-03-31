@@ -73,8 +73,8 @@ export function ApplicationRow({ app, grantId, apiKey }: { app: Application; gra
       <div className="flex gap-4 text-xs text-gray-500">
         <span>Grant apps: <strong>{String(rep.grant_applications ?? 0)}</strong></span>
         <span>Approved: <strong>{String(rep.approved_grants ?? 0)}</strong></span>
-        {rep.wallet_address && <span>Has wallet</span>}
-        {rep.human_did && <span>DID verified</span>}
+        {!!rep.wallet_address && <span>Has wallet</span>}
+        {!!rep.human_did && <span>DID verified</span>}
         <span className="ml-auto">{new Date(app.created_at).toLocaleDateString()}</span>
       </div>
 

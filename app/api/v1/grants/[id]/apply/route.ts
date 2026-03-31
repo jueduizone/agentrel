@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { serviceClient } from '@/lib/supabase'
 import { getUserFromRequest } from '@/lib/agentAuth'
 
-// POST /api/v1/grants/:id/apply — requires api_key or JWT
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -14,7 +13,7 @@ export async function POST(
   const db = serviceClient
 
   const { data: grant } = await db
-    .from('grants').select('id, title, status, min_reputation_score, deadline').eq('id', grantId).single()
+    .from('grants').select('id, title, status, min_reputation_score, deadline, application_fields').eq('id', grantId).single()
   if (!grant) return NextResponse.json({ error: 'Grant not found' }, { status: 404 })
   if (grant.status !== 'open') return NextResponse.json({ error: 'Grant is not open' }, { status: 400 })
   if (grant.deadline && new Date(grant.deadline) < new Date()) {
@@ -26,7 +25,20 @@ export async function POST(
     .eq('grant_id', grantId).eq('user_id', user.id).maybeSingle()
   if (existing) return NextResponse.json({ error: 'Already applied', application_id: existing.id, status: existing.status }, { status: 409 })
 
-  // Reputation snapshot from agentrel users + grant history
+  // Parse body
+  const body = await request.json().catch(() => ({}))
+  const pitch = (body.pitch as string) || null
+  const customFields = (body.custom_fields as Record<string, unknown>) ?? {}
+
+  // Validate required custom fields
+  const appFields = ((grant as Record<string, unknown>).application_fields as Array<{ name: string; required?: boolean }> | null) ?? []
+  for (const field of appFields) {
+    if (field.required && !customFields[field.name]) {
+      return NextResponse.json({ error: `Required field missing: ${field.name}` }, { status: 400 })
+    }
+  }
+
+  // Reputation snapshot
   const { data: userRow } = await db.from('users').select('email, wallet_address, human_did').eq('id', user.id).single()
   const reputationSnapshot: Record<string, unknown> = {}
   if (userRow) {
@@ -42,10 +54,9 @@ export async function POST(
     reputationSnapshot.snapshot_at = new Date().toISOString()
   }
 
-  const body = await request.json().catch(() => ({}))
   const { data: application, error } = await db
     .from('grant_applications')
-    .insert({ grant_id: grantId, user_id: user.id, pitch: pitch, custom_fields: customFields, reputation_snapshot: reputationSnapshot })
+    .insert({ grant_id: grantId, user_id: user.id, pitch, custom_fields: customFields, reputation_snapshot: reputationSnapshot })
     .select('id, status, created_at').single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
