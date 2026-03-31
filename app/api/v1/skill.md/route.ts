@@ -1,21 +1,17 @@
 import { NextResponse } from 'next/server'
 import { serviceClient } from '@/lib/supabase'
 
-export const revalidate = 3600  // regenerate every hour
+export const revalidate = 3600
 
 export async function GET() {
-  const { data: skills, error } = await serviceClient
+  const { data: skills } = await serviceClient
     .from('skills')
     .select('id, name, ecosystem, type, access')
     .order('ecosystem', { ascending: true })
     .order('name', { ascending: true })
 
-  if (error) {
-    return new NextResponse(`# AgentRel Skill Index\n\nError loading skills: ${error.message}`, {
-      status: 500,
-      headers: { 'Content-Type': 'text/markdown; charset=utf-8' },
-    })
-  }
+  const total = skills?.length ?? 0
+  const ecosystems = [...new Set((skills ?? []).map(s => s.ecosystem))].sort()
 
   // Group by ecosystem
   const grouped: Record<string, typeof skills> = {}
@@ -25,62 +21,73 @@ export async function GET() {
     grouped[eco].push(skill)
   }
 
-  // Ecosystem display names
-  const ECO_LABELS: Record<string, string> = {
-    ethereum: 'Ethereum / EVM',
-    solana: 'Solana',
-    monad: 'Monad',
-    zama: 'Zama / fhEVM',
-    near: 'NEAR',
-    cosmos: 'Cosmos / IBC',
-    polkadot: 'Polkadot / Substrate',
-    hyperliquid: 'Hyperliquid',
-    kite: 'Kite AI',
-    '0g': '0G Network',
-    bittensor: 'Bittensor',
-    virtuals: 'Virtuals Protocol',
-    sentient: 'Sentient',
-    aptos: 'Aptos',
-    standards: 'EVM Standards (ERC/EIP)',
-    security: 'Security',
-    'dev-tooling': 'Dev Tooling',
-    grants: 'Grants & Funding',
-    bounty: 'Bounties & Hackathons',
-    hackathon: 'Active Hackathons',
-    cryptoskills: 'Cross-chain Protocols',
-    general: 'General',
-  }
-
-  const BASE_URL = 'https://agentrel.vercel.app'
+  const BASE = 'https://agentrel.vercel.app'
 
   const lines: string[] = [
     '# AgentRel — Web3 AI Skills Index',
     '',
-    `> ${skills?.length ?? 0} Skills across ${Object.keys(grouped).length} ecosystems`,
-    `> Base URL: ${BASE_URL}/api/skills/{skill-id}.md`,
-    `> Updated: ${new Date().toISOString().slice(0, 10)}`,
+    `> ${total} Skills across ${ecosystems.length} ecosystems · ${new Date().toISOString().slice(0, 10)}`,
     '',
-    '## How to Use',
+    '## What is AgentRel?',
     '',
-    '```bash',
-    '# Fetch any skill directly',
-    `curl "${BASE_URL}/api/skills/monad/network-config.md"`,
+    'AgentRel is the Web3 AI context infrastructure. Add this URL to your agent\'s system prompt',
+    'and it will have access to 200+ accurate, up-to-date Web3 Skills.',
     '',
-    '# List skills by ecosystem',
-    `curl "${BASE_URL}/api/skills?ecosystem=ethereum&limit=20"`,
+    '## For AI Agents — How to Use This Index',
+    '',
+    '```',
+    '# Add to system prompt:',
+    `# "Read ${BASE}/api/v1/skill.md to discover available Web3 skills."`,
+    '',
+    '# Or fetch a specific skill directly:',
+    `curl ${BASE}/api/skills/monad/network-config.md`,
+    '',
+    '# Search by ecosystem:',
+    `curl "${BASE}/api/skills?ecosystem=ethereum&limit=10"`,
     '```',
     '',
     '---',
     '',
+    '## Quick Links by Use Case',
+    '',
+    `- 🔨 **Building a dApp** → [Technical Docs](${BASE}/api/skills?type=technical-doc&limit=20)`,
+    `- 🏆 **Joining a Hackathon** → [Hackathon Guides](${BASE}/api/skills?type=hackathon-guide)`,
+    `- 💰 **Applying for a Grant** → [Grant Guides](${BASE}/api/skills?type=grant)`,
+    `- 🔒 **Security Audit** → [Security Skills](${BASE}/api/skills?type=security)`,
+    `- 📋 **Submit a Skill** → [Submit Your Skill](${BASE}/submit)`,
+    '',
+    '## Quick Links by Ecosystem',
+    '',
   ]
 
-  // Sort ecosystems: known ones first, then alphabetical
-  const ECO_ORDER = [
-    'ethereum', 'solana', 'monad', 'zama', 'standards', 'security',
-    'bittensor', 'hyperliquid', 'kite', '0g', 'virtuals', 'sentient',
-    'aptos', 'near', 'cosmos', 'polkadot', 'dev-tooling', 'grants',
-    'bounty', 'hackathon', 'cryptoskills', 'general',
-  ]
+  // Top ecosystems quick links
+  const TOP_ECOS = ['ethereum', 'solana', 'monad', 'zama', 'security', 'standards', 'bittensor', 'hyperliquid', '0g']
+  for (const eco of TOP_ECOS) {
+    if (grouped[eco]) {
+      lines.push(`- **${eco.charAt(0).toUpperCase() + eco.slice(1)}** (${grouped[eco].length} skills) → \`${BASE}/api/skills?ecosystem=${eco}\``)
+    }
+  }
+  lines.push('')
+  lines.push('---')
+  lines.push('')
+
+  // Full skill index by ecosystem
+  lines.push('## Full Skill Index')
+  lines.push('')
+
+  const ECO_LABELS: Record<string, string> = {
+    ethereum: 'Ethereum / EVM', solana: 'Solana', monad: 'Monad', zama: 'Zama / fhEVM',
+    near: 'NEAR', cosmos: 'Cosmos', polkadot: 'Polkadot', hyperliquid: 'Hyperliquid',
+    kite: 'Kite AI', '0g': '0G Network', bittensor: 'Bittensor', virtuals: 'Virtuals',
+    sentient: 'Sentient', aptos: 'Aptos', standards: 'EVM Standards', security: 'Security',
+    'dev-tooling': 'Dev Tooling', grants: 'Grants', bounty: 'Bounties', hackathon: 'Hackathons',
+    cryptoskills: 'Cross-chain Protocols', general: 'General',
+  }
+
+  const ECO_ORDER = ['ethereum', 'solana', 'monad', 'zama', 'standards', 'security', 'bittensor',
+    'hyperliquid', 'kite', '0g', 'virtuals', 'sentient', 'aptos', 'near', 'cosmos', 'polkadot',
+    'dev-tooling', 'grants', 'bounty', 'hackathon', 'cryptoskills', 'general']
+
   const sortedEcos = [
     ...ECO_ORDER.filter(e => grouped[e]),
     ...Object.keys(grouped).filter(e => !ECO_ORDER.includes(e)).sort(),
@@ -88,11 +95,11 @@ export async function GET() {
 
   for (const eco of sortedEcos) {
     const ecoSkills = grouped[eco]
-    const label = ECO_LABELS[eco] ?? eco.charAt(0).toUpperCase() + eco.slice(1)
-    lines.push(`## ${label}`)
+    const label = ECO_LABELS[eco] ?? (eco.charAt(0).toUpperCase() + eco.slice(1))
+    lines.push(`### ${label}`)
     lines.push('')
-    for (const skill of ecoSkills) {
-      const url = `${BASE_URL}/api/skills/${skill.id}.md`
+    for (const skill of (ecoSkills ?? [])) {
+      const url = `${BASE}/api/skills/${skill.id}.md`
       const accessTag = skill.access && skill.access !== 'free' ? ` *(${skill.access})*` : ''
       lines.push(`- [${skill.name}](${url})${accessTag}`)
     }
@@ -100,11 +107,9 @@ export async function GET() {
   }
 
   lines.push('---')
-  lines.push('')
-  lines.push(`*Generated by AgentRel · ${BASE_URL}*`)
+  lines.push(`*AgentRel · ${BASE} · Updated ${new Date().toISOString().slice(0, 10)}*`)
 
-  const md = lines.join('\n')
-  return new NextResponse(md, {
+  return new NextResponse(lines.join('\n'), {
     headers: {
       'Content-Type': 'text/markdown; charset=utf-8',
       'Cache-Control': 'public, max-age=3600, s-maxage=3600',

@@ -2,7 +2,7 @@ import Link from 'next/link'
 import { Github, ArrowRight, Zap, RefreshCw, FileText } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import { serviceClient as supabase } from '@/lib/supabase'
-import { InstallTabs } from './InstallTabs'
+import { HomeCopyButton } from './HomeCopyButton'
 
 const SCENARIOS = [
   {
@@ -39,6 +39,7 @@ const INSTALL_EXAMPLES = [
   { label: 'Zama', cmd: 'curl "https://agentrel.vercel.app/api/skills/zama/fhevm-dev-guide.md"' },
 ]
 const INSTALL_CMD = INSTALL_EXAMPLES[0].cmd
+const INDEX_CMD = 'curl https://agentrel.vercel.app/api/v1/skill.md'
 
 async function getStats() {
   const [{ count: skillsCount }, { data: ecosystemRows }] = await Promise.all([
@@ -110,6 +111,19 @@ export default async function HomePage() {
             Product Docs
           </a>
         </div>
+        {/* One URL for everything — right under the 3 CTA buttons */}
+        <div className="mt-10 mx-auto max-w-xl">
+          <p className="text-xs text-center text-muted-foreground mb-3 font-medium uppercase tracking-wider">
+            One URL for everything
+          </p>
+          <div className="flex items-center justify-between rounded-lg border border-border bg-gray-900 px-4 py-3">
+            <code className="font-mono text-sm text-gray-100 truncate mr-3">{INDEX_CMD}</code>
+            <HomeCopyButton text={INDEX_CMD} />
+          </div>
+          <p className="text-xs text-center text-muted-foreground mt-2">
+            Add to your agent&apos;s system prompt to unlock 212+ Web3 Skills
+          </p>
+        </div>
       </section>
 
       {/* Scenario cards */}
@@ -130,9 +144,6 @@ export default async function HomePage() {
             </Link>
           ))}
         </div>
-
-        {/* Quick install — tab-based examples for 15+ ecosystems */}
-        <InstallTabs />
       </section>
 
       {/* Stats */}
