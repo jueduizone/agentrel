@@ -39,7 +39,7 @@ const INSTALL_EXAMPLES = [
   { label: 'Zama', cmd: 'curl "https://agentrel.vercel.app/api/skills/zama/fhevm-dev-guide.md"' },
 ]
 const INSTALL_CMD = INSTALL_EXAMPLES[0].cmd
-const INDEX_CMD = 'curl https://agentrel.vercel.app/api/v1/skill.md'
+const INDEX_CMD = 'https://agentrel.vercel.app/api/v1/skill.md'
 
 async function getStats() {
   const [{ count: skillsCount }, { data: ecosystemRows }, { data: sourceRows }] = await Promise.all([
