@@ -1,0 +1,463 @@
+{
+  "judge_model": "claude",
+  "faithfulness_enabled": false,
+  "timestamp": "2026-03-31T09:45:33.782428",
+  "mode": "full",
+  "skill_ids_filter": null,
+  "total_questions": 51,
+  "avg_control": 4.16,
+  "avg_test": 4.29,
+  "delta": 0.14,
+  "by_category": {
+    "SDK 版本变更题（AI 幻觉重灾区）": {
+      "control": 4.43,
+      "test": 5.0,
+      "n": 7
+    },
+    "链配置参数题（有固定正确答案）": {
+      "control": 4.12,
+      "test": 4.25,
+      "n": 8
+    },
+    "安全漏洞题（高风险幻觉区）": {
+      "control": 4.5,
+      "test": 5.0,
+      "n": 6
+    },
+    "DeFi 核心机制题": {
+      "control": 3.8,
+      "test": 4.6,
+      "n": 5
+    },
+    "Solana 生态题": {
+      "control": 4.0,
+      "test": 3.83,
+      "n": 6
+    },
+    "Zama fhEVM 题": {
+      "control": 3.4,
+      "test": 3.4,
+      "n": 5
+    },
+    "Grant / Hackathon 策略题": {
+      "control": 4.25,
+      "test": 3.5,
+      "n": 4
+    },
+    "跨链 / 工具选型题": {
+      "control": 4.4,
+      "test": 4.3,
+      "n": 10
+    }
+  },
+  "results": [
+    {
+      "id": "Q01",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q02",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q03",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q04",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q05",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q06",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q07",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "Q08",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q09",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "Q10",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "Q11",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "Q12",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "standards/erc-account-standards",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 1
+    },
+    {
+      "id": "Q13",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "standards/erc-account-standards",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q14",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "standards/erc-signature-standards",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q15",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "standards/erc-token-standards",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q16",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/reentrancy-access-control",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q17",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/initialization-proxy",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q18",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/oracle-price-manipulation",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "Q19",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/arithmetic-precision",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q20",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/reentrancy-access-control",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q21",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/arithmetic-precision",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q22",
+      "category": "DeFi 核心机制题",
+      "skill_id": "ethereum/defi-math",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q23",
+      "category": "DeFi 核心机制题",
+      "skill_id": "ethereum/l2-comparison",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "Q24",
+      "category": "DeFi 核心机制题",
+      "skill_id": "ethereum/mev-protection",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q25",
+      "category": "DeFi 核心机制题",
+      "skill_id": "ethereum/gas-optimization",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 3
+    },
+    {
+      "id": "Q26",
+      "category": "DeFi 核心机制题",
+      "skill_id": "cryptoskills/chainlink",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q27",
+      "category": "Solana 生态题",
+      "skill_id": "solana/program-model",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q28",
+      "category": "Solana 生态题",
+      "skill_id": "solana/program-model",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q29",
+      "category": "Solana 生态题",
+      "skill_id": "solana/anchor-idl",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q30",
+      "category": "Solana 生态题",
+      "skill_id": "hackathon/solana-patterns",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 2
+    },
+    {
+      "id": "Q31",
+      "category": "Solana 生态题",
+      "skill_id": "solana/metaplex-nft",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 3
+    },
+    {
+      "id": "Q32",
+      "category": "Solana 生态题",
+      "skill_id": "solana/anchor-idl",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q33",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "Q34",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 2
+    },
+    {
+      "id": "Q34",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "Q35",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/use-case-voting",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 3
+    },
+    {
+      "id": "Q36",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 3
+    },
+    {
+      "id": "Q37",
+      "category": "Grant / Hackathon 策略题",
+      "skill_id": "bounty/ethglobal-hackathon-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 0
+    },
+    {
+      "id": "Q38",
+      "category": "Grant / Hackathon 策略题",
+      "skill_id": "bounty/code4rena-audit-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q39",
+      "category": "Grant / Hackathon 策略题",
+      "skill_id": "grants/gitcoin-overview",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q40",
+      "category": "Grant / Hackathon 策略题",
+      "skill_id": "bounty/immunefi-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q41",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "dev-tooling/ethers-vs-viem",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q42",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "dev-tooling/hardhat-vs-foundry",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q43",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "cryptoskills/layerzero",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q44",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "cryptoskills/wormhole",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q45",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "cryptoskills/safe",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 3
+    },
+    {
+      "id": "Q46",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "cryptoskills/the-graph",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q47",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "standards/erc-account-standards",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "Q48",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "near/dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "Q49",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "cosmos/ibc-integration",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q50",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "polkadot/substrate-dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    }
+  ]
+}

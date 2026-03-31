@@ -15,9 +15,13 @@ AGENTREL_BASE = "https://agentrel.vercel.app/api/skills"
 TIER_MAP: dict[str, str] = {
     'official': 'official',
     'official-docs': 'official',
+    'verified': 'community',
+    'third-party': 'community',
     'community': 'community',
-    'generated': 'generated',
-    'verified': 'verified',
+    'ai-generated': 'openbuild',
+    'npm': 'community',
+    'defillama': 'community',
+    'generated': 'openbuild',  # legacy alias
 }
 
 SUPABASE_URL = "https://zkpeutvzmrfhlzpsbyhr.supabase.co"

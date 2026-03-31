@@ -1,0 +1,44 @@
+{
+  "judge_model": "gpt-4o-mini",
+  "faithfulness_enabled": false,
+  "timestamp": "2026-03-31T11:52:01.752263",
+  "mode": "incremental",
+  "skill_ids_filter": "zama/gateway-decrypt,zama/fhevm-dev-guide",
+  "total_questions": 3,
+  "avg_control": 3.67,
+  "avg_test": 4.0,
+  "delta": 0.33,
+  "by_category": {
+    "Zama fhEVM 题": {
+      "control": 3.67,
+      "test": 4.0,
+      "n": 3
+    }
+  },
+  "results": [
+    {
+      "id": "Q33",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "Q34",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 3
+    },
+    {
+      "id": "Q34",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    }
+  ]
+}
