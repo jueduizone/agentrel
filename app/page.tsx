@@ -42,12 +42,20 @@ const INSTALL_CMD = INSTALL_EXAMPLES[0].cmd
 const INDEX_CMD = 'curl https://agentrel.vercel.app/api/v1/skill.md'
 
 async function getStats() {
-  const [{ count: skillsCount }, { data: ecosystemRows }] = await Promise.all([
+  const [{ count: skillsCount }, { data: ecosystemRows }, { data: sourceRows }] = await Promise.all([
     supabase.from('skills').select('*', { count: 'exact', head: true }),
     supabase.from('skills').select('ecosystem'),
+    supabase.from('skills').select('source'),
   ])
 
   const uniqueEcosystems = new Set((ecosystemRows ?? []).map((r) => r.ecosystem)).size
+
+  // Contributors = distinct source organizations (official/verified/community)
+  const contributors = new Set(
+    (sourceRows ?? [])
+      .map(r => r.source)
+      .filter((s): s is string => !!s && s !== 'ai-generated' && s !== 'openbuild')
+  ).size
 
   // Build ecosystem list with counts, sorted by count desc
   const countMap: Record<string, number> = {}
@@ -62,7 +70,7 @@ async function getStats() {
   return {
     skills: skillsCount ?? 0,
     ecosystems: uniqueEcosystems,
-    contributors: 42,
+    contributors,
     ecosystemList,
   }
 }
@@ -160,7 +168,7 @@ export default async function HomePage() {
             </div>
             <div>
               <div className="text-4xl font-bold text-black">{stats.contributors}</div>
-              <div className="mt-1 text-sm text-muted-foreground">Contributors</div>
+              <div className="mt-1 text-sm text-muted-foreground">Sources</div>
             </div>
           </div>
         </div>
