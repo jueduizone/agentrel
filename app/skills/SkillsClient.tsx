@@ -117,6 +117,19 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
   }, [skills, search, selectedEcosystem, selectedType, selectedSource])
 
   function getSkillUrl(skill: Skill): string {
+    // Official skills: use source_repo direct URL if available (raw content)
+    if (skill.source === 'official' && skill.source_repo) {
+      // Convert GitHub repo URL to raw content URL if it's a GitHub repo
+      const repo = skill.source_repo
+      if (repo.includes('github.com') && !repo.includes('/blob/') && !repo.endsWith('.md')) {
+        // It's a repo URL, not a direct file URL — fall back to our API
+        return `https://agentrel.vercel.app/api/skills/${skill.id}.md`
+      }
+      // Direct file URL or raw URL — use it
+      if (repo.endsWith('.md') || repo.includes('raw.githubusercontent')) {
+        return repo
+      }
+    }
     return `https://agentrel.vercel.app/api/skills/${skill.id}.md`
   }
 
