@@ -47,8 +47,7 @@ def fetch_skill_meta(skill_ids: list[str]) -> dict[str, str]:
 
 CLAUDE_CLI = "/home/bre/.npm-global/bin/claude"
 ZENMUX_OAI_URL = "https://zenmux.ai/api/v1/chat/completions"
-ZENMUX_KEY = os.environ.get("ZENMUX_API_KEY",
-    "sk-ss-v1-196d706809b60c6ccf68e30afa1a711ce1b834674822781bd972b3885ab640e0")
+ZENMUX_KEY = os.environ.get("ZENMUX_API_KEY", "")
 MD_PATH = "/home/bre/.openclaw/workspace-prd-bot/agentrel-eval-questions.md"
 RESULTS_DIR = Path(__file__).parent / "results"
 
@@ -180,8 +179,7 @@ def ask_anthropic_api(prompt, api_key):
 def ask_zenmux(prompt, system=""):
     """Use Zenmux Anthropic-compatible API as answerer (no rate limit issues)."""
     import anthropic, time as _time
-    key = os.environ.get("ZENMUX_API_KEY",
-        "sk-ss-v1-196d706809b60c6ccf68e30afa1a711ce1b834674822781bd972b3885ab640e0")
+    key = os.environ.get("ZENMUX_API_KEY", "")
     client = anthropic.Anthropic(api_key=key, base_url="https://zenmux.ai/api/anthropic")
     full_prompt = f"<system>\n{system}\n</system>\n\n{prompt}" if system else prompt
     for attempt in range(3):

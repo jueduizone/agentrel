@@ -1,7 +1,7 @@
 import { createClient } from '@supabase/supabase-js'
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN
-const ZENMUX_KEY = 'sk-ss-v1-196d706809b60c6ccf68e30afa1a711ce1b834674822781bd972b3885ab640e0'
+const ZENMUX_KEY = process.env.ZENMUX_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
