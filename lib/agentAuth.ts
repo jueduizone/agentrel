@@ -1,14 +1,8 @@
 import { serviceClient } from './supabase'
-import { createClient } from '@supabase/supabase-js'
 
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-/** Get user from Bearer token — supports two modes:
- *  1. Supabase JWT  (human login via email/password)
- *  2. agentrel_xxx  (api_key — agent or developer access)
- *
- *  Returns { id, email, role } or null.
+/**
+ * Get user from Bearer token.
+ * Supports: agentrel_xxx (api_key from public.users)
  */
 export async function getUserFromRequest(
   request: Request
@@ -19,7 +13,7 @@ export async function getUserFromRequest(
 
   const db = serviceClient
 
-  // Mode 1: api_key (format: agentrel_...)
+  // api_key mode: agentrel_xxx
   if (token.startsWith('agentrel_')) {
     const { data } = await db
       .from('users')
@@ -27,31 +21,12 @@ export async function getUserFromRequest(
       .eq('api_key', token)
       .single()
     if (!data) return null
-    // Update last_seen_at async
-    db.from('users')
-      .update({ last_seen_at: new Date().toISOString() })
-      .eq('id', data.id)
-      .then(() => {})
+    // Update last_seen async
+    db.from('users').update({ last_seen_at: new Date().toISOString() }).eq('id', data.id).then(() => {})
     return data
   }
 
-  // Mode 2: Supabase JWT
-  const anonClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
-  const { data: { user }, error } = await anonClient.auth.getUser(token)
-  if (error || !user) return null
-
-  // Fetch extended profile from public.users
-  const { data: profile } = await db
-    .from('users')
-    .select('id, email, role')
-    .eq('id', user.id)
-    .single()
-
-  // If profile not yet created (edge case), create it
-  if (!profile) {
-    await db.from('users').upsert({ id: user.id, email: user.email }).eq('id', user.id)
-    return { id: user.id, email: user.email ?? null, role: 'developer' }
-  }
-
-  return profile
+  // Supabase JWT mode (deferred to avoid cold start overhead)
+  // TODO: implement if needed
+  return null
 }
