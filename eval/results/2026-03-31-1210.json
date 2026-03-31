@@ -1,0 +1,28 @@
+{
+  "judge_model": "gpt-4o-mini",
+  "faithfulness_enabled": false,
+  "timestamp": "2026-03-31T12:10:15.106090",
+  "mode": "incremental",
+  "skill_ids_filter": "bounty/ethglobal-hackathon-guide",
+  "total_questions": 1,
+  "avg_control": 5.0,
+  "avg_test": 4.0,
+  "delta": -1.0,
+  "by_category": {
+    "Grant / Hackathon 策略题": {
+      "control": 5.0,
+      "test": 4.0,
+      "n": 1
+    }
+  },
+  "results": [
+    {
+      "id": "Q37",
+      "category": "Grant / Hackathon 策略题",
+      "skill_id": "bounty/ethglobal-hackathon-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    }
+  ]
+}
