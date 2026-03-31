@@ -53,7 +53,10 @@ export default async function SkillDetailPage({
   }
 
   const skill = data as Skill
-  const installCmd = `curl https://agentrel.vercel.app/api/skills/${skill.id}.md`
+  const installCmd = (skill.source === 'official' && skill.source_repo &&
+    (skill.source_repo.endsWith('.md') || skill.source_repo.includes('raw.githubusercontent')))
+    ? skill.source_repo
+    : `https://agentrel.vercel.app/api/skills/${skill.id}.md`
 
   return (
     <div className="min-h-screen bg-white">
