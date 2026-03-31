@@ -26,11 +26,20 @@ export async function POST(
     .eq('grant_id', grantId).eq('user_id', user.id).maybeSingle()
   if (existing) return NextResponse.json({ error: 'Already applied', application_id: existing.id, status: existing.status }, { status: 409 })
 
-  // Reputation snapshot
-  const { data: userRow } = await db.from('users').select('email').eq('id', user.id).single()
+  // Reputation snapshot from agentrel users + grant history
+  const { data: userRow } = await db.from('users').select('email, wallet_address, human_did').eq('id', user.id).single()
   const reputationSnapshot: Record<string, unknown> = {}
-  if (userRow?.email) {
-    // Try agentrel developer_reputation if exists, skip gracefully
+  if (userRow) {
+    const [{ count: totalApps }, { count: approvedApps }] = await Promise.all([
+      db.from('grant_applications').select('*', { count: 'exact', head: true }).eq('user_id', user.id),
+      db.from('grant_applications').select('*', { count: 'exact', head: true }).eq('user_id', user.id).eq('status', 'approved'),
+    ])
+    reputationSnapshot.email = userRow.email
+    reputationSnapshot.wallet_address = userRow.wallet_address ?? null
+    reputationSnapshot.human_did = userRow.human_did ?? null
+    reputationSnapshot.grant_applications = totalApps ?? 0
+    reputationSnapshot.approved_grants = approvedApps ?? 0
+    reputationSnapshot.snapshot_at = new Date().toISOString()
   }
 
   const body = await request.json().catch(() => ({}))
