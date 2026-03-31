@@ -28,7 +28,7 @@ export async function POST(
 
   // Reputation snapshot
   const { data: userRow } = await db.from('users').select('email').eq('id', user.id).single()
-  let reputationSnapshot: Record<string, unknown> = {}
+  const reputationSnapshot: Record<string, unknown> = {}
   if (userRow?.email) {
     // Try agentrel developer_reputation if exists, skip gracefully
   }
