@@ -101,6 +101,10 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
 
   const filtered = useMemo(() => {
     return skills.filter((s) => {
+      // Hide deprioritized skills (health_score=0) by default
+      if (s.health_score === 0 && selectedSource !== 'all') return false
+      // Grant auto-skills: only show when source=auto is selected
+      if (s.id?.startsWith('grant-') && selectedSource !== 'auto' && selectedSource !== 'all') return false
       if (selectedEcosystem !== 'all' && s.ecosystem !== selectedEcosystem) return false
       if (selectedType !== 'all' && s.type !== selectedType) return false
       if (selectedSource !== 'all' && s.source !== selectedSource) return false
@@ -217,13 +221,12 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
         {/* Source filter row */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="self-center text-xs text-muted-foreground">{lang === 'zh' ? '来源：' : 'Source:'}</span>
-          {(['all', 'official', 'verified', 'community', 'ai-generated'] as const).map((src) => {
+          {(['all', 'official', 'community', 'auto'] as const).map((src) => {
             const label = src === 'all'
               ? (lang === 'zh' ? '全部' : 'All')
               : src === 'official' ? '🏛️ Official'
-              : src === 'verified' ? '✅ Verified'
               : src === 'community' ? '👥 Community'
-              : '🤖 AI Draft'
+              : '⚡ Auto (Grant)'
             return (
               <button
                 key={src}
