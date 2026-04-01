@@ -1,8 +1,11 @@
 import { serviceClient } from './supabase'
+import { createClient } from '@supabase/supabase-js'
 
 /**
  * Get user from Bearer token.
- * Supports: agentrel_xxx (api_key from public.users)
+ * Supports:
+ *   - agentrel_xxx  (api_key from public.users — for Agent API calls)
+ *   - Supabase JWT  (access_token from auth session — for human admin UI)
  */
 export async function getUserFromRequest(
   request: Request
@@ -21,12 +24,28 @@ export async function getUserFromRequest(
       .eq('api_key', token)
       .single()
     if (!data) return null
-    // Update last_seen async
     db.from('users').update({ last_seen_at: new Date().toISOString() }).eq('id', data.id).then(() => {})
     return data
   }
 
-  // Supabase JWT mode (deferred to avoid cold start overhead)
-  // TODO: implement if needed
-  return null
+  // Supabase JWT mode (access_token from auth session)
+  try {
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+    const { data: { user }, error } = await supabase.auth.getUser(token)
+    if (error || !user) return null
+
+    // Look up role from public.users
+    const { data: profile } = await db
+      .from('users')
+      .select('id, email, role')
+      .eq('id', user.id)
+      .single()
+    if (!profile) return null
+    return profile
+  } catch {
+    return null
+  }
 }

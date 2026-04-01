@@ -31,7 +31,7 @@ export async function POST(request: NextRequest) {
     .eq('id', data.user.id)
     .single()
 
-  return NextResponse.json({
+  const response = NextResponse.json({
     access_token: data.session.access_token,
     token_type: 'Bearer',
     expires_in: data.session.expires_in,
@@ -42,4 +42,15 @@ export async function POST(request: NextRequest) {
       role: profile?.role ?? 'developer',
     },
   })
+
+  // Set a lightweight session marker cookie for middleware route protection
+  response.cookies.set('agentrel_session', '1', {
+    httpOnly: false,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: data.session.expires_in,
+    path: '/',
+  })
+
+  return response
 }
