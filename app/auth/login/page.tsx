@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/navbar'
+import { Footer } from '@/components/footer'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -63,15 +64,7 @@ export default function LoginPage() {
         </div>
       </div>
       </div>
-      <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-muted-foreground md:flex-row">
-          <span>© 2026 AgentRel. Open source under MIT License.</span>
-          <div className="flex items-center gap-6">
-            <a href="https://github.com/jueduizone/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>
-            <a href="https://discord.gg/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Discord</a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   )
 }

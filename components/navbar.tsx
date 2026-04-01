@@ -42,8 +42,9 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-border bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <div className="flex items-center gap-8">
-          <Link href="/" className="text-lg font-bold tracking-tight text-black">
-            AgentRel
+          <Link href="/" className="flex items-center gap-1.5">
+            <span className="text-lg font-bold tracking-tight text-black">AgentRel</span>
+            <span className="text-xs text-gray-400 font-normal hidden sm:inline">by <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">OpenBuild</a></span>
           </Link>
           <div className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
             {[
