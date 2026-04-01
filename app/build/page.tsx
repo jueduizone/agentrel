@@ -71,7 +71,7 @@ function GrantCard({ grant }: { grant: {
   const isPast = deadlineDate && deadlineDate < new Date()
 
   return (
-    <Link href={`/grants/${grant.id}`} className="block">
+    <Link href={`/build/${grant.id}`} className="block">
       <div className="bg-white rounded-xl border border-gray-200 p-5 hover:border-indigo-300 hover:shadow-sm transition-all">
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">

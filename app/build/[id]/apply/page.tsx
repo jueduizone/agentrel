@@ -71,7 +71,7 @@ export default function ApplyPage() {
         <div className="text-4xl mb-4">✅</div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">申请已提交！</h2>
         <p className="text-sm text-gray-500 mb-6">我们会尽快审核你的申请，结果通过邮件通知。</p>
-        <Link href="/grants" className="text-indigo-600 text-sm font-medium hover:underline">← 返回 Grants 列表</Link>
+        <Link href="/build" className="text-indigo-600 text-sm font-medium hover:underline">← 返回 Grants 列表</Link>
       </div>
     </div>
   )
@@ -81,7 +81,7 @@ export default function ApplyPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-xl mx-auto px-6 py-10">
-        <Link href={`/grants/${id}`} className="text-sm text-gray-400 hover:text-gray-600 mb-6 inline-block">← 返回详情</Link>
+        <Link href={`/build/${id}`} className="text-sm text-gray-400 hover:text-gray-600 mb-6 inline-block">← 返回详情</Link>
 
         <div className="bg-white rounded-2xl border border-gray-200 p-8">
           <h1 className="text-xl font-bold text-gray-900 mb-1">{grant.title}</h1>

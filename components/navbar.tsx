@@ -47,7 +47,7 @@ export function Navbar() {
             <Link href="/skills" className="hover:text-foreground transition-colors">Skills</Link>
             <Link href="/bundles" className="hover:text-foreground transition-colors">Bundles</Link>
             <Link href="/benchmark" className="hover:text-foreground transition-colors">Benchmark</Link>
-            <Link href="/grants" className="hover:text-foreground transition-colors">Grants</Link>
+            <Link href="/build" className="hover:text-foreground transition-colors">Build</Link>
             <Link href="/submit" className="hover:text-foreground transition-colors text-indigo-500 font-medium">
               Submit Skill
             </Link>

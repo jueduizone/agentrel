@@ -28,7 +28,7 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="max-w-3xl mx-auto px-6 py-10">
-        <Link href="/grants" className="text-sm text-gray-400 hover:text-gray-600 mb-6 inline-block">← 所有 Grants</Link>
+        <Link href="/build" className="text-sm text-gray-400 hover:text-gray-600 mb-6 inline-block">← 所有 Grants</Link>
 
         <div className="bg-white rounded-2xl border border-gray-200 p-8">
           {/* Header */}
@@ -136,7 +136,7 @@ function ApplyCTA({ grantId, isOpen }: { grantId: string; isOpen: boolean }) {
   }
   return (
     <div className="text-center">
-      <Link href={`/grants/${grantId}/apply`}
+      <Link href={`/build/${grantId}/apply`}
         className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors">
         立即申请 →
       </Link>
