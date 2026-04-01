@@ -1,10 +1,12 @@
 'use client'
 
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import { Github, ChevronDown, User, KeyRound, Shield, LogOut } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 
 export function Navbar() {
+  const pathname = usePathname()
   const [user, setUser] = useState<{ email: string; role: string; api_key: string } | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -44,15 +46,29 @@ export function Navbar() {
             AgentRel
           </Link>
           <div className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-            <Link href="/skills" className="hover:text-foreground transition-colors">Skills</Link>
-            <Link href="/bundles" className="hover:text-foreground transition-colors">Bundles</Link>
-            <Link href="/benchmark" className="hover:text-foreground transition-colors">Benchmark</Link>
-            <Link href="/build" className="hover:text-foreground transition-colors">Build</Link>
-            <Link href="/submit" className="hover:text-foreground transition-colors text-indigo-500 font-medium">
-              Submit Skill
-            </Link>
+            {[
+              { href: '/skills', label: 'Skills' },
+              { href: '/bundles', label: 'Bundles' },
+              { href: '/benchmark', label: 'Benchmark' },
+              { href: '/build', label: 'Build' },
+              { href: '/submit', label: 'Submit Skill', accent: true },
+            ].map(({ href, label, accent }) => {
+              const isActive = pathname === href || (href !== '/' && pathname.startsWith(href))
+              return (
+                <Link key={href} href={href}
+                  className={`transition-colors ${
+                    isActive
+                      ? 'text-black font-semibold'
+                      : accent
+                      ? 'text-indigo-500 font-medium hover:text-indigo-600'
+                      : 'text-muted-foreground hover:text-foreground'
+                  }`}>
+                  {label}
+                </Link>
+              )
+            })}
             <a href="https://ian-docs.vercel.app/docs/agentforum" target="_blank" rel="noopener noreferrer"
-              className="hover:text-foreground transition-colors">Docs</a>
+              className="text-muted-foreground hover:text-foreground transition-colors">Docs</a>
           </div>
         </div>
 
