@@ -34,7 +34,7 @@ export async function GET(request: NextRequest) {
   // If no profile yet (trigger might not have run), create it
   if (!profile) {
 
-    const apiKey = 'agentrel_' + crypto.randomBytes(24).toString('hex')
+    const arr = new Uint8Array(24); globalThis.crypto.getRandomValues(arr); const apiKey = 'agentrel_' + Array.from(arr).map((b: number) => b.toString(16).padStart(2,'0')).join('')
     await db.from('users').insert({
       id: data.user.id,
       email: data.user.email,
