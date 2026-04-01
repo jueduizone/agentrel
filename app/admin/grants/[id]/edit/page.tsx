@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { GrantForm, type GrantFormData } from '../_components/GrantForm'
+import { GrantForm, type GrantFormData } from '../../_components/GrantForm'
 
 export default function EditGrantPage() {
   const { id } = useParams<{ id: string }>()
