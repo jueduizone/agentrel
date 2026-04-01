@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { serviceClient } from '@/lib/supabase'
-import { randomBytes } from 'crypto'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
