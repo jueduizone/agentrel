@@ -4,13 +4,13 @@ import { useState } from 'react'
 export type GrantFormData = {
   title: string; description: string; sponsor: string; reward: string
   deadline: string; status: string; source_type: string; external_url: string
-  template_md: string; application_schema: string; max_applications: string
+  application_schema: string; max_applications: string
   track: string; tech_requirements: string
 }
 
 const EMPTY: GrantFormData = {
   title: '', description: '', sponsor: '', reward: '', deadline: '',
-  status: 'open', source_type: 'native', external_url: '', template_md: '',
+  status: 'open', source_type: 'native', external_url: '',
   application_schema: '', max_applications: '', track: '', tech_requirements: '',
 }
 
@@ -77,7 +77,6 @@ export function GrantForm({
         <Field label="名额上限（可选）"><input type="number" value={form.max_applications} onChange={set('max_applications')} placeholder="不填=不限" className={inputCls} /></Field>
       </div>
       <Field label="技术要求（可选）"><textarea value={form.tech_requirements} onChange={set('tech_requirements')} rows={2} placeholder="如 Solidity, Rust..." className={inputCls} /></Field>
-      <Field label="申请模板 Markdown（可选）"><textarea value={form.template_md} onChange={set('template_md')} rows={4} placeholder="## 项目背景\n\n## 技术方案\n\n## 申请理由" className={`${inputCls} font-mono text-xs`} /></Field>
       <Field label="自定义报名字段 JSON（可选）" hint='格式：[{"name":"github_url","label":"GitHub URL","type":"url","required":true}]'>
         <textarea value={form.application_schema} onChange={set('application_schema')} rows={3} placeholder='[{"name":"github_url","label":"GitHub URL","type":"url","required":true}]' className={`${inputCls} font-mono text-xs`} />
       </Field>

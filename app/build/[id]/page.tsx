@@ -2,7 +2,6 @@ import { serviceClient } from '@/lib/supabase'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
-import { TemplateModal } from './TemplateModal'
 import { ApplyCTA } from './ApplyCTA'
 
 async function getGrant(id: string) {
@@ -114,7 +113,6 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
                 🔗 查看原网站
               </a>
             )}
-            <TemplateModal templateMd={grant.template_md ?? ''} grantTitle={grant.title} />
           </div>
 
           {/* Apply CTA — two buttons */}

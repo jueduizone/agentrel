@@ -25,7 +25,6 @@ export default function EditGrantPage() {
         status: g.status ?? 'open',
         source_type: g.source_type ?? 'native',
         external_url: g.external_url ?? '',
-        template_md: g.template_md ?? '',
         application_schema: g.application_schema ? JSON.stringify(g.application_schema, null, 2) : '',
         max_applications: g.max_applications != null ? String(g.max_applications) : '',
         track: g.track ?? '',
