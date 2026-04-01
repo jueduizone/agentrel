@@ -26,36 +26,30 @@ export function ApplyCTA({ grantId, isOpen }: { grantId: string; isOpen: boolean
   }
 
   return (
-    <div className="flex flex-col sm:flex-row gap-3 justify-center items-center pt-2">
+    <div className="flex flex-col gap-3 w-full max-w-sm mx-auto pt-2">
       {/* Primary: Apply now */}
       <Link
         href={`/build/${grantId}/apply`}
-        className="group inline-flex items-center gap-2 px-7 py-3 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-black transition-all shadow-sm hover:shadow-md active:scale-[0.98]"
+        className="group inline-flex items-center justify-center gap-2 w-full px-7 py-3 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-black transition-all shadow-sm hover:shadow-md active:scale-[0.98] whitespace-nowrap"
       >
         立即申请
         <span className="transition-transform group-hover:translate-x-0.5">→</span>
       </Link>
 
-      {/* Secondary: Agent apply — gradient border via wrapper */}
+      {/* Secondary: Agent apply — gradient border */}
       <button
         onClick={handleAgentCopy}
-        className={`relative inline-flex items-center gap-2 px-7 py-3 text-sm font-semibold rounded-xl transition-all active:scale-[0.98]
-          ${copied
-            ? 'bg-green-50 text-green-700 border border-green-300'
-            : 'border border-transparent text-indigo-700 hover:bg-indigo-50'
-          }`}
+        className={`inline-flex items-center justify-center gap-2 w-full px-7 py-3 text-sm font-semibold rounded-xl transition-all active:scale-[0.98] whitespace-nowrap
+          ${copied ? 'bg-green-50 text-green-700 border border-green-300' : 'border border-transparent text-indigo-700 hover:bg-indigo-50'}`}
         style={copied ? {} : {
           background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #6366f1, #a855f7) border-box',
           border: '1.5px solid transparent',
         }}
       >
-        {copied
-          ? <><span>✅</span> 已复制</>
-          : <><span>🤖</span> Agent 帮我申请</>
-        }
+        {copied ? <><span>✅</span> 已复制</> : <><span>🤖</span> Agent 帮我申请</>}
       </button>
 
-      <p className="text-xs text-gray-400 w-full text-center sm:-mt-1">
+      <p className="text-xs text-gray-400 text-center -mt-1">
         立即申请需登录 · Agent 申请将 Skill URL 复制到剪贴板
       </p>
     </div>
