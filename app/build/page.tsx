@@ -71,12 +71,13 @@ function GrantCard({ grant }: { grant: {
   const isPast = deadlineDate && deadlineDate < new Date()
 
   return (
-    <Link href={`/build/${grant.id}`} className="block">
+    <Link href={`/build/${grant.id}`} className="block group">
       <div className="bg-white rounded-xl border border-gray-200 p-5 hover:border-indigo-300 hover:shadow-sm transition-all">
-        <div className="flex items-start justify-between gap-4">
+        {/* Title row */}
+        <div className="flex items-start justify-between gap-4 mb-2">
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2 flex-wrap mb-1">
-              <h3 className="font-semibold text-gray-900 text-base">{grant.title}</h3>
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="font-semibold text-gray-900 text-base group-hover:text-indigo-700 transition-colors">{grant.title}</h3>
               {grant.source_type === 'external' && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">External</span>
               )}
@@ -87,26 +88,37 @@ function GrantCard({ grant }: { grant: {
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">{grant.track}</span>
               )}
             </div>
-            {grant.description && (
-              <p className="text-sm text-gray-500 line-clamp-2">{grant.description}</p>
-            )}
           </div>
+          {/* Reward + status badge */}
           <div className="text-right shrink-0">
-            {grant.reward && <p className="font-semibold text-indigo-700 text-sm">{grant.reward}</p>}
-            {grant.sponsor && <p className="text-xs text-gray-400">{grant.sponsor}</p>}
+            {grant.reward && <p className="font-bold text-indigo-700 text-sm">{grant.reward}</p>}
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-0.5 ${isOpen && !isPast ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+              {isOpen && !isPast ? '开放中' : '已截止'}
+            </span>
           </div>
         </div>
-        <div className="flex items-center gap-4 mt-3 text-xs text-gray-400">
+
+        {/* Info bar: Sponsor · deadline · count */}
+        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+          {grant.sponsor ? (
+            <span className="flex items-center gap-1 font-medium text-gray-700">
+              <span>🏢</span>{grant.sponsor}
+            </span>
+          ) : null}
+          {grant.sponsor && deadlineDate && <span className="text-gray-300">·</span>}
           {deadlineDate && (
             <span className={isPast ? 'text-red-400' : ''}>
               截止 {deadlineDate.toLocaleDateString('zh-CN')}
             </span>
           )}
+          {(grant.sponsor || deadlineDate) && <span className="text-gray-300">·</span>}
           <span>{grant.application_count} 人已申请</span>
-          <span className={`ml-auto inline-flex items-center px-2 py-0.5 rounded-full font-medium ${isOpen ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-            {isOpen ? '开放中' : '已截止'}
-          </span>
         </div>
+
+        {/* Description */}
+        {grant.description && (
+          <p className="text-sm text-gray-500 line-clamp-2">{grant.description}</p>
+        )}
       </div>
     </Link>
   )

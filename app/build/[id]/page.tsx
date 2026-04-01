@@ -32,9 +32,10 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
 
         <div className="bg-white rounded-2xl border border-gray-200 p-8">
           {/* Header */}
-          <div className="flex items-start justify-between gap-4 mb-6">
-            <div>
-              <div className="flex items-center gap-2 flex-wrap mb-2">
+          <div className="mb-6">
+            {/* Title + badges */}
+            <div className="flex items-start justify-between gap-4 mb-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h1 className="text-xl font-bold text-gray-900">{grant.title}</h1>
                 {grant.source_type === 'external' && (
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">External</span>
@@ -43,19 +44,33 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
                   <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">Native</span>
                 )}
               </div>
-              <div className="flex items-center gap-3 text-sm text-gray-500">
-                {grant.sponsor && <span>by {grant.sponsor}</span>}
-                <span>{grant.application_count} 人已申请</span>
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${isOpen && !isPast ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                  {isOpen && !isPast ? '开放中' : '已截止'}
-                </span>
-              </div>
+              {/* Reward */}
+              {grant.reward && (
+                <div className="text-right shrink-0">
+                  <p className="text-xl font-bold text-indigo-700">{grant.reward}</p>
+                </div>
+              )}
             </div>
-            {grant.reward && (
-              <div className="text-right shrink-0">
-                <p className="text-xl font-bold text-indigo-700">{grant.reward}</p>
-              </div>
-            )}
+            {/* Info bar: Sponsor · deadline · count · status */}
+            <div className="flex items-center gap-1.5 text-sm text-gray-500 flex-wrap">
+              {grant.sponsor && (
+                <span className="flex items-center gap-1.5 font-semibold text-gray-800">
+                  <span className="text-base">🏢</span>{grant.sponsor}
+                </span>
+              )}
+              {grant.sponsor && <span className="text-gray-300">·</span>}
+              {deadline && (
+                <span className={isPast ? 'text-red-500' : ''}>
+                  截止 {deadline.toLocaleDateString('zh-CN')}
+                </span>
+              )}
+              {deadline && <span className="text-gray-300">·</span>}
+              <span>{grant.application_count} 人已申请</span>
+              <span className="text-gray-300">·</span>
+              <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${isOpen && !isPast ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+                  {isOpen && !isPast ? '开放中' : '已截止'}
+              </span>
+            </div>
           </div>
 
           {/* Description */}
