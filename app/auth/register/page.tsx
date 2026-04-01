@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { Navbar } from '@/components/navbar'
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('')
@@ -29,7 +30,9 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      <Navbar />
+      <div className="flex-1 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <Link href="/" className="text-2xl font-bold text-black">AgentRel</Link>
@@ -59,6 +62,16 @@ export default function RegisterPage() {
           </p>
         </div>
       </div>
+      </div>
+      <footer className="border-t border-border">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-4 py-8 text-sm text-muted-foreground md:flex-row">
+          <span>© 2026 AgentRel. Open source under MIT License.</span>
+          <div className="flex items-center gap-6">
+            <a href="https://github.com/jueduizone/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">GitHub</a>
+            <a href="https://discord.gg/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Discord</a>
+          </div>
+        </div>
+      </footer>
     </div>
   )
 }

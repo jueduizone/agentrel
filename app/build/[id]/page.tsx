@@ -131,7 +131,7 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
           </div>
 
           {/* Apply CTA — two buttons */}
-          <ApplyCTA grantId={id} isOpen={isOpen && !isPast} />
+          <ApplyCTA grantId={id} isOpen={isOpen && !isPast} grant={grant} />
         </div>
       </main>
     </div>
