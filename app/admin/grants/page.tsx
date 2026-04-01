@@ -23,7 +23,12 @@ export default async function AdminGrantsPage() {
       <Navbar />
       <main className="max-w-4xl mx-auto px-6 py-10">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-gray-900">Admin — Grants</h1>
+          <div className="flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-gray-900">Admin — Grants</h1>
+            <Link href="/admin/grants/new" className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors">
+              + 新建 Grant
+            </Link>
+          </div>
           <p className="text-gray-500 text-sm mt-1">Manage grant applications</p>
         </div>
 

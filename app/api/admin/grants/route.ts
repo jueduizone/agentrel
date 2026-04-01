@@ -40,3 +40,40 @@ export async function GET(request: NextRequest) {
     (grants ?? []).map(g => ({ ...g, _stats: countMap[g.id] ?? { total: 0, pending: 0, approved: 0, rejected: 0 } }))
   )
 }
+
+// POST /api/admin/grants — create a grant
+export async function POST(request: NextRequest) {
+  const check = await requireAdmin(request)
+  if ('error' in check) return NextResponse.json({ error: check.error }, { status: check.status })
+
+  const body = await request.json()
+  const {
+    title, description, sponsor, reward, deadline, status = 'open',
+    source_type = 'native', external_url, template_md, application_schema,
+    max_applications, track, tech_requirements, required_skills, min_reputation_score,
+  } = body
+
+  if (!title) return NextResponse.json({ error: 'title is required' }, { status: 400 })
+
+  const { data, error } = await serviceClient
+    .from('grants')
+    .insert({
+      title, description, sponsor, reward,
+      deadline: deadline || null,
+      status,
+      source_type,
+      external_url: external_url || null,
+      template_md: template_md || null,
+      application_schema: application_schema || null,
+      max_applications: max_applications || null,
+      track: track || null,
+      tech_requirements: tech_requirements || null,
+      required_skills: required_skills || null,
+      min_reputation_score: min_reputation_score || null,
+    })
+    .select('id')
+    .single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ id: data.id }, { status: 201 })
+}

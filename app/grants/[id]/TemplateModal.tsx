@@ -1,0 +1,42 @@
+'use client'
+import { useState } from 'react'
+
+export function TemplateModal({ templateMd, grantTitle }: { templateMd: string; grantTitle: string }) {
+  const [open, setOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const copy = async () => {
+    await navigator.clipboard.writeText(templateMd)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  return (
+    <>
+      <button onClick={() => setOpen(true)}
+        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-green-300 text-sm font-medium text-green-700 hover:bg-green-50 transition-colors">
+        📄 获取申请模板
+      </button>
+
+      {open && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between px-6 py-4 border-b">
+              <h3 className="font-semibold text-gray-900">申请模板 — {grantTitle}</h3>
+              <div className="flex items-center gap-2">
+                <button onClick={copy}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${copied ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                  {copied ? '✓ 已复制' : '复制 Markdown'}
+                </button>
+                <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-auto p-6">
+              <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono bg-gray-50 rounded-lg p-4">{templateMd}</pre>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
+}
