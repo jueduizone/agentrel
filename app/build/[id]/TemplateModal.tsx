@@ -13,10 +13,17 @@ export function TemplateModal({ templateMd, grantTitle }: { templateMd: string; 
 
   return (
     <>
-      <button onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-green-300 text-sm font-medium text-green-700 hover:bg-green-50 transition-colors">
-        📄 获取申请模板
-      </button>
+      {templateMd ? (
+        <button onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-green-300 text-sm font-medium text-green-700 hover:bg-green-50 transition-colors">
+          📄 获取申请模板
+        </button>
+      ) : (
+        <button disabled
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-400 cursor-not-allowed">
+          📄 暂无申请模板
+        </button>
+      )}
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">

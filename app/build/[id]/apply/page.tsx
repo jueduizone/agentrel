@@ -71,7 +71,7 @@ export default function ApplyPage() {
         <div className="text-4xl mb-4">✅</div>
         <h2 className="text-xl font-bold text-gray-900 mb-2">申请已提交！</h2>
         <p className="text-sm text-gray-500 mb-6">我们会尽快审核你的申请，结果通过邮件通知。</p>
-        <Link href="/build" className="text-indigo-600 text-sm font-medium hover:underline">← 返回 Grants 列表</Link>
+        <Link href="/build" className="text-indigo-600 text-sm font-medium hover:underline">← 返回 Build</Link>
       </div>
     </div>
   )

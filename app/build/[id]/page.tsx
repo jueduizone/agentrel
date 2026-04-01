@@ -28,7 +28,7 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="max-w-3xl mx-auto px-6 py-10">
-        <Link href="/build" className="text-sm text-gray-400 hover:text-gray-600 mb-6 inline-block">← 所有 Grants</Link>
+        <Link href="/build" className="text-sm text-gray-400 hover:text-gray-600 mb-6 inline-block">← Build</Link>
 
         <div className="bg-white rounded-2xl border border-gray-200 p-8">
           {/* Header */}
@@ -117,9 +117,7 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
               className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-indigo-300 text-sm font-medium text-indigo-700 hover:bg-indigo-50 transition-colors">
               🤖 用 Skill 申请
             </Link>
-            {grant.template_md && (
-              <TemplateModal templateMd={grant.template_md} grantTitle={grant.title} />
-            )}
+            <TemplateModal templateMd={grant.template_md ?? ''} grantTitle={grant.title} />
           </div>
 
           {/* Apply CTA */}
