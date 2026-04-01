@@ -1,6 +1,8 @@
 import { serviceClient } from '@/lib/supabase'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
+import { Suspense } from 'react'
+import { BuildTabs } from './BuildClient'
 
 async function getGrants() {
   const db = serviceClient
@@ -9,7 +11,6 @@ async function getGrants() {
     .select('id, title, description, sponsor, reward, deadline, status, source_type, track, created_at')
     .order('created_at', { ascending: false })
 
-  // Get application counts
   const ids = (grants ?? []).map(g => g.id)
   const { data: apps } = ids.length
     ? await db.from('grant_applications').select('grant_id').in('grant_id', ids)
@@ -21,41 +22,49 @@ async function getGrants() {
   return (grants ?? []).map(g => ({ ...g, application_count: countMap[g.id] ?? 0 }))
 }
 
-export default async function GrantsPage() {
-  const grants = await getGrants()
-  const open = grants.filter(g => g.status === 'open')
-  const closed = grants.filter(g => g.status !== 'open')
+type StatusFilter = 'open' | 'closed' | 'all'
+
+export default async function GrantsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ status?: string }>
+}) {
+  const { status } = await searchParams
+  const filter: StatusFilter = (status === 'closed' || status === 'all') ? status : 'open'
+
+  const allGrants = await getGrants()
+  const open = allGrants.filter(g => g.status === 'open')
+  const closed = allGrants.filter(g => g.status !== 'open')
+
+  const displayed = filter === 'all' ? allGrants : filter === 'closed' ? closed : open
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Navbar />
       <main className="max-w-4xl mx-auto px-6 py-10">
-        <div className="mb-8">
+        <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Grants & Bounties</h1>
           <p className="text-sm text-gray-500 mt-1">Web3 开发者资助计划，Apply with AI Agent</p>
         </div>
 
-        {open.length === 0 && closed.length === 0 && (
-          <p className="text-center text-gray-400 py-16">暂无 Grant 项目</p>
+        <Suspense fallback={null}>
+          <BuildTabs
+            total={allGrants.length}
+            openCount={open.length}
+            closedCount={closed.length}
+            current={filter}
+          />
+        </Suspense>
+
+        {displayed.length === 0 && (
+          <p className="text-center text-gray-400 py-16">
+            {filter === 'open' ? '暂无开放中的 Grant' : filter === 'closed' ? '暂无已截止的 Grant' : '暂无 Grant 项目'}
+          </p>
         )}
 
-        {open.length > 0 && (
-          <section className="mb-10">
-            <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-4">开放中 ({open.length})</h2>
-            <div className="space-y-4">
-              {open.map(g => <GrantCard key={g.id} grant={g} />)}
-            </div>
-          </section>
-        )}
-
-        {closed.length > 0 && (
-          <section>
-            <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">已截止 ({closed.length})</h2>
-            <div className="space-y-3 opacity-60">
-              {closed.map(g => <GrantCard key={g.id} grant={g} />)}
-            </div>
-          </section>
-        )}
+        <div className={`space-y-4 ${filter === 'closed' ? 'opacity-75' : ''}`}>
+          {displayed.map(g => <GrantCard key={g.id} grant={g} />)}
+        </div>
       </main>
     </div>
   )
