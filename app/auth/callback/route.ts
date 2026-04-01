@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createSupabaseClient } from '@supabase/supabase-js'
 import { serviceClient } from '@/lib/supabase'
+import { randomBytes } from 'crypto'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
 
   // If no profile yet (trigger might not have run), create it
   if (!profile) {
-    const crypto = require('crypto')
+
     const apiKey = 'agentrel_' + crypto.randomBytes(24).toString('hex')
     await db.from('users').insert({
       id: data.user.id,
