@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { serviceClient } from '@/lib/supabase'
 import { getUserFromRequest } from '@/lib/agentAuth'
+import { upsertGrantSkill, syncGrantsIndex } from '@/lib/grantSkill'
 
 async function requireAdmin(request: NextRequest) {
   const user = await getUserFromRequest(request)
@@ -32,6 +33,14 @@ export async function PATCH(
 
   const { error } = await serviceClient.from('grants').update(updates).eq('id', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Re-sync grant skill
+  const { data: updated } = await serviceClient.from('grants').select('*').eq('id', id).single()
+  if (updated) {
+    upsertGrantSkill(updated).catch(() => {})
+    syncGrantsIndex().catch(() => {})
+  }
+
   return NextResponse.json({ ok: true })
 }
 

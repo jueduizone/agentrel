@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
 import { TemplateModal } from './TemplateModal'
+import { ApplyCTA } from './ApplyCTA'
 
 async function getGrant(id: string) {
   const db = serviceClient
@@ -105,7 +106,7 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
             )}
           </div>
 
-          {/* Three entry buttons */}
+          {/* Action buttons */}
           <div className="flex flex-wrap gap-3 mb-6 pb-6 border-b border-gray-100">
             {grant.source_type === 'external' && grant.external_url && (
               <a href={grant.external_url} target="_blank" rel="noopener noreferrer"
@@ -113,14 +114,10 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
                 🔗 查看原网站
               </a>
             )}
-            <Link href={`/skills?filter=grant`}
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-indigo-300 text-sm font-medium text-indigo-700 hover:bg-indigo-50 transition-colors">
-              🤖 用 Skill 申请
-            </Link>
             <TemplateModal templateMd={grant.template_md ?? ''} grantTitle={grant.title} />
           </div>
 
-          {/* Apply CTA */}
+          {/* Apply CTA — two buttons */}
           <ApplyCTA grantId={id} isOpen={isOpen && !isPast} />
         </div>
       </main>
@@ -128,17 +125,4 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
   )
 }
 
-function ApplyCTA({ grantId, isOpen }: { grantId: string; isOpen: boolean }) {
-  if (!isOpen) {
-    return <p className="text-center text-sm text-gray-400 py-2">此 Grant 已截止，无法申请</p>
-  }
-  return (
-    <div className="text-center">
-      <Link href={`/build/${grantId}/apply`}
-        className="inline-flex items-center gap-2 px-6 py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors">
-        立即申请 →
-      </Link>
-      <p className="text-xs text-gray-400 mt-2">需要登录账号</p>
-    </div>
-  )
-}
+

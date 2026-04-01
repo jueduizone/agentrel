@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { serviceClient } from '@/lib/supabase'
 import { getUserFromRequest } from '@/lib/agentAuth'
+import { upsertGrantSkill, syncGrantsIndex } from '@/lib/grantSkill'
 
 async function requireAdmin(request: NextRequest) {
   const user = await getUserFromRequest(request)
@@ -75,5 +76,10 @@ export async function POST(request: NextRequest) {
     .single()
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Auto-sync grant skill card
+  upsertGrantSkill({ id: data.id, title, description, reward, deadline, status, sponsor, track, application_schema }).catch(() => {})
+  syncGrantsIndex().catch(() => {})
+
   return NextResponse.json({ id: data.id }, { status: 201 })
 }
