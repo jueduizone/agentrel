@@ -54,7 +54,7 @@ export function GrantForm({
         </div>
       </div>
 
-      <Field label="标题" required><input required value={form.title} onChange={set('title')} placeholder="Grant 标题" className={inputCls} /></Field>
+      <Field label="标题" required><input required name="title" value={form.title} onChange={set('title')} placeholder="Grant 标题" className={inputCls} /></Field>
       <Field label="描述"><textarea value={form.description} onChange={set('description')} rows={4} placeholder="Grant 详细描述..." className={inputCls} /></Field>
       <div className="grid grid-cols-2 gap-4">
         <Field label="Sponsor"><input value={form.sponsor} onChange={set('sponsor')} placeholder="如 OpenBuild" className={inputCls} /></Field>
@@ -70,7 +70,7 @@ export function GrantForm({
         </Field>
       </div>
       {form.source_type === 'external' && (
-        <Field label="原网站链接（External URL）"><input type="url" value={form.external_url} onChange={set('external_url')} placeholder="https://" className={inputCls} /></Field>
+        <Field label="原网站链接（External URL）"><input type="url" name="external_url" value={form.external_url} onChange={set('external_url')} placeholder="https://" className={inputCls} /></Field>
       )}
       <div className="grid grid-cols-2 gap-4">
         <Field label="赛道 / 方向（可选）"><input value={form.track} onChange={set('track')} placeholder="如 DeFi" className={inputCls} /></Field>
