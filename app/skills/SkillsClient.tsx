@@ -104,7 +104,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
       // Hide deprioritized skills (health_score=0) by default
       if (s.health_score === 0 && selectedSource !== 'all') return false
       // Grant auto-skills: only show when source=auto is selected
-      if (s.id?.startsWith('grant-') && selectedSource !== 'auto' && selectedSource !== 'all') return false
+      if (s.id?.startsWith('grant-') && selectedSource !== 'ai-generated' && selectedSource !== 'all') return false
       if (selectedEcosystem !== 'all' && s.ecosystem !== selectedEcosystem) return false
       if (selectedType !== 'all' && s.type !== selectedType) return false
       if (selectedSource !== 'all' && s.source !== selectedSource) return false
@@ -206,27 +206,38 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
         </div>
 
         {/* Type filter row */}
-        {selectedType !== 'all' && (
-          <div className="flex flex-wrap gap-2">
-            <span className="self-center text-xs text-muted-foreground">Type:</span>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="self-center text-xs text-muted-foreground">Type:</span>
+          {([
+            { key: 'all', label: 'All Types' },
+            { key: 'grant-guide', label: '💰 Grant / Bounty' },
+            { key: 'technical-doc', label: '📖 Dev Guide' },
+            { key: 'security', label: '🔒 Security' },
+            { key: 'standards', label: '📐 Standards' },
+          ] as const).map(({ key, label }) => (
             <button
-              onClick={() => setSelectedType('all')}
-              className="rounded-full border border-black bg-black px-3 py-1 text-xs font-medium text-white transition-colors hover:bg-gray-800"
+              key={key}
+              onClick={() => setSelectedType(key === 'all' ? 'all' : key)}
+              className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                (key === 'all' ? selectedType === 'all' : selectedType === key)
+                  ? 'bg-black text-white'
+                  : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
+              }`}
             >
-              {selectedType} ✕
+              {label}
             </button>
-          </div>
-        )}
+          ))}
+        </div>
 
         {/* Source filter row */}
         <div className="flex flex-wrap items-center gap-2">
           <span className="self-center text-xs text-muted-foreground">{lang === 'zh' ? '来源：' : 'Source:'}</span>
-          {(['all', 'official', 'community', 'auto'] as const).map((src) => {
+          {(['all', 'official', 'community', 'ai-generated'] as const).map((src) => {
             const label = src === 'all'
               ? (lang === 'zh' ? '全部' : 'All')
               : src === 'official' ? '🏛️ Official'
               : src === 'community' ? '👥 Community'
-              : '⚡ Auto (Grant)'
+              : '🤖 AI Generated'
             return (
               <button
                 key={src}
