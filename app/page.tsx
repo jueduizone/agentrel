@@ -22,7 +22,7 @@ const SCENARIOS = [
     icon: '💰',
     title: 'Apply for a Grant',
     desc: 'Grant guides + success stories',
-    href: '/skills?type=grant',
+    href: '/build',
   },
   {
     icon: '🔒',
