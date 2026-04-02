@@ -196,7 +196,7 @@ export default async function HomePage() {
             {stats.ecosystemList.map((eco) => (
               <Link
                 key={eco.name}
-                href={`/skills?ecosystem=${eco.name.toLowerCase()}`}
+                href={(() => { const slug = eco.name.toLowerCase(); return ['ton', 'monad', 'sui', 'base', 'solana', 'zama', 'ethereum'].includes(slug) ? `/ecosystem/${slug}` : `/skills?ecosystem=${slug}`; })()}
                 className="inline-flex items-center gap-1.5 rounded-full border border-border bg-white px-4 py-1.5 text-sm font-medium text-foreground transition-all hover:border-black hover:shadow-sm"
               >
                 {eco.name}

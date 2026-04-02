@@ -7,6 +7,7 @@ import { useState, useEffect, useRef } from 'react'
 
 export function Navbar() {
   const pathname = usePathname()
+  const [ecoOpen, setEcoOpen] = useState(false)
   const [user, setUser] = useState<{ email: string; role: string; api_key: string } | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -47,6 +48,32 @@ export function Navbar() {
             <span className="text-xs text-gray-400 font-normal hidden sm:inline">by <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">OpenBuild</a></span>
           </Link>
           <div className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
+            {/* Ecosystems dropdown */}
+            <div className="relative" onMouseEnter={() => setEcoOpen(true)} onMouseLeave={() => setEcoOpen(false)}>
+              <button className={`flex items-center gap-1 transition-colors hover:text-foreground ${pathname.startsWith('/ecosystem') ? 'text-black font-semibold' : ''}`}>
+                Ecosystems
+                <svg className="h-3 w-3 opacity-60" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+              </button>
+              {ecoOpen && (
+                <div className="absolute top-full left-0 mt-1 w-44 bg-white border border-border rounded-xl shadow-lg py-1 z-50">
+                  {[
+                    { name: 'Ethereum', slug: 'ethereum' },
+                    { name: 'Solana', slug: 'solana' },
+                    { name: 'Base', slug: 'base' },
+                    { name: 'Monad', slug: 'monad' },
+                    { name: 'Sui', slug: 'sui' },
+                    { name: 'TON', slug: 'ton' },
+                    { name: 'Zama', slug: 'zama' },
+                  ].map(({ name, slug }) => (
+                    <Link key={slug} href={`/ecosystem/${slug}`}
+                      className={`block px-3 py-1.5 text-sm hover:bg-gray-50 transition-colors ${pathname === `/ecosystem/${slug}` ? 'text-black font-medium' : 'text-gray-600'}`}
+                      onClick={() => setEcoOpen(false)}>
+                      {name}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
             {[
               { href: '/skills', label: 'Skills' },
               { href: '/bundles', label: 'Bundles' },
