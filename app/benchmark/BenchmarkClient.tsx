@@ -22,6 +22,7 @@ type Props = {
     run: { run_at: string; judge_model: string; inject_strategy: string }
     bySource: { official: SourceStats; community: SourceStats; 'ai-generated': SourceStats }
     overall: SourceStats
+    byEcosystem?: Record<string, SourceStats>
   } | null
 }
 
@@ -134,6 +135,53 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
   )
 }
 
+
+const ECO_LABELS: Record<string, string> = {
+  all: 'All', ethereum: 'Ethereum', solana: 'Solana', monad: 'Monad',
+  zama: 'Zama', sui: 'Sui', ton: 'TON', base: 'Base', multichain: 'Multichain', other: 'Other',
+}
+
+function EcosystemSection({ byEcosystem }: { byEcosystem: Record<string, SourceStats> }) {
+  const ecoKeys = Object.keys(byEcosystem).filter(k => byEcosystem[k] !== null)
+  const [activeEco, setActiveEco] = useState<string>('all')
+
+  // Combine all for "All" tab
+  const allStats: SourceStats = (() => {
+    const allResults = Object.values(byEcosystem).filter(Boolean)
+    if (!allResults.length) return null
+    const totalQ = allResults.reduce((s, v) => s + (v?.total_questions ?? 0), 0)
+    const avgC = allResults.reduce((s, v) => s + (v?.avg_control ?? 0) * (v?.total_questions ?? 0), 0) / (totalQ || 1)
+    const avgT = allResults.reduce((s, v) => s + (v?.avg_test ?? 0) * (v?.total_questions ?? 0), 0) / (totalQ || 1)
+    return {
+      total_questions: totalQ,
+      avg_control: Math.round(avgC * 100) / 100,
+      avg_test: Math.round(avgT * 100) / 100,
+      delta: Math.round((avgT - avgC) * 100) / 100,
+      catStats: [],
+      topSkills: allResults.flatMap(v => v?.topSkills ?? []).sort((a, b) => b.delta - a.delta).slice(0, 10),
+    }
+  })()
+
+  const activeStats = activeEco === 'all' ? allStats : byEcosystem[activeEco]
+
+  return (
+    <main className="max-w-5xl mx-auto px-6 py-8 border-t border-gray-100 mt-4">
+      <h2 className="text-lg font-bold text-gray-800 mb-4">🌐 By Ecosystem</h2>
+      <div className="flex gap-2 border-b border-gray-100 mb-8 overflow-x-auto pb-0 -mb-px">
+        {['all', ...ecoKeys].map(eco => (
+          <button key={eco} onClick={() => setActiveEco(eco)}
+            className={`flex items-center gap-1 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+              activeEco === eco ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700'
+            }`}>
+            {ECO_LABELS[eco] ?? eco}
+          </button>
+        ))}
+      </div>
+      <StatsPanel stats={activeStats} title={ECO_LABELS[activeEco] ?? activeEco} />
+    </main>
+  )
+}
+
 export default function BenchmarkClient({ data }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>('overall')
 
@@ -205,6 +253,11 @@ export default function BenchmarkClient({ data }: Props) {
         {/* Stats panel */}
         <StatsPanel stats={activeStats} title={activeTabInfo.label} />
       </main>
+
+      {/* Section 2: By Ecosystem */}
+      {data.byEcosystem && Object.keys(data.byEcosystem).length > 0 && (
+        <EcosystemSection byEcosystem={data.byEcosystem} />
+      )}
     </div>
   )
 }

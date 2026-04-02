@@ -70,10 +70,10 @@ def parse_questions(md_path):
     with open(md_path) as f:
         content = f.read()
     questions = []
-    cat_pattern = r'## (?:📁\s*)?类别[一二三四五六七八九]?[：:]\s*(.+)'
+    cat_pattern = r'## (?:📁\s*)(?:类别[一二三四五六七八九]?[：:]\s*)?(.+)'
     # q_pattern: capture optional 注入策略 field after Skill line
     q_pattern = (
-        r'### ([A-Z]{1,3}\d+)[^\n]*\n'
+        r'### ([A-Z]{1,5}(?:-Q)?\d+)[^\n]*\n'
         r'\*\*问题：\*\* (.+?)\n'
         r'\*\*标准答案：\*\* (.+?)\n'
         r'\*\*Skill：\*\* `([^`]+)`'
