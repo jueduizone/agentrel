@@ -117,7 +117,6 @@ export function Navbar() {
 
   const exploreItems = [
     { label: 'Skills', href: '/skills' },
-    { label: 'Ecosystems', href: '/ecosystem', sub: ECOSYSTEMS },
     { label: 'Bundles', href: '/bundles' },
     { label: 'Benchmark', href: '/benchmark' },
   ]
@@ -141,6 +140,7 @@ export function Navbar() {
 
           <div className="hidden items-center gap-5 md:flex">
             <Dropdown label="Explore" items={exploreItems} isActive={exploreActive} />
+            <Dropdown label="Ecosystems" items={ECOSYSTEMS.map(e => ({ label: e.name, href: `/ecosystem/${e.slug}` }))} isActive={pathname.startsWith('/ecosystem')} />
             <Link href="/build"
               className={`text-sm transition-colors ${buildActive ? 'text-black font-semibold' : 'text-muted-foreground hover:text-foreground'}`}>
               Build
