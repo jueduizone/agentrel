@@ -2,18 +2,96 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Github, ChevronDown, User, KeyRound, Shield, LogOut } from 'lucide-react'
+import { Github, ChevronDown, User, Shield, LogOut } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
+
+const ECOSYSTEMS = [
+  { name: 'Ethereum', slug: 'ethereum' },
+  { name: 'Solana', slug: 'solana' },
+  { name: 'Base', slug: 'base' },
+  { name: 'Monad', slug: 'monad' },
+  { name: 'Sui', slug: 'sui' },
+  { name: 'TON', slug: 'ton' },
+  { name: 'Zama', slug: 'zama' },
+]
+
+function Dropdown({
+  label,
+  items,
+  isActive,
+}: {
+  label: string
+  items: { label: string; href: string; external?: boolean; sub?: { name: string; slug: string }[] }[]
+  isActive: boolean
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handler(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener('mousedown', handler)
+    return () => document.removeEventListener('mousedown', handler)
+  }, [])
+
+  return (
+    <div ref={ref} className="relative"
+      onMouseEnter={() => setOpen(true)}
+      onMouseLeave={() => setOpen(false)}>
+      <button
+        onClick={() => setOpen(v => !v)}
+        className={`flex items-center gap-1 text-sm transition-colors ${
+          isActive ? 'text-black font-semibold' : 'text-muted-foreground hover:text-foreground'
+        }`}
+      >
+        {label}
+        <ChevronDown className={`h-3 w-3 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+
+      {open && (
+        <div className="absolute top-full left-0 mt-1.5 min-w-[180px] bg-white border border-border rounded-xl shadow-lg py-1.5 z-50">
+          {items.map(item => (
+            <div key={item.href}>
+              {item.external ? (
+                <a href={item.href} target="_blank" rel="noopener noreferrer"
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                  onClick={() => setOpen(false)}>
+                  {item.label}
+                </a>
+              ) : item.sub ? (
+                <div>
+                  <p className="px-3 py-1 text-xs font-semibold text-gray-400 uppercase tracking-wider">{item.label}</p>
+                  {item.sub.map(eco => (
+                    <Link key={eco.slug} href={`/ecosystem/${eco.slug}`}
+                      className="flex items-center px-5 py-1 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                      onClick={() => setOpen(false)}>
+                      {eco.name}
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <Link href={item.href}
+                  className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-600 hover:bg-gray-50 transition-colors"
+                  onClick={() => setOpen(false)}>
+                  {item.label}
+                </Link>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 export function Navbar() {
   const pathname = usePathname()
-  const [ecoOpen, setEcoOpen] = useState(false)
   const [user, setUser] = useState<{ email: string; role: string; api_key: string } | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    // Check stored api_key
     const key = localStorage.getItem('agentrel_api_key')
     if (key) {
       fetch('/api/auth/me', { headers: { Authorization: `Bearer ${key}` } })
@@ -25,9 +103,7 @@ export function Navbar() {
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setShowDropdown(false)
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setShowDropdown(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -39,87 +115,61 @@ export function Navbar() {
     setShowDropdown(false)
   }
 
+  const exploreItems = [
+    { label: 'Skills', href: '/skills' },
+    { label: 'Ecosystems', href: '/ecosystem', sub: ECOSYSTEMS },
+    { label: 'Bundles', href: '/bundles' },
+    { label: 'Benchmark', href: '/benchmark' },
+  ]
+
+  const resourceItems = [
+    { label: 'Docs', href: 'https://ian-docs.vercel.app/docs/agentforum', external: true },
+    { label: 'GitHub', href: 'https://github.com/jueduizone/agentrel', external: true },
+  ]
+
+  const exploreActive = ['/skills', '/bundles', '/benchmark', '/ecosystem'].some(p => pathname.startsWith(p))
+  const buildActive = pathname.startsWith('/build')
+
   return (
     <nav className="sticky top-0 z-50 border-b border-border bg-white/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
-        <div className="flex items-center gap-8">
+        {/* Left: Logo + nav */}
+        <div className="flex items-center gap-7">
           <Link href="/" className="flex items-center gap-1.5">
             <span className="text-lg font-bold tracking-tight text-black">AgentRel</span>
             <span className="text-xs text-gray-400 font-normal hidden sm:inline">by <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">OpenBuild</a></span>
           </Link>
-          <div className="hidden items-center gap-6 text-sm text-muted-foreground md:flex">
-            {/* Ecosystems dropdown */}
-            <div className="relative" onMouseEnter={() => setEcoOpen(true)} onMouseLeave={() => setEcoOpen(false)}>
-              <button className={`flex items-center gap-1 transition-colors hover:text-foreground ${pathname.startsWith('/ecosystem') ? 'text-black font-semibold' : ''}`}>
-                Ecosystems
-                <svg className="h-3 w-3 opacity-60" viewBox="0 0 12 12" fill="none"><path d="M2 4l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
-              </button>
-              {ecoOpen && (
-                <div className="absolute top-full left-0 mt-1 w-44 bg-white border border-border rounded-xl shadow-lg py-1 z-50">
-                  {[
-                    { name: 'Ethereum', slug: 'ethereum' },
-                    { name: 'Solana', slug: 'solana' },
-                    { name: 'Base', slug: 'base' },
-                    { name: 'Monad', slug: 'monad' },
-                    { name: 'Sui', slug: 'sui' },
-                    { name: 'TON', slug: 'ton' },
-                    { name: 'Zama', slug: 'zama' },
-                  ].map(({ name, slug }) => (
-                    <Link key={slug} href={`/ecosystem/${slug}`}
-                      className={`block px-3 py-1.5 text-sm hover:bg-gray-50 transition-colors ${pathname === `/ecosystem/${slug}` ? 'text-black font-medium' : 'text-gray-600'}`}
-                      onClick={() => setEcoOpen(false)}>
-                      {name}
-                    </Link>
-                  ))}
-                </div>
-              )}
-            </div>
-            {[
-              { href: '/skills', label: 'Skills' },
-              { href: '/bundles', label: 'Bundles' },
-              { href: '/benchmark', label: 'Benchmark' },
-              { href: '/build', label: 'Build' },
-              { href: '/submit', label: 'Submit Skill', accent: true },
-            ].map(({ href, label, accent }) => {
-              const isActive = pathname === href || (href !== '/' && pathname.startsWith(href))
-              return (
-                <Link key={href} href={href}
-                  className={`transition-colors ${
-                    isActive
-                      ? 'text-black font-semibold'
-                      : accent
-                      ? 'text-indigo-500 font-medium hover:text-indigo-600'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}>
-                  {label}
-                </Link>
-              )
-            })}
-            <a href="https://ian-docs.vercel.app/docs/agentforum" target="_blank" rel="noopener noreferrer"
-              className="text-muted-foreground hover:text-foreground transition-colors">Docs</a>
+
+          <div className="hidden items-center gap-5 md:flex">
+            <Dropdown label="Explore" items={exploreItems} isActive={exploreActive} />
+            <Link href="/build"
+              className={`text-sm transition-colors ${buildActive ? 'text-black font-semibold' : 'text-muted-foreground hover:text-foreground'}`}>
+              Build
+            </Link>
+            <Dropdown label="Resources" items={resourceItems} isActive={false} />
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
-          {/* GitHub */}
+        {/* Right: Submit Skill + auth */}
+        <div className="flex items-center gap-2">
+          <Link href="/submit"
+            className="hidden sm:inline-flex items-center px-3 py-1.5 bg-black text-white text-sm font-medium rounded-lg hover:bg-black/80 transition-colors">
+            Submit Skill
+          </Link>
+
           <a href="https://github.com/jueduizone/agentrel" target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors">
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors px-2">
             <Github className="h-4 w-4" />
-            <span className="hidden sm:inline">GitHub</span>
           </a>
 
-          {/* Auth */}
           {user ? (
             <div className="relative" ref={dropdownRef}>
-              <button
-                onClick={() => setShowDropdown(!showDropdown)}
-                className="flex items-center gap-1.5 text-sm text-gray-700 hover:text-black transition-colors border border-border rounded-lg px-3 py-1.5"
-              >
+              <button onClick={() => setShowDropdown(!showDropdown)}
+                className="flex items-center gap-1.5 text-sm text-gray-700 hover:text-black transition-colors border border-border rounded-lg px-3 py-1.5">
                 <User className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline max-w-[120px] truncate">{user.email.split('@')[0]}</span>
                 <ChevronDown className="h-3 w-3" />
               </button>
-
               {showDropdown && (
                 <div className="absolute right-0 mt-1.5 w-48 bg-white rounded-xl border border-border shadow-lg py-1 z-50">
                   <div className="px-3 py-2 border-b border-border">
@@ -143,13 +193,12 @@ export function Navbar() {
               )}
             </div>
           ) : (
-            <div className="flex items-center gap-2">
-              <Link href="/auth/login"
-                className="text-sm text-gray-600 hover:text-black transition-colors px-3 py-1.5">
+            <div className="flex items-center gap-1.5">
+              <Link href="/auth/login" className="text-sm text-gray-600 hover:text-black transition-colors px-2 py-1.5">
                 Sign In
               </Link>
               <Link href="/auth/register"
-                className="text-sm bg-black text-white rounded-lg px-3 py-1.5 hover:bg-black/80 transition-colors">
+                className="text-sm border border-gray-300 text-gray-700 rounded-lg px-3 py-1.5 hover:bg-gray-50 transition-colors">
                 Register
               </Link>
             </div>
