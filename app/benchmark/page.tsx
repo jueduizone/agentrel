@@ -3,8 +3,15 @@ import BenchmarkClient from './BenchmarkClient'
 
 export const revalidate = 3600
 
+function normalizeSource(src: string | null): 'official' | 'community' | 'ai-generated' {
+  if (!src) return 'community'
+  const s = src.toLowerCase()
+  if (s === 'official' || s === 'official-docs') return 'official'
+  if (s === 'ai-generated' || s === 'auto') return 'ai-generated'
+  return 'community'
+}
+
 async function getBenchmarkData() {
-  // Latest run timestamp
   const { data: latestRow } = await serviceClient
     .from('eval_results')
     .select('run_at, judge_model, inject_strategy')
@@ -14,7 +21,6 @@ async function getBenchmarkData() {
   if (!latestRow || latestRow.length === 0) return null
   const { run_at, judge_model, inject_strategy } = latestRow[0]
 
-  // All results for latest run
   const { data: results } = await serviceClient
     .from('eval_results')
     .select('*')
@@ -23,28 +29,84 @@ async function getBenchmarkData() {
 
   if (!results || results.length === 0) return null
 
-  // Category aggregates
-  const catMap: Record<string, { control: number[]; test: number[] }> = {}
-  for (const r of results) {
-    const cat = r.category || 'Other'
-    if (!catMap[cat]) catMap[cat] = { control: [], test: [] }
-    catMap[cat].control.push(r.control_score)
-    catMap[cat].test.push(r.test_score)
+  // Fetch skill sources for all skill_ids in results
+  const skillIds = [...new Set(results.map(r => r.skill_id).filter(Boolean))]
+  const skillSourceMap: Record<string, 'official' | 'community' | 'ai-generated'> = {}
+  
+  for (let i = 0; i < skillIds.length; i += 50) {
+    const batch = skillIds.slice(i, i + 50)
+    const { data: skills } = await serviceClient
+      .from('skills')
+      .select('id, source')
+      .in('id', batch)
+    for (const s of skills ?? []) {
+      skillSourceMap[s.id] = normalizeSource(s.source)
+    }
   }
-  const catStats = Object.entries(catMap).map(([cat, { control, test }]) => {
-    const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length
-    const c = Math.round(avg(control) * 100) / 100
-    const t = Math.round(avg(test) * 100) / 100
-    return { category: cat, avg_control: c, avg_test: t, delta: Math.round((t - c) * 100) / 100, question_count: control.length }
-  }).sort((a, b) => b.delta - a.delta)
 
-  const totalC = Math.round(results.reduce((s, r) => s + r.control_score, 0) / results.length * 100) / 100
-  const totalT = Math.round(results.reduce((s, r) => s + r.test_score, 0) / results.length * 100) / 100
+  // Group results by source
+  const grouped: Record<string, typeof results> = { official: [], community: [], 'ai-generated': [] }
+  for (const r of results) {
+    const src = r.skill_id ? (skillSourceMap[r.skill_id] ?? 'community') : 'community'
+    grouped[src].push(r)
+  }
+
+  function computeStats(subset: typeof results | null) {
+    if (!subset) return null
+    if (subset.length === 0) return null
+    const catMap: Record<string, { control: number[]; test: number[] }> = {}
+    for (const r of subset) {
+      const cat = r.category || 'Other'
+      if (!catMap[cat]) catMap[cat] = { control: [], test: [] }
+      catMap[cat].control.push(r.control_score)
+      catMap[cat].test.push(r.test_score)
+    }
+    const avg = (arr: number[]) => arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length * 100) / 100 : 0
+    const catStats = Object.entries(catMap).map(([cat, { control, test }]) => ({
+      category: cat,
+      avg_control: avg(control),
+      avg_test: avg(test),
+      delta: Math.round((avg(test) - avg(control)) * 100) / 100,
+      question_count: control.length,
+    })).sort((a, b) => b.delta - a.delta)
+
+    // Top skills by delta
+    const skillMap: Record<string, { control: number[]; test: number[] }> = {}
+    for (const r of subset) {
+      if (!r.skill_id) continue
+      if (!skillMap[r.skill_id]) skillMap[r.skill_id] = { control: [], test: [] }
+      skillMap[r.skill_id].control.push(r.control_score)
+      skillMap[r.skill_id].test.push(r.test_score)
+    }
+    const topSkills = Object.entries(skillMap).map(([id, { control, test }]) => ({
+      skill_id: id,
+      avg_control: avg(control),
+      avg_test: avg(test),
+      delta: Math.round((avg(test) - avg(control)) * 100) / 100,
+      question_count: control.length,
+    })).sort((a, b) => b.delta - a.delta).slice(0, 10)
+
+    const totalC = avg(subset.map(r => r.control_score))
+    const totalT = avg(subset.map(r => r.test_score))
+    return {
+      total_questions: subset.length,
+      avg_control: totalC,
+      avg_test: totalT,
+      delta: Math.round((totalT - totalC) * 100) / 100,
+      catStats,
+      topSkills,
+    }
+  }
 
   return {
-    run: { run_at, judge_model, inject_strategy, total_questions: results.length, avg_control: totalC, avg_test: totalT, delta: Math.round((totalT - totalC) * 100) / 100 },
-    results,
-    catStats,
+    run: { run_at, judge_model, inject_strategy },
+    bySource: {
+      official: computeStats(grouped.official),
+      community: computeStats(grouped.community),
+      'ai-generated': computeStats(grouped['ai-generated']),
+    },
+    // Legacy: overall stats
+    overall: computeStats(results),
   }
 }
 
