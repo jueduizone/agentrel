@@ -49,8 +49,11 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
-          <span>© 2026 AgentRel · Powered by OpenBuild · MIT License</span>
+        <div className="mt-8 text-center">
+          <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Powered by OpenBuild</a>
+        </div>
+        <div className="mt-4 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
+          <span>© 2026 AgentRel · MIT License</span>
           <div className="flex items-center gap-4">
             <a href="https://github.com/jueduizone/agentrel/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">MIT License</a>
             <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">OpenBuild</a>

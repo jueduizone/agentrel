@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Github, ChevronDown, User, Shield, LogOut } from 'lucide-react'
+import { ChevronDown, User, Shield, LogOut } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 
 const ECOSYSTEMS = [
@@ -137,7 +137,6 @@ export function Navbar() {
         <div className="flex items-center gap-7">
           <Link href="/" className="flex items-center gap-1.5">
             <span className="text-lg font-bold tracking-tight text-black">AgentRel</span>
-            <span className="text-xs text-gray-400 font-normal hidden sm:inline">by <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">OpenBuild</a></span>
           </Link>
 
           <div className="hidden items-center gap-5 md:flex">
@@ -157,10 +156,6 @@ export function Navbar() {
             Submit Skill
           </Link>
 
-          <a href="https://github.com/jueduizone/agentrel" target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors px-2">
-            <Github className="h-4 w-4" />
-          </a>
 
           {user ? (
             <div className="relative" ref={dropdownRef}>
