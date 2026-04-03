@@ -1,39 +1,48 @@
 'use client'
-import { Suspense } from 'react'
-import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
-import { Navbar } from '@/components/navbar'
-import { Footer } from '@/components/footer'
+import Link from 'next/link'
+import { Suspense } from 'react'
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams()
-  const email = searchParams.get('email') ?? ''
+  const email = searchParams.get('email') || ''
 
   return (
-    <div className="flex-1 flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-sm text-center">
-        <div className="text-5xl mb-6">📬</div>
-        <h1 className="text-2xl font-bold text-gray-900 mb-3">请查收验证邮件</h1>
-        <p className="text-gray-500 text-sm mb-2">
-          验证邮件已发送至
-        </p>
-        {email && (
-          <p className="font-medium text-gray-900 text-sm mb-4 bg-gray-50 rounded-lg px-4 py-2 inline-block">
-            {email}
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+      <div className="w-full max-w-md text-center">
+        <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+          {/* Email icon */}
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-50">
+            <svg className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+          </div>
+
+          <h1 className="text-xl font-bold text-gray-900 mb-2">请验证您的邮箱</h1>
+          <p className="text-gray-500 text-sm mb-4">
+            验证邮件已发送至
           </p>
-        )}
-        <p className="text-gray-400 text-sm mb-8">
-          点击邮件中的链接完成注册。如未收到，请检查垃圾邮件文件夹。
-        </p>
-        <div className="space-y-3">
-          <Link href="/auth/login"
-            className="block w-full py-2.5 bg-black text-white text-sm font-semibold rounded-xl hover:bg-black/80 transition-colors">
-            已验证，去登录
-          </Link>
-          <Link href="/auth/register"
-            className="block text-sm text-gray-400 hover:text-gray-600 transition-colors">
-            返回注册
-          </Link>
+          {email && (
+            <p className="font-medium text-gray-800 mb-4 break-all">{email}</p>
+          )}
+          <p className="text-gray-500 text-sm mb-6">
+            请点击邮件中的链接完成注册。如未收到，请检查垃圾邮件文件夹。
+          </p>
+
+          <div className="space-y-3">
+            <Link
+              href="/auth/login"
+              className="block w-full bg-black text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-black/80 transition-colors text-center"
+            >
+              前往登录
+            </Link>
+            <Link
+              href="/auth/register"
+              className="block w-full border border-gray-300 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors text-center"
+            >
+              重新注册
+            </Link>
+          </div>
         </div>
       </div>
     </div>
@@ -42,12 +51,8 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
-      <Navbar />
-      <Suspense fallback={null}>
-        <VerifyEmailContent />
-      </Suspense>
-      <Footer />
-    </div>
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>}>
+      <VerifyEmailContent />
+    </Suspense>
   )
 }
