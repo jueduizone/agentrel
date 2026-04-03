@@ -17,5 +17,5 @@ export async function GET(
     .select('*', { count: 'exact', head: true })
     .eq('grant_id', id)
 
-  return NextResponse.json({ ...data, application_count: count ?? 0 })
+  return NextResponse.json({ ...data, name: data.title ?? '', application_count: count ?? 0 })
 }

@@ -41,11 +41,11 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Fallback：全文关键词搜索
+  // Fallback：全文关键词搜索（id + name + description + tags）
   let query = serviceClient
     .from('skills')
-    .select('id, name, ecosystem, type, source, tags, health_score, install_count')
-    .or(`name.ilike.%${q}%,id.ilike.%${q}%`)
+    .select('id, name, ecosystem, type, source, tags, health_score, install_count, description')
+    .or(`name.ilike.%${q}%,id.ilike.%${q}%,description.ilike.%${q}%,content.ilike.%${q}%`)
     .order('install_count', { ascending: false })
     .limit(limit)
 
@@ -55,5 +55,6 @@ export async function GET(request: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
-  return NextResponse.json({ data: data ?? [], mode: 'keyword' })
+  // 返回结构与 /api/skills 保持一致
+  return NextResponse.json({ data: data ?? [], total: data?.length ?? 0, mode: 'keyword' })
 }
