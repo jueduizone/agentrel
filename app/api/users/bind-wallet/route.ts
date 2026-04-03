@@ -19,6 +19,15 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'wallet_address 格式不正确 (需要 0x... 42位)' }, { status: 400 })
   }
 
+  // Validate signature format (EIP-191: 0x + 130 hex chars = 65 bytes)
+  const { signature } = await request.json().catch(() => ({})) as { signature?: string }
+  if (wallet_address && signature !== undefined) {
+    if (!/^0x[0-9a-fA-F]{130}$/.test(signature)) {
+      return NextResponse.json({ error: 'signature 格式不正确 (需要 0x + 130 hex)' }, { status: 400 })
+    }
+    // TODO: Full EIP-191 signature verification with ethers.js if needed
+  }
+
   const db = serviceClient
   const updates: Record<string, string> = {}
   if (wallet_address) updates.wallet_address = wallet_address.toLowerCase()

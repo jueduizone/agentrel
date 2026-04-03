@@ -4,7 +4,9 @@ import { serviceClient } from '@/lib/supabase'
 type FeedbackBody = {
   skill_id: string
   agent?: string
-  issue: string
+  issue?: string
+  comment?: string  // alias for issue
+  feedback?: string  // alias for issue
   code_snippet?: string
   error_message?: string
   fix?: string
@@ -16,12 +18,13 @@ async function createGitHubIssue(body: FeedbackBody): Promise<number | null> {
 
   if (!token) return null
 
+  const issueText = (body as FeedbackBody & { comment?: string; feedback?: string }).issue || (body as FeedbackBody & { comment?: string; feedback?: string }).comment || (body as FeedbackBody & { comment?: string; feedback?: string }).feedback || ''
   const issueBody = [
     `**Skill:** \`${body.skill_id}\``,
     `**Reported by agent:** ${body.agent ?? 'anonymous'}`,
     '',
     '## Issue',
-    body.issue,
+    issueText,
     body.code_snippet
       ? `\n## Code Snippet\n\`\`\`\n${body.code_snippet}\n\`\`\``
       : '',
@@ -44,7 +47,7 @@ async function createGitHubIssue(body: FeedbackBody): Promise<number | null> {
         Accept: 'application/vnd.github+json',
       },
       body: JSON.stringify({
-        title: `[Feedback] ${body.skill_id}: ${body.issue.slice(0, 80)}`,
+        title: `[Feedback] ${body.skill_id}: ${issueText.slice(0, 80)}`,
         body: issueBody,
         labels: ['feedback', `skill:${body.skill_id}`],
       }),
@@ -67,7 +70,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
   }
 
-  const { skill_id, agent, issue, code_snippet, error_message, fix } = body as FeedbackBody
+  const raw = body as FeedbackBody & { comment?: string; feedback?: string }
+  const { skill_id, agent, code_snippet, error_message, fix } = raw
+  const issue = raw.issue || raw.comment || raw.feedback || ''
 
   if (!skill_id || !issue) {
     return NextResponse.json(

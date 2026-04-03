@@ -19,13 +19,16 @@ export async function POST(request: NextRequest) {
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_KEY!
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
   )
 
-  const { data, error } = await supabase.auth.admin.createUser({
+  // Use signUp which sends confirmation email (respects Supabase email settings)
+  const { data, error } = await supabase.auth.signUp({
     email: email.trim().toLowerCase(),
     password,
-    email_confirm: true,  // skip email confirmation for now
+    options: {
+      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://agentrel.vercel.app'}/auth/callback`,
+    },
   })
 
   if (error) {
@@ -35,9 +38,25 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
 
-  // Fetch auto-created public.users record (created by trigger)
+  if (!data.user) {
+    return NextResponse.json({ error: '注册失败' }, { status: 500 })
+  }
+
+  // If email confirmation is required, user.identities will be empty or user.email_confirmed_at null
+  const needsEmailConfirm = !data.session
+
+  if (needsEmailConfirm) {
+    return NextResponse.json({
+      user_id: data.user.id,
+      email: data.user.email,
+      message: '注册成功，请查收确认邮件',
+      email_confirmation_required: true,
+    }, { status: 201 })
+  }
+
+  // Auto-confirmed (email confirmations disabled) — return api_key
   const db = serviceClient
-  await new Promise(r => setTimeout(r, 100))  // brief wait for trigger
+  await new Promise(r => setTimeout(r, 200))
   const { data: profile } = await db
     .from('users')
     .select('id, email, api_key, role')
