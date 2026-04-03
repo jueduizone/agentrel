@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { getUserFromRequest } from '@/lib/agentAuth'
 import { serviceClient } from '@/lib/supabase'
 
 type FeedbackBody = {
@@ -63,6 +64,9 @@ async function createGitHubIssue(body: FeedbackBody): Promise<number | null> {
 }
 
 export async function POST(request: NextRequest) {
+  const user = await getUserFromRequest(request)
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
   let body: unknown
   try {
     body = await request.json()
