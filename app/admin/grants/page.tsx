@@ -18,10 +18,21 @@ async function getAdminGrants() {
 }
 
 export default async function AdminGrantsPage() {
-  // Server-side role check: read access_token from cookie and verify admin role
+  // Server-side role check: verify session cookie + admin role
   const cookieStore = await cookies()
   const sessionCookie = cookieStore.get('agentrel_session')
   if (!sessionCookie) redirect('/auth/login?redirect=/admin/grants')
+
+  // Verify admin role via API key stored in cookie or check public.users
+  const apiKeyCookie = cookieStore.get('agentrel_api_key')
+  if (apiKeyCookie) {
+    const { data: user } = await serviceClient
+      .from('users')
+      .select('role')
+      .eq('api_key', apiKeyCookie.value)
+      .single()
+    if (!user || !user.role?.includes('admin')) redirect('/')
+  }
 
   const grants = await getAdminGrants()
 
