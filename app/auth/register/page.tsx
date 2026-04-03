@@ -63,6 +63,10 @@ export default function RegisterPage() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || '注册失败'); return }
+      if (data.email_confirmation_required) {
+        router.push(`/auth/verify-email?email=${encodeURIComponent(email.trim())}`)
+        return
+      }
       localStorage.setItem('agentrel_api_key', data.api_key)
       router.push('/')
       router.refresh()
