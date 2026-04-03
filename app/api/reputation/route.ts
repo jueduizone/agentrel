@@ -59,12 +59,14 @@ export async function GET(request: NextRequest) {
     db.from('grant_applications').select('*', { count: 'exact', head: true }).eq('user_id', userRow.id).eq('status', 'approved'),
   ])
 
+  // Only expose wallet/did for own reputation (authenticated, no emailParam)
+  const isOwnRequest = !emailParam
   return NextResponse.json({
     email,
     grant_applications: totalApps ?? 0,
     approved_grants: approvedApps ?? 0,
     approval_rate: totalApps ? Math.round(((approvedApps ?? 0) / totalApps) * 100) : 0,
-    wallet_address: userRow.wallet_address ?? null,
-    human_did: userRow.human_did ?? null,
+    wallet_address: isOwnRequest ? (userRow.wallet_address ?? null) : undefined,
+    human_did: isOwnRequest ? (userRow.human_did ?? null) : undefined,
   })
 }

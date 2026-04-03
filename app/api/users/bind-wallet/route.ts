@@ -8,7 +8,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  const { wallet_address, human_did } = await request.json().catch(() => ({}))
+  const body = await request.json().catch(() => ({})) as {
+    wallet_address?: string
+    human_did?: string
+    signature?: string
+  }
+  const { wallet_address, human_did, signature } = body
 
   if (!wallet_address && !human_did) {
     return NextResponse.json({ error: '至少提供 wallet_address 或 human_did 之一' }, { status: 400 })
@@ -20,7 +25,6 @@ export async function POST(request: NextRequest) {
   }
 
   // Validate signature format (EIP-191: 0x + 130 hex chars = 65 bytes)
-  const { signature } = await request.json().catch(() => ({})) as { signature?: string }
   if (wallet_address && signature !== undefined) {
     if (!/^0x[0-9a-fA-F]{130}$/.test(signature)) {
       return NextResponse.json({ error: 'signature 格式不正确 (需要 0x + 130 hex)' }, { status: 400 })

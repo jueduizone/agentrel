@@ -1,4 +1,6 @@
 import { redirect } from 'next/navigation'
+import { cookies } from 'next/headers'
+import { createClient } from '@supabase/supabase-js'
 import Link from 'next/link'
 import { serviceClient } from '@/lib/supabase'
 import { Navbar } from '@/components/navbar'
@@ -16,6 +18,11 @@ async function getAdminGrants() {
 }
 
 export default async function AdminGrantsPage() {
+  // Server-side role check: read access_token from cookie and verify admin role
+  const cookieStore = await cookies()
+  const sessionCookie = cookieStore.get('agentrel_session')
+  if (!sessionCookie) redirect('/auth/login?redirect=/admin/grants')
+
   const grants = await getAdminGrants()
 
   return (
