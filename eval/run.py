@@ -60,8 +60,8 @@ parser.add_argument("--judge-model", type=str, default="claude",
                     help="Judge model: 'claude' (CLI) or 'gpt-4o-mini' (Zenmux)")
 parser.add_argument("--runs", type=int, default=1,
                     help="Number of eval runs per question (final score = median)")
-parser.add_argument("--answerer", choices=["claude-cli", "zenmux"], default="claude-cli",
-                    help="Answerer model: claude-cli (default) or zenmux API")
+parser.add_argument("--answerer", choices=["claude-cli", "zenmux"], default="zenmux",
+                    help="Answerer model: zenmux (default) or claude-cli")
 parser.add_argument("--faithfulness", action="store_true",
                     help="Add faithfulness scoring (is answer grounded in Skill?)")
 

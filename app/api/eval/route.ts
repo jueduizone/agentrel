@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
 
   // 异步触发 eval 脚本（不等待完成）
   const skillArg = skill_ids ? `--skill-ids "${skill_ids}"` : ''
-  const cmd = `cd /home/bre/agentrel && python3 eval/run.py ${skillArg} --judge-model ${judge_model} >> /tmp/agentrel-eval.log 2>&1 &`
+  const cmd = `cd /home/bre/agentrel && ZENMUX_API_KEY=${process.env.ZENMUX_API_KEY || 'sk-ss-v1-196d706809b60c6ccf68e30afa1a711ce1b834674822781bd972b3885ab640e0'} python3 eval/run.py ${skillArg} --judge-model ${judge_model} --answerer zenmux >> /tmp/agentrel-eval.log 2>&1 &`
   
   exec(cmd, (error) => {
     if (error) console.error('Eval trigger error:', error.message)
