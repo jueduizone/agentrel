@@ -198,8 +198,8 @@ export default function BenchmarkClient({ data }: Props) {
       })
       const d = await res.json()
       setTriggerMsg(d.message || (d.ok ? '已触发' : d.error))
-    } catch (e: any) {
-      setTriggerMsg('触发失败: ' + e.message)
+    } catch (e: unknown) {
+      setTriggerMsg('触发失败: ' + (e instanceof Error ? e.message : String(e)))
     }
     setTriggering(false)
   }
