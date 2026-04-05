@@ -1,46 +1,9 @@
 import Link from 'next/link'
-import { Github, ArrowRight, Zap, RefreshCw, FileText } from 'lucide-react'
+import { Zap, RefreshCw, FileText } from 'lucide-react'
 import { Navbar } from '@/components/navbar'
 import { serviceClient as supabase } from '@/lib/supabase'
-import { HomeCopyButton } from './HomeCopyButton'
+import { HeroSection } from './HeroSection'
 import { Footer } from '@/components/footer'
-
-const SCENARIOS = [
-  {
-    icon: '💻',
-    title: 'Build a dApp',
-    desc: 'Pick skills by chain for development',
-    href: '/skills?type=technical-doc',
-  },
-  {
-    icon: '🏆',
-    title: 'Join a Hackathon',
-    desc: 'Hackathon tracks + chain bundles',
-    href: '/skills?type=hackathon-guide',
-  },
-  {
-    icon: '💰',
-    title: 'Apply for a Grant',
-    desc: 'Grant guides + success stories',
-    href: '/build',
-  },
-  {
-    icon: '🔒',
-    title: 'Security Audit',
-    desc: 'Contract vulnerabilities + checklists',
-    href: '/skills?type=security',
-  },
-]
-
-const INSTALL_EXAMPLES = [
-  { label: 'Ethereum', cmd: 'curl "https://agentrel.vercel.app/api/skills?ecosystem=ethereum&limit=5"' },
-  { label: 'Solana', cmd: 'curl "https://agentrel.vercel.app/api/skills?ecosystem=solana&limit=5"' },
-  { label: 'Monad', cmd: 'curl "https://agentrel.vercel.app/api/skills/monad/network-config.md"' },
-  { label: 'Security', cmd: 'curl "https://agentrel.vercel.app/api/skills?type=security&limit=5"' },
-  { label: 'Zama', cmd: 'curl "https://agentrel.vercel.app/api/skills/zama/fhevm-dev-guide.md"' },
-]
-const INSTALL_CMD = INSTALL_EXAMPLES[0].cmd
-const INDEX_CMD = 'https://agentrel.vercel.app/api/v1/skill.md'
 
 async function getStats() {
   const [{ count: skillsCount }, { data: ecosystemRows }, { data: sourceRows }] = await Promise.all([
@@ -83,52 +46,7 @@ export default async function HomePage() {
     <div className="min-h-screen bg-white">
       <Navbar />
 
-      {/* Hero */}
-      <section className="mx-auto max-w-6xl px-4 py-20 text-center">
-        <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-border bg-muted/50 px-3 py-1 text-xs text-muted-foreground">
-          <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-          Open Source · Free for Developers
-        </div>
-        <h1 className="mt-6 text-5xl font-bold tracking-tight text-black md:text-6xl">
-          Web3 AI Skills
-        </h1>
-        <p className="mx-auto mt-4 max-w-xl text-lg text-muted-foreground">
-          Give your AI agent real Web3 context
-        </p>
-        {/* One URL for everything */}
-        <div className="mt-10 mx-auto max-w-xl">
-          <p className="text-xs text-center text-muted-foreground mb-3 font-medium uppercase tracking-wider">
-            One URL for everything
-          </p>
-          <div className="flex items-center justify-between rounded-lg border border-border bg-gray-900 px-4 py-3">
-            <code className="font-mono text-sm text-gray-100 truncate mr-3">{INDEX_CMD}</code>
-            <HomeCopyButton text={INDEX_CMD} />
-          </div>
-          <p className="text-xs text-center text-muted-foreground mt-2">
-            Add to your agent&apos;s system prompt to unlock 212+ Web3 Skills
-          </p>
-        </div>
-      </section>
-
-      {/* Scenario cards */}
-      <section className="mx-auto max-w-6xl px-4 pb-12">
-        <h2 className="mb-6 text-center text-xl font-semibold text-black">
-          What are you building?
-        </h2>
-        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-          {SCENARIOS.map((s) => (
-            <Link
-              key={s.href}
-              href={s.href}
-              className="flex flex-col rounded-xl border border-border p-4 transition-all hover:border-black hover:shadow-md active:scale-95 active:bg-gray-50 no-underline cursor-pointer group"
-            >
-              <span className="mb-2 text-2xl">{s.icon}</span>
-              <span className="mb-1 font-medium text-black text-sm">{s.title}</span>
-              <span className="text-xs text-muted-foreground">{s.desc}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
+      <HeroSection />
 
       {/* Stats */}
       <section className="border-y border-border bg-muted/30">

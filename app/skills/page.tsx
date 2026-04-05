@@ -2,6 +2,7 @@ import { serviceClient } from '@/lib/supabase'
 import type { Skill } from '@/lib/types'
 import { Navbar } from '@/components/navbar'
 import { SkillsClient } from './SkillsClient'
+import { SkillsPageHeader } from './SkillsPageHeader'
 
 export default async function SkillsPage({
   searchParams,

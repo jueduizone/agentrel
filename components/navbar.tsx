@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { ChevronDown, User, Shield, LogOut } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
+import { useLang } from '@/context/LanguageContext'
 
 const ECOSYSTEMS = [
   { name: 'Ethereum', slug: 'ethereum' },
@@ -90,6 +91,7 @@ export function Navbar() {
   const [user, setUser] = useState<{ email: string; role: string; api_key: string } | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
+  const { lang, setLang, t } = useLang()
 
   useEffect(() => {
     const key = localStorage.getItem('agentrel_api_key')
@@ -139,23 +141,31 @@ export function Navbar() {
           </Link>
 
           <div className="hidden items-center gap-5 md:flex">
-            <Dropdown label="Explore" items={exploreItems} isActive={exploreActive} />
-            <Dropdown label="Ecosystems" items={ECOSYSTEMS.map(e => ({ label: e.name, href: `/ecosystem/${e.slug}` }))} isActive={pathname.startsWith('/ecosystem')} />
+            <Dropdown label={t('nav.explore')} items={exploreItems} isActive={exploreActive} />
+            <Dropdown label={t('nav.ecosystems')} items={ECOSYSTEMS.map(e => ({ label: e.name, href: `/ecosystem/${e.slug}` }))} isActive={pathname.startsWith('/ecosystem')} />
             <Link href="/build"
               className={`text-sm transition-colors ${buildActive ? 'text-black font-semibold' : 'text-muted-foreground hover:text-foreground'}`}>
-              Build
+              {t('nav.build')}
             </Link>
-            <Dropdown label="Resources" items={resourceItems} isActive={false} />
+            <Dropdown label={t('nav.resources')} items={resourceItems} isActive={false} />
           </div>
         </div>
 
-        {/* Right: Submit Skill + auth */}
+        {/* Right: lang toggle + Submit Skill + auth */}
         <div className="flex items-center gap-2">
+          {/* Language toggle */}
+          <button
+            onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
+            className="flex items-center gap-1 text-sm text-gray-500 hover:text-black transition-colors px-2 py-1.5 rounded-lg hover:bg-gray-50"
+            title={lang === 'en' ? '切换到中文' : 'Switch to English'}
+          >
+            🌐 <span className="hidden sm:inline font-medium">{lang === 'en' ? 'EN' : 'ZH'}</span>
+          </button>
+
           <Link href="/submit"
             className="hidden sm:inline-flex items-center px-3 py-1.5 bg-black text-white text-sm font-medium rounded-lg hover:bg-black/80 transition-colors">
-            Submit Skill
+            {t('nav.submitSkill')}
           </Link>
-
 
           {user ? (
             <div className="relative" ref={dropdownRef}>
@@ -182,7 +192,7 @@ export function Navbar() {
                   </div>
                   <button onClick={signOut}
                     className="flex items-center gap-2 w-full px-3 py-2 text-sm text-red-500 hover:bg-red-50 transition-colors">
-                    <LogOut className="h-3.5 w-3.5" />Sign Out
+                    <LogOut className="h-3.5 w-3.5" />{t('nav.signOut')}
                   </button>
                 </div>
               )}
@@ -190,11 +200,11 @@ export function Navbar() {
           ) : (
             <div className="flex items-center gap-1.5">
               <Link href="/auth/login" className="text-sm text-gray-600 hover:text-black transition-colors px-2 py-1.5">
-                Sign In
+                {t('nav.signIn')}
               </Link>
               <Link href="/auth/register"
                 className="text-sm border border-gray-300 text-gray-700 rounded-lg px-3 py-1.5 hover:bg-gray-50 transition-colors">
-                Register
+                {t('nav.register')}
               </Link>
             </div>
           )}
