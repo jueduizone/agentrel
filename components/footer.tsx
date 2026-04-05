@@ -24,11 +24,11 @@ export function Footer() {
           <div>
             <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">{t('footer.product')}</h4>
             <ul className="space-y-2 text-sm text-gray-500">
-              <li><Link href="/skills" className="hover:text-gray-900 transition-colors">Skills</Link></li>
-              <li><Link href="/build" className="hover:text-gray-900 transition-colors">Build</Link></li>
-              <li><Link href="/benchmark" className="hover:text-gray-900 transition-colors">Benchmark</Link></li>
-              <li><Link href="/bundles" className="hover:text-gray-900 transition-colors">Bundles</Link></li>
-              <li><a href="https://ian-docs.vercel.app/docs/agentforum" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">Docs</a></li>
+              <li><Link href="/skills" className="hover:text-gray-900 transition-colors">{t('footer.skills')}</Link></li>
+              <li><Link href="/build" className="hover:text-gray-900 transition-colors">{t('footer.build')}</Link></li>
+              <li><Link href="/benchmark" className="hover:text-gray-900 transition-colors">{t('footer.benchmark')}</Link></li>
+              <li><Link href="/bundles" className="hover:text-gray-900 transition-colors">{t('footer.bundles')}</Link></li>
+              <li><a href="https://ian-docs.vercel.app/docs/agentforum" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">{t('footer.docs')}</a></li>
             </ul>
           </div>
 
@@ -38,7 +38,7 @@ export function Footer() {
             <ul className="space-y-2 text-sm text-gray-500">
               <li><a href="https://github.com/jueduizone/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">GitHub</a></li>
               <li><a href="https://discord.gg/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">Discord</a></li>
-              <li><Link href="/submit" className="hover:text-gray-900 transition-colors">Submit Skill</Link></li>
+              <li><Link href="/submit" className="hover:text-gray-900 transition-colors">{t('footer.submitSkill')}</Link></li>
               <li><a href="https://t.me/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">Telegram</a></li>
             </ul>
           </div>
