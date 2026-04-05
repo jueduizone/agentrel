@@ -13,7 +13,8 @@ export default async function SkillsPage({
   const { data: skills, error } = await serviceClient
     .from('skills')
     .select('*')
-    .order('created_at', { ascending: false })
+    .order('health_score', { ascending: false, nullsFirst: false })
+    .order('install_count', { ascending: false, nullsFirst: false })
 
   const initialSkills: Skill[] = skills ?? []
 
