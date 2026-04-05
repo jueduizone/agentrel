@@ -1,6 +1,11 @@
+'use client'
+
 import Link from 'next/link'
+import { useLang } from '@/context/LanguageContext'
 
 export function Footer() {
+  const { t } = useLang()
+
   return (
     <footer className="border-t border-border bg-white">
       <div className="mx-auto max-w-6xl px-6 py-12">
@@ -11,13 +16,13 @@ export function Footer() {
               <span className="text-base font-bold text-black">AgentRel</span>
               <span className="text-xs text-gray-400">by <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">OpenBuild</a></span>
             </div>
-            <p className="text-sm text-gray-500 leading-relaxed">Web3 AI Context Infrastructure</p>
-            <p className="text-xs text-gray-400 mt-3">Open source · MIT License</p>
+            <p className="text-sm text-gray-500 leading-relaxed">{t('footer.infra')}</p>
+            <p className="text-xs text-gray-400 mt-3">{t('footer.openSource')}</p>
           </div>
 
           {/* Product */}
           <div>
-            <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Product</h4>
+            <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">{t('footer.product')}</h4>
             <ul className="space-y-2 text-sm text-gray-500">
               <li><Link href="/skills" className="hover:text-gray-900 transition-colors">Skills</Link></li>
               <li><Link href="/build" className="hover:text-gray-900 transition-colors">Build</Link></li>
@@ -29,7 +34,7 @@ export function Footer() {
 
           {/* Community */}
           <div>
-            <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">Community</h4>
+            <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">{t('footer.community')}</h4>
             <ul className="space-y-2 text-sm text-gray-500">
               <li><a href="https://github.com/jueduizone/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">GitHub</a></li>
               <li><a href="https://discord.gg/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">Discord</a></li>
@@ -40,7 +45,7 @@ export function Footer() {
 
           {/* OpenBuild Ecosystem */}
           <div>
-            <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">OpenBuild Ecosystem</h4>
+            <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">{t('footer.ecosystem')}</h4>
             <ul className="space-y-2 text-sm text-gray-500">
               <li><a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">openbuild.xyz</a></li>
               <li><a href="https://github.com/openbuildxyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">GitHub</a></li>

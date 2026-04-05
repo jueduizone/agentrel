@@ -7,6 +7,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer,
 } from 'recharts'
+import { useLang } from '@/context/LanguageContext'
 
 type SourceStats = {
   total_questions: number
@@ -47,6 +48,8 @@ const SOURCE_TABS = [
 type TabKey = typeof SOURCE_TABS[number]['key']
 
 function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
+  const { t } = useLang()
+
   if (!stats) {
     return (
       <div className="text-center py-12 text-gray-400 text-sm">
@@ -67,10 +70,10 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
       {/* Summary cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Questions', value: stats.total_questions },
-          { label: 'Control Avg', value: stats.avg_control.toFixed(2) },
-          { label: 'With Skill Avg', value: stats.avg_test.toFixed(2) },
-          { label: 'Δ Delta', value: (stats.delta > 0 ? '+' : '') + stats.delta.toFixed(2), highlight: stats.delta > 0 },
+          { label: t('benchmark.questions'), value: stats.total_questions },
+          { label: t('benchmark.controlAvg'), value: stats.avg_control.toFixed(2) },
+          { label: t('benchmark.withSkillAvg'), value: stats.avg_test.toFixed(2) },
+          { label: t('benchmark.delta'), value: (stats.delta > 0 ? '+' : '') + stats.delta.toFixed(2), highlight: stats.delta > 0 },
         ].map(({ label, value, highlight }) => (
           <div key={label} className="bg-gray-50 rounded-xl p-4 text-center">
             <p className="text-xs text-gray-400 mb-1">{label}</p>
@@ -82,7 +85,7 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
       {/* Bar chart */}
       {chartData.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Score by Category</h3>
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">{t('benchmark.scoreByCategory')}</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={chartData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -100,16 +103,16 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
       {/* Top skills */}
       {stats.topSkills.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">Top Skills by Impact (Δ)</h3>
+          <h3 className="text-sm font-semibold text-gray-700 mb-3">{t('benchmark.topSkillsTitle')}</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-100 text-xs text-gray-400">
-                  <th className="text-left pb-2 font-medium">Skill</th>
-                  <th className="text-right pb-2 font-medium">Control</th>
-                  <th className="text-right pb-2 font-medium">With Skill</th>
-                  <th className="text-right pb-2 font-medium">Δ Impact</th>
-                  <th className="text-right pb-2 font-medium">Questions</th>
+                  <th className="text-left pb-2 font-medium">{t('benchmark.colSkill')}</th>
+                  <th className="text-right pb-2 font-medium">{t('benchmark.colControl')}</th>
+                  <th className="text-right pb-2 font-medium">{t('benchmark.colWithSkill')}</th>
+                  <th className="text-right pb-2 font-medium">{t('benchmark.colImpact')}</th>
+                  <th className="text-right pb-2 font-medium">{t('benchmark.colQuestions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -136,15 +139,20 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
 }
 
 
-const ECO_LABELS: Record<string, string> = {
-  all: 'All', ethereum: 'Ethereum', solana: 'Solana', monad: 'Monad',
-  zama: 'Zama', sui: 'Sui', ton: 'TON', base: 'Base', multichain: 'Multichain',
-  'cross-chain': '通用/技术', other: 'Other',
+function useEcoLabels(): Record<string, string> {
+  const { t } = useLang()
+  return {
+    all: 'All', ethereum: 'Ethereum', solana: 'Solana', monad: 'Monad',
+    zama: 'Zama', sui: 'Sui', ton: 'TON', base: 'Base', multichain: 'Multichain',
+    'cross-chain': t('benchmark.generalTech'), other: 'Other',
+  }
 }
 
 function EcosystemSection({ byEcosystem }: { byEcosystem: Record<string, SourceStats> }) {
   const ecoKeys = Object.keys(byEcosystem).filter(k => byEcosystem[k] !== null)
   const [activeEco, setActiveEco] = useState<string>('all')
+  const { t } = useLang()
+  const ECO_LABELS = useEcoLabels()
 
   // Combine all for "All" tab
   const allStats: SourceStats = (() => {
@@ -167,7 +175,7 @@ function EcosystemSection({ byEcosystem }: { byEcosystem: Record<string, SourceS
 
   return (
     <main className="max-w-5xl mx-auto px-6 py-8 border-t border-gray-100 mt-4">
-      <h2 className="text-lg font-bold text-gray-800 mb-4">🌐 By Ecosystem</h2>
+      <h2 className="text-lg font-bold text-gray-800 mb-4">🌐 {t('benchmark.byEcosystem')}</h2>
       <div className="flex gap-2 border-b border-gray-100 mb-8 overflow-x-auto pb-0 -mb-px">
         {['all', ...ecoKeys].map(eco => (
           <button key={eco} onClick={() => setActiveEco(eco)}
@@ -187,6 +195,7 @@ export default function BenchmarkClient({ data }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>('overall')
   const [triggering, setTriggering] = useState(false)
   const [triggerMsg, setTriggerMsg] = useState('')
+  const { t } = useLang()
 
   const triggerEval = async (skillIds?: string) => {
     setTriggering(true)
@@ -237,7 +246,7 @@ export default function BenchmarkClient({ data }: Props) {
             <Link href="/" className="text-gray-400 hover:text-gray-700 transition-colors">
               <ArrowLeft size={18} />
             </Link>
-            <span className="text-xl font-bold tracking-tight">AgentRel Benchmark</span>
+            <span className="text-xl font-bold tracking-tight">{t('benchmark.title')}</span>
           </div>
           <div className="flex items-center gap-3">
             <button
@@ -257,7 +266,7 @@ export default function BenchmarkClient({ data }: Props) {
             <a href="https://github.com/jueduizone/agentrel/tree/main/eval" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
               <ExternalLink size={14} />
-              <span className="hidden sm:inline">Methodology</span>
+              <span className="hidden sm:inline">{t('benchmark.methodology')}</span>
             </a>
           </div>
         </div>

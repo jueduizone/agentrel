@@ -23,15 +23,10 @@ export default async function SkillsPage({
     <div className="min-h-screen bg-white">
       <Navbar />
       <div className="mx-auto max-w-6xl px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-black">Skills</h1>
-          <p className="mt-2 text-muted-foreground">
-            Browse AI context skills for Web3 development
-          </p>
-          {error && (
-            <p className="mt-2 text-sm text-red-500">Failed to load skills: {error.message}</p>
-          )}
-        </div>
+        <SkillsPageHeader />
+        {error && (
+          <p className="mb-4 text-sm text-red-500">Failed to load skills: {error.message}</p>
+        )}
         <SkillsClient
           skills={initialSkills}
           initialEcosystem={ecosystem}

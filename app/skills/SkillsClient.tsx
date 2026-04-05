@@ -60,7 +60,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
   const [suggestions, setSuggestions] = useState<Skill[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
-  const { lang } = useLang()
+  const { lang, t } = useLang()
 
   // 搜索建议（防抖 300ms，调 /api/skills/search）
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -153,7 +153,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
         <div ref={searchRef} className="relative w-full max-w-sm">
           <input
             type="search"
-            placeholder="搜索 Skills..."
+            placeholder={t('skills.searchPlaceholder')}
             value={search}
             onChange={(e) => { setSearch(e.target.value); setShowSuggestions(true) }}
             onFocus={() => search.length >= 2 && setShowSuggestions(true)}
@@ -185,7 +185,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                 : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
             }`}
           >
-            All ({skills.length})
+            {t('skills.allSources')} ({skills.length})
           </button>
           {ecosystems.map((eco) => {
             const count = skills.filter((s) => s.ecosystem === eco).length
@@ -207,9 +207,9 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
 
         {/* Type filter row */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="self-center text-xs text-muted-foreground">Type:</span>
+          <span className="self-center text-xs text-muted-foreground">{t('skills.typeFilter')}</span>
           {([
-            { key: 'all', label: 'All Types' },
+            { key: 'all', label: t('skills.allTypes') },
             { key: 'grant-guide', label: '💰 Grant / Bounty' },
             { key: 'technical-doc', label: '📖 Dev Guide' },
             { key: 'security', label: '🔒 Security' },
@@ -231,10 +231,10 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
 
         {/* Source filter row */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="self-center text-xs text-muted-foreground">{lang === 'zh' ? '来源：' : 'Source:'}</span>
+          <span className="self-center text-xs text-muted-foreground">{t('skills.sourceFilter')}</span>
           {(['all', 'official', 'community', 'ai-generated'] as const).map((src) => {
             const label = src === 'all'
-              ? (lang === 'zh' ? '全部' : 'All')
+              ? t('skills.allSources')
               : src === 'official' ? '🏛️ Official'
               : src === 'community' ? '👥 Community'
               : '🤖 AI Generated'
@@ -256,12 +256,12 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
       </div>
 
       <p className="mb-4 text-sm text-muted-foreground">
-        {filtered.length} skill{filtered.length !== 1 ? 's' : ''} · click to copy URL
+        {filtered.length} skill{filtered.length !== 1 ? 's' : ''} · {t('skills.clickToCopy')}
       </p>
 
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-border p-12 text-center text-muted-foreground">
-          No skills found.
+          {t('skills.noSkillsFound')}
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -286,7 +286,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                     onClick={(e) => handleCopy(e, skill)}
                     className={`shrink-0 text-xs font-medium transition-colors px-1.5 py-0.5 rounded hover:bg-gray-100 ${copied ? 'text-green-600' : 'text-muted-foreground'}`}
                   >
-                    {copied ? '✓ Copied' : 'Copy URL'}
+                    {copied ? t('skills.copied') : t('skills.copyUrl')}
                   </button>
                 </div>
 
