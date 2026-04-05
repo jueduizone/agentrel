@@ -84,25 +84,28 @@ async function getBenchmarkData() {
 
   // Group by ecosystem
   const ECOSYSTEMS = ['ethereum', 'solana', 'monad', 'zama', 'sui', 'ton', 'base', 'multichain']
-  // skill.id 前缀 → ecosystem 的映射（补充 ecosystem 字段缺失/不准的情况）
+  // 技术/通用类 skill 前缀 → 归入 'cross-chain'（多链/通用）
+  const TECH_PREFIXES = ['standards', 'security', 'dev-tooling', 'cryptoskills', 'hackathon', 'grants', 'bounty', 'protocols', 'defi']
   const ID_PREFIX_ECO: Record<string, string> = {
     'zama/': 'zama', 'solana/': 'solana', 'monad/': 'monad', 'ethereum/': 'ethereum',
     'sui/': 'sui', 'ton/': 'ton', 'base/': 'base',
+    ...Object.fromEntries(TECH_PREFIXES.map(p => [`${p}/`, 'cross-chain'])),
   }
+  const ALL_ECOSYSTEMS = [...ECOSYSTEMS, 'cross-chain']
   const byEco: Record<string, typeof results> = {}
-  for (const eco of ECOSYSTEMS) byEco[eco] = []
+  for (const eco of ALL_ECOSYSTEMS) byEco[eco] = []
   byEco['other'] = []
 
   for (const r of results) {
     if (!r.skill_id) { byEco['other'].push(r); continue }
     let eco = skillMetaMap[r.skill_id]?.ecosystem?.toLowerCase() ?? ''
     // fallback: 从 skill_id 前缀推断
-    if (!ECOSYSTEMS.includes(eco)) {
+    if (!ALL_ECOSYSTEMS.includes(eco)) {
       for (const [prefix, mapped] of Object.entries(ID_PREFIX_ECO)) {
         if (r.skill_id.startsWith(prefix)) { eco = mapped; break }
       }
     }
-    if (ECOSYSTEMS.includes(eco)) byEco[eco].push(r)
+    if (ALL_ECOSYSTEMS.includes(eco)) byEco[eco].push(r)
     else byEco['other'].push(r)
   }
 

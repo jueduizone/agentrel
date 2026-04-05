@@ -153,7 +153,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
         <div ref={searchRef} className="relative w-full max-w-sm">
           <input
             type="search"
-            placeholder="Search skills..."
+            placeholder="搜索 Skills..."
             value={search}
             onChange={(e) => { setSearch(e.target.value); setShowSuggestions(true) }}
             onFocus={() => search.length >= 2 && setShowSuggestions(true)}

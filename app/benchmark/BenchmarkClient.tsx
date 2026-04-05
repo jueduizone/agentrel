@@ -138,7 +138,8 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
 
 const ECO_LABELS: Record<string, string> = {
   all: 'All', ethereum: 'Ethereum', solana: 'Solana', monad: 'Monad',
-  zama: 'Zama', sui: 'Sui', ton: 'TON', base: 'Base', multichain: 'Multichain', other: 'Other',
+  zama: 'Zama', sui: 'Sui', ton: 'TON', base: 'Base', multichain: 'Multichain',
+  'cross-chain': '通用/技术', other: 'Other',
 }
 
 function EcosystemSection({ byEcosystem }: { byEcosystem: Record<string, SourceStats> }) {
