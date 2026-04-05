@@ -84,13 +84,24 @@ async function getBenchmarkData() {
 
   // Group by ecosystem
   const ECOSYSTEMS = ['ethereum', 'solana', 'monad', 'zama', 'sui', 'ton', 'base', 'multichain']
+  // skill.id 前缀 → ecosystem 的映射（补充 ecosystem 字段缺失/不准的情况）
+  const ID_PREFIX_ECO: Record<string, string> = {
+    'zama/': 'zama', 'solana/': 'solana', 'monad/': 'monad', 'ethereum/': 'ethereum',
+    'sui/': 'sui', 'ton/': 'ton', 'base/': 'base',
+  }
   const byEco: Record<string, typeof results> = {}
   for (const eco of ECOSYSTEMS) byEco[eco] = []
   byEco['other'] = []
 
   for (const r of results) {
     if (!r.skill_id) { byEco['other'].push(r); continue }
-    const eco = skillMetaMap[r.skill_id]?.ecosystem?.toLowerCase() ?? ''
+    let eco = skillMetaMap[r.skill_id]?.ecosystem?.toLowerCase() ?? ''
+    // fallback: 从 skill_id 前缀推断
+    if (!ECOSYSTEMS.includes(eco)) {
+      for (const [prefix, mapped] of Object.entries(ID_PREFIX_ECO)) {
+        if (r.skill_id.startsWith(prefix)) { eco = mapped; break }
+      }
+    }
     if (ECOSYSTEMS.includes(eco)) byEco[eco].push(r)
     else byEco['other'].push(r)
   }

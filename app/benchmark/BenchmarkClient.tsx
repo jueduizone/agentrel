@@ -184,13 +184,40 @@ function EcosystemSection({ byEcosystem }: { byEcosystem: Record<string, SourceS
 
 export default function BenchmarkClient({ data }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>('overall')
+  const [triggering, setTriggering] = useState(false)
+  const [triggerMsg, setTriggerMsg] = useState('')
+
+  const triggerEval = async (skillIds?: string) => {
+    setTriggering(true)
+    setTriggerMsg('')
+    try {
+      const res = await fetch('/api/eval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: 'agentrel-eval-2026', skill_ids: skillIds, judge_model: 'gpt-4o-mini' }),
+      })
+      const d = await res.json()
+      setTriggerMsg(d.message || (d.ok ? '已触发' : d.error))
+    } catch (e: any) {
+      setTriggerMsg('触发失败: ' + e.message)
+    }
+    setTriggering(false)
+  }
 
   if (!data) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
         <div className="text-center">
           <p className="text-2xl font-bold text-gray-800 mb-2">Benchmark data not yet available</p>
-          <p className="text-gray-500 text-sm">Eval runs will appear here after the first automated run.</p>
+          <p className="text-gray-500 text-sm mb-4">Eval runs will appear here after the first automated run.</p>
+          <button
+            onClick={() => triggerEval()}
+            disabled={triggering}
+            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          >
+            {triggering ? '触发中...' : '🚀 触发全量 Eval'}
+          </button>
+          {triggerMsg && <p className="text-sm text-gray-500 mt-2">{triggerMsg}</p>}
         </div>
       </div>
     )
@@ -211,12 +238,33 @@ export default function BenchmarkClient({ data }: Props) {
             </Link>
             <span className="text-xl font-bold tracking-tight">AgentRel Benchmark</span>
           </div>
-          <a href="https://github.com/jueduizone/agentrel/tree/main/eval" target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
-            <ExternalLink size={14} />
-            <span className="hidden sm:inline">Methodology</span>
-          </a>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => triggerEval()}
+              disabled={triggering}
+              className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+            >
+              {triggering ? '触发中...' : '🚀 重新跑 Eval'}
+            </button>
+            <button
+              onClick={() => triggerEval('zama/fhevm-solidity,zama/relayer-sdk,zama/overview,zama/tfhe-rs')}
+              disabled={triggering}
+              className="px-3 py-1.5 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+            >
+              {triggering ? '...' : 'Zama 专项'}
+            </button>
+            <a href="https://github.com/jueduizone/agentrel/tree/main/eval" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
+              <ExternalLink size={14} />
+              <span className="hidden sm:inline">Methodology</span>
+            </a>
+          </div>
         </div>
+        {triggerMsg && (
+          <div className="max-w-5xl mx-auto mt-2 text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded">
+            {triggerMsg}
+          </div>
+        )}
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-8">
