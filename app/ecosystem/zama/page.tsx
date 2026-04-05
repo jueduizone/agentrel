@@ -1,17 +1,16 @@
 'use client'
 
+import { SourceBadge } from '@/components/SourceBadge'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 import { Navbar } from '@/components/navbar'
 import { CopySkillUrlButton } from './CopySkillUrlButton'
 import { useLang } from '@/context/LanguageContext'
-
 const browserClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
 )
-
 interface Skill {
   id: string
   name: string
@@ -25,12 +24,10 @@ interface Skill {
   content: string
   description_zh?: string | null
 }
-
 function extractSkillUrl(content: string): string | null {
   const match = content.match(/Skill URL:\s*(https?:\/\/\S+)/)
   return match ? match[1] : null
 }
-
 function getDescription(content: string): string {
   const stripped = content
     .replace(/^---[\s\S]*?---\s*/m, '')
@@ -41,18 +38,15 @@ function getDescription(content: string): string {
   const firstPara = stripped.split('\n\n').find((p) => p.trim().length > 20) ?? ''
   return firstPara.trim().slice(0, 120)
 }
-
 const SOURCE_BADGE: Record<string, { label: string; className: string }> = {
   official: { label: '🏛️ Official', className: 'bg-blue-100 text-blue-700 border border-blue-200' },
   verified: { label: '✅ Verified', className: 'bg-green-100 text-green-700 border border-green-200' },
   community: { label: '👥 Community', className: 'bg-gray-100 text-gray-600 border border-gray-200' },
   'ai-generated': { label: '🤖 AI Draft', className: 'bg-yellow-100 text-yellow-700 border border-yellow-200' },
 }
-
 export default function ZamaEcosystemPage() {
   const [skills, setSkills] = useState<Skill[]>([])
   const { lang } = useLang()
-
   useEffect(() => {
     browserClient
       .from('skills')
@@ -61,7 +55,6 @@ export default function ZamaEcosystemPage() {
       .order('created_at', { ascending: true })
       .then(({ data }) => setSkills(data ?? []))
   }, [])
-
   return (
     <div className="min-h-screen bg-white">
       <Navbar />
@@ -74,7 +67,6 @@ export default function ZamaEcosystemPage() {
           <span>/</span>
           <span className="text-foreground font-medium">Zama</span>
         </nav>
-
         {/* Header */}
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-3">
@@ -88,7 +80,6 @@ export default function ZamaEcosystemPage() {
           <p className="text-muted-foreground max-w-2xl">
             Zama is an open source cryptography company building cutting-edge FHE solutions for blockchain and AI. Their fhEVM library enables confidential smart contracts on Ethereum — computations on encrypted data without ever decrypting on-chain.
           </p>
-
           {/* Social links */}
           <div className="mt-4 flex items-center gap-4 text-sm">
             <a href="https://zama.org" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors">
@@ -104,7 +95,6 @@ export default function ZamaEcosystemPage() {
               @zama_fhe
             </a>
           </div>
-
           {/* Stats */}
           <div className="mt-6 flex flex-wrap gap-4">
             {[
@@ -122,7 +112,6 @@ export default function ZamaEcosystemPage() {
             ))}
           </div>
         </div>
-
         {/* Skills */}
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-black">
@@ -138,7 +127,6 @@ export default function ZamaEcosystemPage() {
             View all skills →
           </Link>
         </div>
-
         {skills.length === 0 ? (
           <div className="rounded-xl border border-border p-12 text-center text-muted-foreground">
             No skills found for Zama.
@@ -152,7 +140,6 @@ export default function ZamaEcosystemPage() {
                 : getDescription(skill.content)
               const displayName = lang === 'zh' && skill.name_zh ? skill.name_zh : skill.name
               const sourceBadge = SOURCE_BADGE[skill.source]
-
               return (
                 <div
                   key={skill.id}
@@ -163,29 +150,18 @@ export default function ZamaEcosystemPage() {
                     <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground truncate">
                       {skill.id}
                     </span>
-                    {sourceBadge ? (
-                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${sourceBadge.className}`}>
-                        {sourceBadge.label}
-                      </span>
-                    ) : (
-                      <span className="shrink-0 rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                        {skill.source}
-                      </span>
-                    )}
+                    <SourceBadge source={skill.source} />
                   </div>
-
                   {/* Name */}
                   <Link href={`/skills/${skill.id}`}>
                     <h3 className="mb-2 font-medium text-black hover:text-red-700 transition-colors">
                       {displayName}
                     </h3>
                   </Link>
-
                   {/* Description */}
                   <p className="mb-3 flex-1 text-xs text-muted-foreground line-clamp-3">
                     {description}
                   </p>
-
                   {/* Tags */}
                   {skill.tags?.length > 0 && (
                     <div className="mb-3 flex flex-wrap gap-1">
@@ -199,7 +175,6 @@ export default function ZamaEcosystemPage() {
                       ))}
                     </div>
                   )}
-
                   {/* Copy Skill URL */}
                   {skillUrl && <CopySkillUrlButton url={skillUrl} />}
                 </div>
@@ -207,7 +182,6 @@ export default function ZamaEcosystemPage() {
             })}
           </div>
         )}
-
         {/* Footer note */}
         <div className="mt-10 rounded-xl border border-border bg-muted/30 p-6">
           <h3 className="mb-1 font-medium text-black">Using these skills</h3>

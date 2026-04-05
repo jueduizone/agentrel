@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { ArrowLeft, CheckCircle, XCircle, Loader2 } from 'lucide-react'
+import { useLang } from '@/context/LanguageContext'
 import { Navbar } from '@/components/navbar'
 
 type SubmitResult = {
@@ -19,6 +20,7 @@ export default function SubmitSkillPage() {
   const [url, setUrl] = useState('')
   const [loading, setLoading] = useState(false)
   const [result, setResult] = useState<SubmitResult | null>(null)
+  const { t } = useLang()
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -49,12 +51,8 @@ export default function SubmitSkillPage() {
             <ArrowLeft size={16} />
             Back to AgentRel
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Submit a Skill</h1>
-          <p className="text-gray-500 text-base">
-            Share a Web3 AI Skill with the community. Paste the direct URL to a{' '}
-            <code className="bg-gray-100 px-1.5 py-0.5 rounded text-sm">.md</code>{' '}
-            file with YAML frontmatter.
-          </p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('submit.title')}</h1>
+          <p className="text-gray-500 text-base">{t('submit.desc')}</p>
         </div>
 
         {/* Format guide */}

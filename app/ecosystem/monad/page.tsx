@@ -1,3 +1,4 @@
+import { SourceBadge } from '@/components/SourceBadge'
 import Link from 'next/link'
 import { serviceClient } from '@/lib/supabase'
 import type { Skill } from '@/lib/types'
@@ -119,15 +120,7 @@ export default async function MonadEcosystemPage() {
                     <span className="rounded bg-muted px-1.5 py-0.5 font-mono text-xs text-muted-foreground truncate">
                       {skill.id}
                     </span>
-                    {sourceBadge ? (
-                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${sourceBadge.className}`}>
-                        {sourceBadge.label}
-                      </span>
-                    ) : (
-                      <span className="shrink-0 rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                        {skill.source}
-                      </span>
-                    )}
+                    <SourceBadge source={skill.source} />
                   </div>
 
                   {/* Name */}
