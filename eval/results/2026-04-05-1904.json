@@ -1,0 +1,265 @@
+{
+  "judge_model": "gpt-4o-mini",
+  "faithfulness_enabled": false,
+  "timestamp": "2026-04-05T19:04:27.079233",
+  "mode": "incremental",
+  "skill_ids_filter": "zama/fhevm-solidity,zama/relayer-sdk,zama/overview,zama/tfhe-rs",
+  "total_questions": 30,
+  "avg_control": 1.0,
+  "avg_test": 1.0,
+  "delta": 0.0,
+  "by_category": {
+    "Zama fhEVM 题": {
+      "control": 1.0,
+      "test": 1.0,
+      "n": 5
+    },
+    "Zama/fhEVM 补充题（共补 26 题，合计 30 题）": {
+      "control": 1.0,
+      "test": 1.0,
+      "n": 25
+    }
+  },
+  "results": [
+    {
+      "id": "Q33",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "Q34",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/relayer-sdk",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "Q34",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/relayer-sdk",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "Q35",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "Q36",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/overview",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q05",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q06",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q07",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q08",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q09",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q10",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q11",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q12",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/overview",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q13",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q14",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/overview",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q15",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q16",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q17",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q18",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q19",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q20",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/relayer-sdk",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q21",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q22",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q24",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/overview",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q25",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/overview",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q26",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/relayer-sdk",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q27",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q28",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q29",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q30",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-solidity",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    }
+  ]
+}
