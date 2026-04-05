@@ -38,14 +38,18 @@ const CAT_SHORT: Record<string, string> = {
   '跨链 / 工具选型题': '跨链工具',
 }
 
-const SOURCE_TABS = [
-  { key: 'overall', label: 'Overall', emoji: '📊', desc: 'All sources combined' },
-  { key: 'official', label: 'Official Skill', emoji: '🏛️', desc: 'AgentRel curated, quality baseline' },
-  { key: 'community', label: 'Community Skill', emoji: '👥', desc: 'Community submitted, variable quality' },
-  { key: 'ai-generated', label: 'AI Generated', emoji: '🤖', desc: 'Grant auto-generated, standard format' },
-] as const
+const SOURCE_TAB_KEYS = ['overall', 'official', 'community', 'ai-generated'] as const
+type TabKey = typeof SOURCE_TAB_KEYS[number]
 
-type TabKey = typeof SOURCE_TABS[number]['key']
+function useSourceTabs() {
+  const { t } = useLang()
+  return [
+    { key: 'overall' as TabKey, label: 'Overall', emoji: '📊', desc: 'All sources combined' },
+    { key: 'official' as TabKey, label: t('benchmark.tierOfficial'), emoji: '🏛️', desc: t('benchmark.tierOfficialDesc') },
+    { key: 'community' as TabKey, label: t('benchmark.tierCommunity'), emoji: '👥', desc: t('benchmark.tierCommunityDesc') },
+    { key: 'ai-generated' as TabKey, label: t('benchmark.tierAI'), emoji: '🤖', desc: t('benchmark.tierAIDesc') },
+  ]
+}
 
 function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
   const { t } = useLang()
@@ -53,7 +57,7 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
   if (!stats) {
     return (
       <div className="text-center py-12 text-gray-400 text-sm">
-        No eval data for {title} yet.
+        {t('benchmark.noData')} ({title})
       </div>
     )
   }
@@ -196,6 +200,7 @@ export default function BenchmarkClient({ data }: Props) {
   const [triggering, setTriggering] = useState(false)
   const [triggerMsg, setTriggerMsg] = useState('')
   const { t } = useLang()
+  const SOURCE_TABS = useSourceTabs()
 
   const triggerEval = async (skillIds?: string) => {
     setTriggering(true)
@@ -254,14 +259,14 @@ export default function BenchmarkClient({ data }: Props) {
               disabled={triggering}
               className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
-              {triggering ? '触发中...' : '🚀 重新跑 Eval'}
+              {triggering ? '...' : `🚀 ${t('benchmark.runEval')}`}
             </button>
             <button
               onClick={() => triggerEval('zama/fhevm-solidity,zama/relayer-sdk,zama/overview,zama/tfhe-rs')}
               disabled={triggering}
               className="px-3 py-1.5 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
             >
-              {triggering ? '...' : 'Zama 专项'}
+              {triggering ? '...' : t('benchmark.zamaSpecific')}
             </button>
             <a href="https://github.com/jueduizone/agentrel/tree/main/eval" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
