@@ -88,9 +88,10 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
     return () => document.removeEventListener('mousedown', onClick)
   }, [])
 
-  // Extract unique ecosystems from data, sorted by count
+  // Extract unique ecosystems from data, sorted by count (exclude 'agentrel' ecosystem)
   const ecosystems = useMemo(() => {
     const counts = skills.reduce<Record<string, number>>((acc, s) => {
+      if (s.ecosystem === 'agentrel') return acc  // hide agentrel from filter
       acc[s.ecosystem] = (acc[s.ecosystem] ?? 0) + 1
       return acc
     }, {})
@@ -170,7 +171,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                   className="flex items-center justify-between px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
                 >
                   <span className="truncate text-foreground">{s.name}</span>
-                  <span className="ml-2 flex-shrink-0 text-xs text-muted-foreground capitalize">{s.ecosystem}</span>
+                  <span className="ml-2 flex-shrink-0 text-xs text-muted-foreground capitalize">{s.ecosystem.charAt(0).toUpperCase() + s.ecosystem.slice(1)}</span>
                 </Link>
               ))}
             </div>
@@ -199,7 +200,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                     : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
                 }`}
               >
-                {eco} ({count})
+                {eco.charAt(0).toUpperCase() + eco.slice(1)} ({count})
               </button>
             )
           })}
@@ -302,16 +303,11 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                     : skill.content?.replace(/^---[\s\S]*?---\s*/m, '').replace(/#{1,6}\s/g, '').replace(/\n/g, ' ').slice(0, 120)}
                 </p>
 
-                {/* Bottom row: ecosystem + health signals */}
+                {/* Bottom row: ecosystem + signals */}
                 <div className="flex flex-wrap items-center gap-2 mt-auto pt-2">
                   <span className={`rounded-full border px-2 py-0.5 text-xs font-medium capitalize ${ecosystemClass(skill.ecosystem)}`}>
-                    {skill.ecosystem}
+                    {skill.ecosystem.charAt(0).toUpperCase() + skill.ecosystem.slice(1)}
                   </span>
-                  {skill.health_score != null && (
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${healthClass(skill.health_score)}`}>
-                      {lang === 'zh' ? `健康度 ${skill.health_score}%` : `Health ${skill.health_score}%`}
-                    </span>
-                  )}
                   {(skill.install_count ?? 0) > 0 && (
                     <span className="text-xs text-muted-foreground">
                       ⚡ {formatInstallCount(skill.install_count!)}{lang === 'zh' ? ' 次' : ''}
