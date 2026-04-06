@@ -61,14 +61,14 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
               {grant.sponsor && <span className="text-gray-300">·</span>}
               {deadline && (
                 <span className={isPast ? 'text-red-500' : ''}>
-                  截止 {deadline.toLocaleDateString('zh-CN')}
+                  Deadline: {deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                 </span>
               )}
               {deadline && <span className="text-gray-300">·</span>}
-              <span>{grant.application_count} 人已申请</span>
+              <span>{grant.application_count} applied</span>
               <span className="text-gray-300">·</span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${isOpen && !isPast ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                  {isOpen && !isPast ? '开放中' : '已截止'}
+                  {isOpen && !isPast ? 'Open' : 'Closed'}
               </span>
             </div>
           </div>
@@ -84,9 +84,9 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
           <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
             {deadline && (
               <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-xs text-gray-400 mb-0.5">截止日期</p>
+                <p className="text-xs text-gray-400 mb-0.5">Deadline</p>
                 <p className={`font-medium ${isPast ? 'text-red-500' : 'text-gray-800'}`}>
-                  {deadline.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}
+                  {deadline.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
               </div>
             )}

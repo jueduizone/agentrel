@@ -44,7 +44,7 @@ export default async function GrantsPage({
       <main className="max-w-4xl mx-auto px-6 py-10">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900">Grants & Bounties</h1>
-          <p className="text-sm text-gray-500 mt-1">Web3 开发者资助计划，Apply with AI Agent</p>
+          <p className="text-sm text-gray-500 mt-1">Web3 developer grants &amp; bounties — apply with your AI agent</p>
         </div>
 
         <Suspense fallback={null}>
@@ -58,7 +58,7 @@ export default async function GrantsPage({
 
         {displayed.length === 0 && (
           <p className="text-center text-gray-400 py-16">
-            {filter === 'open' ? '暂无开放中的 Grant' : filter === 'closed' ? '暂无已截止的 Grant' : '暂无 Grant 项目'}
+            {filter === 'open' ? 'No open grants at the moment.' : filter === 'closed' ? 'No closed grants.' : 'No grants found.'}
           </p>
         )}
 
@@ -102,7 +102,7 @@ function GrantCard({ grant }: { grant: {
           <div className="text-right shrink-0">
             {grant.reward && <p className="font-bold text-indigo-700 text-sm">{grant.reward}</p>}
             <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-0.5 ${isOpen && !isPast ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-              {isOpen && !isPast ? '开放中' : '已截止'}
+              {isOpen && !isPast ? 'Open' : 'Closed'}
             </span>
           </div>
         </div>
@@ -117,11 +117,11 @@ function GrantCard({ grant }: { grant: {
           {grant.sponsor && deadlineDate && <span className="text-gray-300">·</span>}
           {deadlineDate && (
             <span className={isPast ? 'text-red-400' : ''}>
-              截止 {deadlineDate.toLocaleDateString('zh-CN')}
+              Deadline: {deadlineDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
             </span>
           )}
           {(grant.sponsor || deadlineDate) && <span className="text-gray-300">·</span>}
-          <span>{grant.application_count} 人已申请</span>
+          <span>{grant.application_count} applied</span>
         </div>
 
         {/* Description */}

@@ -27,6 +27,16 @@ function Dropdown({
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleMouseEnter = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current)
+    setOpen(true)
+  }
+
+  const handleMouseLeave = () => {
+    closeTimer.current = setTimeout(() => setOpen(false), 150)
+  }
 
   useEffect(() => {
     function handler(e: MouseEvent) {
@@ -38,8 +48,8 @@ function Dropdown({
 
   return (
     <div ref={ref} className="relative"
-      onMouseEnter={() => setOpen(true)}
-      onMouseLeave={() => setOpen(false)}>
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}>
       <button
         onClick={() => setOpen(v => !v)}
         className={`flex items-center gap-1 text-sm transition-colors ${
@@ -51,7 +61,8 @@ function Dropdown({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 min-w-[180px] bg-white border border-border rounded-xl shadow-lg py-1.5 z-50">
+        <div className="absolute top-full left-0 pt-1 min-w-[180px] z-50">
+        <div className="bg-white border border-border rounded-xl shadow-lg py-1.5">
           {items.map(item => (
             <div key={item.href}>
               {item.external ? (
@@ -80,6 +91,7 @@ function Dropdown({
               )}
             </div>
           ))}
+        </div>
         </div>
       )}
     </div>
