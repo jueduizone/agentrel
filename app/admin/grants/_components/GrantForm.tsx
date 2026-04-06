@@ -2,25 +2,28 @@
 import { useState } from 'react'
 
 export type GrantFormData = {
-  title: string; description: string; sponsor: string; reward: string
+  title: string; description: string; sponsor: string; sponsor_id: string; reward: string
   deadline: string; status: string; source_type: string; external_url: string
   application_schema: string; max_applications: string
   track: string; tech_requirements: string
 }
 
+export type SponsorOption = { id: string; name: string; logo_url?: string | null }
+
 const EMPTY: GrantFormData = {
-  title: '', description: '', sponsor: '', reward: '', deadline: '',
+  title: '', description: '', sponsor: '', sponsor_id: '', reward: '', deadline: '',
   status: 'open', source_type: 'native', external_url: '',
   application_schema: '', max_applications: '', track: '', tech_requirements: '',
 }
 
 export function GrantForm({
-  initial, onSubmit, saving, submitLabel,
+  initial, onSubmit, saving, submitLabel, sponsors = [],
 }: {
   initial?: Partial<GrantFormData>
   onSubmit: (data: GrantFormData) => void
   saving: boolean
   submitLabel: string
+  sponsors?: SponsorOption[]
 }) {
   const [form, setForm] = useState<GrantFormData>({ ...EMPTY, ...initial })
   const set = (key: keyof GrantFormData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
@@ -57,7 +60,18 @@ export function GrantForm({
       <Field label="标题" required><input required name="title" value={form.title} onChange={set('title')} placeholder="Grant 标题" className={inputCls} /></Field>
       <Field label="描述"><textarea value={form.description} onChange={set('description')} rows={4} placeholder="Grant 详细描述..." className={inputCls} /></Field>
       <div className="grid grid-cols-2 gap-4">
-        <Field label="Sponsor"><input value={form.sponsor} onChange={set('sponsor')} placeholder="如 OpenBuild" className={inputCls} /></Field>
+        <Field label="Sponsor">
+          {sponsors.length > 0 ? (
+            <select value={form.sponsor_id} onChange={set('sponsor_id')} className={inputCls}>
+              <option value="">— 选择项目方 —</option>
+              {sponsors.map(s => (
+                <option key={s.id} value={s.id}>{s.name}</option>
+              ))}
+            </select>
+          ) : (
+            <input value={form.sponsor} onChange={set('sponsor')} placeholder="如 OpenBuild" className={inputCls} />
+          )}
+        </Field>
         <Field label="奖励金额"><input value={form.reward} onChange={set('reward')} placeholder="如 $500 USDC" className={inputCls} /></Field>
       </div>
       <div className="grid grid-cols-2 gap-4">

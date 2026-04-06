@@ -2,13 +2,14 @@
 import { useEffect, useState } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { GrantForm, type GrantFormData } from '../../_components/GrantForm'
+import { GrantForm, type GrantFormData, type SponsorOption } from '../../_components/GrantForm'
 
 export default function EditGrantPage() {
   const { id } = useParams<{ id: string }>()
   const router = useRouter()
   const [initial, setInitial] = useState<Partial<GrantFormData> | null>(null)
   const [saving, setSaving] = useState(false)
+  const [sponsors, setSponsors] = useState<SponsorOption[]>([])
   const [error, setError] = useState('')
 
   const apiKey = typeof window !== 'undefined' ? localStorage.getItem('agentrel_api_key') : null
@@ -65,7 +66,7 @@ export default function EditGrantPage() {
         <Link href={`/admin/grants/${id}`} className="text-sm text-gray-400 hover:text-gray-600 mb-6 inline-block">← 返回详情</Link>
         <h1 className="text-xl font-bold text-gray-900 mb-6">编辑 Grant</h1>
         {error && <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2 mb-4">{error}</p>}
-        <GrantForm initial={initial} onSubmit={handleSubmit} saving={saving} submitLabel="保存修改" />
+        <GrantForm initial={initial} onSubmit={handleSubmit} saving={saving} submitLabel="保存修改" sponsors={sponsors} />
       </main>
     </div>
   )

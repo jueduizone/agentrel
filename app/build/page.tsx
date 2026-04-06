@@ -8,7 +8,7 @@ async function getGrants() {
   const db = serviceClient
   const { data: grants } = await db
     .from('grants')
-    .select('id, title, description, sponsor, reward, deadline, status, source_type, track, created_at')
+    .select('id, title, description, sponsor, sponsor_id, reward, deadline, status, source_type, track, created_at, sponsors(name, logo_url, website_url)')
     .order('created_at', { ascending: false })
 
   const ids = (grants ?? []).map(g => g.id)
@@ -71,7 +71,8 @@ export default async function GrantsPage({
 }
 
 function GrantCard({ grant }: { grant: {
-  id: string; title: string; description: string | null; sponsor: string | null
+  id: string; title: string; description: string | null; sponsor: string | null; sponsor_id: string | null
+  sponsors: { name: string; logo_url: string | null; website_url: string | null } | null
   reward: string | null; deadline: string | null; status: string
   source_type?: string; track?: string | null; application_count: number
 }}) {
@@ -109,12 +110,17 @@ function GrantCard({ grant }: { grant: {
 
         {/* Info bar: Sponsor · deadline · count */}
         <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
-          {grant.sponsor ? (
+          {(grant.sponsors || grant.sponsor) ? (
             <span className="flex items-center gap-1 font-medium text-gray-700">
-              <span>🏢</span>{grant.sponsor}
+              {grant.sponsors?.logo_url
+                ? <img src={grant.sponsors.logo_url} alt={grant.sponsors.name} className="w-4 h-4 rounded-full object-cover" />
+                : <span>🏢</span>}
+              {grant.sponsors?.website_url
+                ? <a href={grant.sponsors.website_url} target="_blank" rel="noopener noreferrer" className="hover:underline">{grant.sponsors.name ?? grant.sponsor}</a>
+                : <span>{grant.sponsors?.name ?? grant.sponsor}</span>}
             </span>
           ) : null}
-          {grant.sponsor && deadlineDate && <span className="text-gray-300">·</span>}
+          {(grant.sponsors || grant.sponsor) && deadlineDate && <span className="text-gray-300">·</span>}
           {deadlineDate && (
             <span className={isPast ? 'text-red-400' : ''}>
               Deadline: {deadlineDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

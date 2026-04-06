@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
 
   const body = await request.json()
   const {
-    title, description, sponsor, reward, deadline, status = 'open',
+    title, description, sponsor, sponsor_id, reward, deadline, status = 'open',
     source_type = 'native', external_url, template_md, application_schema,
     max_applications, track, tech_requirements, required_skills, min_reputation_score,
   } = body
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
   const { data, error } = await serviceClient
     .from('grants')
     .insert({
-      title, description, sponsor, reward,
+      title, description, sponsor, sponsor_id: sponsor_id || null, reward,
       deadline: deadline || null,
       status,
       source_type,

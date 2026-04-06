@@ -6,7 +6,7 @@ import { ApplyCTA } from './ApplyCTA'
 
 async function getGrant(id: string) {
   const db = serviceClient
-  const { data: grant } = await db.from('grants').select('*').eq('id', id).single()
+  const { data: grant } = await db.from('grants').select('*, sponsors(name, logo_url, website_url)').eq('id', id).single()
   if (!grant) return null
   const { count } = await db
     .from('grant_applications')
@@ -53,12 +53,17 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
             </div>
             {/* Info bar: Sponsor · deadline · count · status */}
             <div className="flex items-center gap-1.5 text-sm text-gray-500 flex-wrap">
-              {grant.sponsor && (
+              {(grant.sponsors || grant.sponsor) && (
                 <span className="flex items-center gap-1.5 font-semibold text-gray-800">
-                  <span className="text-base">🏢</span>{grant.sponsor}
+                  {(grant as any).sponsors?.logo_url
+                    ? <img src={(grant as any).sponsors.logo_url} alt={(grant as any).sponsors.name} className="w-5 h-5 rounded-full object-cover" />
+                    : <span className="text-base">🏢</span>}
+                  {(grant as any).sponsors?.website_url
+                    ? <a href={(grant as any).sponsors.website_url} target="_blank" rel="noopener noreferrer" className="hover:underline">{(grant as any).sponsors?.name ?? grant.sponsor}</a>
+                    : <span>{(grant as any).sponsors?.name ?? grant.sponsor}</span>}
                 </span>
               )}
-              {grant.sponsor && <span className="text-gray-300">·</span>}
+              {(grant.sponsors || grant.sponsor) && <span className="text-gray-300">·</span>}
               {deadline && (
                 <span className={isPast ? 'text-red-500' : ''}>
                   Deadline: {deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

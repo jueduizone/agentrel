@@ -2,11 +2,12 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { GrantForm, type GrantFormData } from '../_components/GrantForm'
+import { GrantForm, type GrantFormData, type SponsorOption } from '../_components/GrantForm'
 
 export default function NewGrantPage() {
   const router = useRouter()
   const [saving, setSaving] = useState(false)
+  const [sponsors, setSponsors] = useState<SponsorOption[]>([])
   const [error, setError] = useState('')
   const [authChecked, setAuthChecked] = useState(false)
 
@@ -64,7 +65,7 @@ export default function NewGrantPage() {
         <Link href="/admin/grants" className="text-sm text-gray-400 hover:text-gray-600 mb-6 inline-block">← 所有 Grants</Link>
         <h1 className="text-xl font-bold text-gray-900 mb-6">新建 Grant</h1>
         {error && <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2 mb-4">{error}</p>}
-        <GrantForm onSubmit={handleSubmit} saving={saving} submitLabel="创建 Grant" />
+        <GrantForm onSubmit={handleSubmit} saving={saving} submitLabel="创建 Grant" sponsors={sponsors} />
       </main>
     </div>
   )
