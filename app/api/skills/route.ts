@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   let query = serviceClient
     .from('skills')
     .select('*', { count: 'exact' })
-    .gte('health_score', 0)  // health_score=-1 表示已下架
+    .gte('health_score', 0)  // health_score<0: -1=disabled, -2=eval-flagged
     .order('created_at', { ascending: false })
     .range(offset, offset + limit - 1)
 

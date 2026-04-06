@@ -441,8 +441,64 @@ def main():
         if any(q["id"] in qids for q in questions):
             print(f"  {sid}: {qids}")
 
-    # ③ sessions_send summary to prd-bot
+    # ③ Auto-flag skills with negative delta in DB
+    _auto_flag_skills(output)
+
+    # ④ sessions_send summary to prd-bot
     _send_eval_summary(output, out_path)
+
+
+def _auto_flag_skills(output: dict):
+    """After a full eval run, flag skills with Δ<0 in Supabase (health_score=-2).
+    health_score=-1: manually disabled
+    health_score=-2: auto-flagged by eval (Δ<0), pending review
+    """
+    try:
+        results = output.get("results", [])
+        # Aggregate delta per skill_id
+        from collections import defaultdict
+        skill_deltas: dict[str, list[int]] = defaultdict(list)
+        for r in results:
+            sid = r.get("skill_id", "")
+            if sid:
+                skill_deltas[sid].append(r.get("test_score", 0) - r.get("control_score", 0))
+
+        flagged = []
+        for sid, deltas in skill_deltas.items():
+            total = sum(deltas)
+            if total < 0:
+                flagged.append(sid)
+
+        if not flagged:
+            print("\n✅ No skills to auto-flag (all Δ >= 0)")
+            return
+
+        print(f"\n🚩 Auto-flagging {len(flagged)} skills with negative delta: {flagged}")
+
+        for sid in flagged:
+            r = requests.patch(
+                f"{SUPABASE_URL}/rest/v1/skills?id=eq.{sid}",
+                json={"health_score": -2},
+                headers={
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": f"Bearer {SUPABASE_KEY}",
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal",
+                },
+                timeout=10,
+            )
+            status = "✅" if r.status_code in (200, 204) else f"❌ {r.status_code}"
+            print(f"  {status} {sid} → health_score=-2 (flagged)")
+
+        # Notify Telegram
+        flag_msg = f"🚩 Eval 自动标记 {len(flagged)} 个降分 skill（health_score=-2）:\n" + "\n".join(f"  • {s}" for s in flagged) + "\n\n7天内无人处理将自动下架（health_score=-1）。"
+        subprocess.run(
+            ["/home/bre/.npm-global/bin/openclaw", "message", "send",
+             "--channel", "telegram", "--target", "-1003776690352", "--message", flag_msg],
+            capture_output=True, text=True, timeout=15,
+        )
+    except Exception as e:
+        print(f"\n⚠️  auto_flag_skills error: {e}")
 
 
 def _send_eval_summary(output: dict, out_path: str):
