@@ -441,11 +441,72 @@ def main():
         if any(q["id"] in qids for q in questions):
             print(f"  {sid}: {qids}")
 
-    # ③ Auto-flag skills with negative delta in DB
+    # ③ Save results to Supabase eval_results table (for Benchmark page)
+    _save_results_to_db(output)
+
+    # ④ Auto-flag skills with negative delta in DB
     _auto_flag_skills(output)
 
     # ④ sessions_send summary to prd-bot
     _send_eval_summary(output, out_path)
+
+
+def _save_results_to_db(output: dict):
+    """Save eval results to Supabase eval_results table for the Benchmark page."""
+    try:
+        results = output.get("results", [])
+        if not results:
+            return
+
+        # Use ISO timestamp as run_at
+        run_at = output.get("timestamp", datetime.utcnow().isoformat() + "+00:00")
+        if not run_at.endswith("+00:00") and not run_at.endswith("Z"):
+            run_at = run_at + "+00:00"
+        judge_model = output.get("judge_model", "gpt-4o-mini")
+        inject_strategy = output.get("mode", "full")
+
+        rows = []
+        for r in results:
+            qid = r.get("id", "")
+            cat = qid.split("-Q")[0] if "-Q" in qid else "General"
+            rows.append({
+                "run_at": run_at,
+                "judge_model": judge_model,
+                "inject_strategy": inject_strategy,
+                "category": cat,
+                "question_id": qid,
+                "question_label": r.get("question", "")[:200],
+                "control_score": r.get("control_score", 0),
+                "test_score": r.get("test_score", 0),
+                "faithfulness": None,
+                "skill_id": r.get("skill_id", ""),
+                "skill_found": bool(r.get("skill_id")),
+            })
+
+        # Insert in batches of 50
+        batch_size = 50
+        inserted = 0
+        for i in range(0, len(rows), batch_size):
+            batch = rows[i:i + batch_size]
+            resp = requests.post(
+                f"{SUPABASE_URL}/rest/v1/eval_results",
+                json=batch,
+                headers={
+                    "apikey": SUPABASE_KEY,
+                    "Authorization": f"Bearer {SUPABASE_KEY}",
+                    "Content-Type": "application/json",
+                    "Prefer": "return=minimal",
+                },
+                timeout=15,
+            )
+            if resp.status_code in (200, 201):
+                inserted += len(batch)
+            else:
+                print(f"  ⚠️  DB insert batch {i // batch_size} failed: {resp.status_code}")
+
+        print(f"\n📊 Saved {inserted}/{len(rows)} eval results to DB (run_at={run_at})")
+    except Exception as e:
+        print(f"\n⚠️  _save_results_to_db error: {e}")
 
 
 def _auto_flag_skills(output: dict):
