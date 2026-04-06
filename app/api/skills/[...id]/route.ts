@@ -94,6 +94,12 @@ export async function GET(
     return NextResponse.json({ error: 'Skill not found' }, { status: 404 })
   }
 
+  // health_score = -1 表示已下架，对外不可访问
+  if ((data.health_score as number) < 0) {
+    if (format === 'raw') return new NextResponse('# Skill not found\n', { status: 404 })
+    return NextResponse.json({ error: 'Skill not found' }, { status: 404 })
+  }
+
   const access = (data.access as string) ?? 'free'
   const previewLines = (data.preview_lines as number) ?? 30
   const partnerId = (data.partner_id as string | null) ?? null

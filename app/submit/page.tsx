@@ -91,10 +91,10 @@ version: 1.0
             {loading ? (
               <>
                 <Loader2 size={16} className="animate-spin" />
-                Submitting...
+                {t('submit.submitting')}
               </>
             ) : (
-              'Submit Skill'
+              t('submit.button')
             )}
           </button>
         </form>

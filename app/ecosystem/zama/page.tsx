@@ -51,7 +51,7 @@ export default function ZamaEcosystemPage() {
     browserClient
       .from('skills')
       .select('*')
-      .eq('ecosystem', 'Zama')
+      .eq('ecosystem', 'zama')
       .order('created_at', { ascending: true })
       .then(({ data }) => setSkills(data ?? []))
   }, [])

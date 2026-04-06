@@ -84,6 +84,8 @@
   "benchmark.triggerSuccess": "Eval 已触发",
   "submit.title": "提交 Skill",
   "submit.desc": "向社区贡献 Web3 AI Skill。粘贴带有 YAML frontmatter 的 .md 文件直链。",
+  "submit.button": "提交 Skill",
+  "submit.submitting": "提交中...",
   "bundles.title": "Bundles",
   "bundles.desc": "针对常见 Web3 开发场景的预打包 Skill 集合",
   "bundles.empty": "暂无 Bundle。",

@@ -84,6 +84,8 @@
   "benchmark.triggerSuccess": "Eval triggered",
   "submit.title": "Submit a Skill",
   "submit.desc": "Share a Web3 AI Skill with the community. Paste the direct URL to a .md file with YAML frontmatter.",
+  "submit.button": "Submit Skill",
+  "submit.submitting": "Submitting...",
   "bundles.title": "Bundles",
   "bundles.desc": "Pre-packaged skill collections for common Web3 development scenarios",
   "bundles.empty": "No bundles available yet.",
