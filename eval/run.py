@@ -155,7 +155,7 @@ def extract_relevant_section(skill_content: str, question: str, max_chars: int =
 # ── Answerer: claude CLI or Anthropic API ────────────────────────────────────
 def ask_claude_cli(prompt):
     result = subprocess.run([CLAUDE_CLI, "--print", "--dangerously-skip-permissions"], input=prompt,
-                            capture_output=True, text=True, timeout=180)
+                            capture_output=True, text=True, timeout=600)
     return result.stdout.strip()
 
 

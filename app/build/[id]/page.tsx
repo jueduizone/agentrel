@@ -4,7 +4,10 @@ import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
 import { ApplyCTA } from './ApplyCTA'
 
-async function getGrant(id: string) {
+type SponsorInfo = { name: string; logo_url: string | null; website_url: string | null }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function getGrant(id: string): Promise<any | null> {
   const db = serviceClient
   const { data: grant } = await db.from('grants').select('*, sponsors(name, logo_url, website_url)').eq('id', id).single()
   if (!grant) return null
@@ -12,7 +15,10 @@ async function getGrant(id: string) {
     .from('grant_applications')
     .select('*', { count: 'exact', head: true })
     .eq('grant_id', id)
-  return { ...grant, application_count: count ?? 0 }
+  const rawSponsors = (grant as Record<string, unknown>).sponsors
+  const sponsors: SponsorInfo | null = Array.isArray(rawSponsors) ? (rawSponsors[0] ?? null) : (rawSponsors as SponsorInfo | null)
+  const { sponsors: _s, ...grantRest } = grant as Record<string, unknown> & typeof grant
+  return { ...grantRest, sponsors, application_count: count ?? 0 }
 }
 
 export default async function GrantDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -55,12 +61,12 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
             <div className="flex items-center gap-1.5 text-sm text-gray-500 flex-wrap">
               {(grant.sponsors || grant.sponsor) && (
                 <span className="flex items-center gap-1.5 font-semibold text-gray-800">
-                  {(grant as any).sponsors?.logo_url
-                    ? <img src={(grant as any).sponsors.logo_url} alt={(grant as any).sponsors.name} className="w-5 h-5 rounded-full object-cover" />
+                  {grant.sponsors?.logo_url
+                    ? <img src={grant.sponsors.logo_url} alt={grant.sponsors.name} className="w-5 h-5 rounded-full object-cover" />
                     : <span className="text-base">🏢</span>}
-                  {(grant as any).sponsors?.website_url
-                    ? <a href={(grant as any).sponsors.website_url} target="_blank" rel="noopener noreferrer" className="hover:underline">{(grant as any).sponsors?.name ?? grant.sponsor}</a>
-                    : <span>{(grant as any).sponsors?.name ?? grant.sponsor}</span>}
+                  {grant.sponsors?.website_url
+                    ? <a href={grant.sponsors.website_url} target="_blank" rel="noopener noreferrer" className="hover:underline">{grant.sponsors?.name ?? grant.sponsor}</a>
+                    : <span>{grant.sponsors?.name ?? grant.sponsor}</span>}
                 </span>
               )}
               {(grant.sponsors || grant.sponsor) && <span className="text-gray-300">·</span>}
@@ -136,7 +142,7 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
           </div>
 
           {/* Apply CTA — two buttons */}
-          <ApplyCTA grantId={id} isOpen={isOpen && !isPast} grant={grant} />
+          <ApplyCTA grantId={id} isOpen={isOpen && !isPast} />
         </div>
       </main>
     </div>

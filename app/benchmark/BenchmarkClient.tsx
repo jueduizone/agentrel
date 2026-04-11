@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -63,7 +63,7 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
   }
 
   const chartData = stats.catStats.map(s => ({
-    name: CAT_SHORT[s.category] ?? s.category.slice(0, 8),
+    name: CAT_SHORT[s.category] ?? s.category,
     Control: s.avg_control,
     'With Skill': s.avg_test,
     delta: s.delta,
@@ -199,8 +199,14 @@ export default function BenchmarkClient({ data }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>('overall')
   const [triggering, setTriggering] = useState(false)
   const [triggerMsg, setTriggerMsg] = useState('')
+  const [isAdmin, setIsAdmin] = useState(false)
   const { t } = useLang()
   const SOURCE_TABS = useSourceTabs()
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    setIsAdmin(!!localStorage.getItem('agentrel_api_key')) // eslint-disable-line
+  }, [])
 
   const triggerEval = async (skillIds?: string) => {
     setTriggering(true)
@@ -225,13 +231,15 @@ export default function BenchmarkClient({ data }: Props) {
         <div className="text-center">
           <p className="text-2xl font-bold text-gray-800 mb-2">Benchmark data not yet available</p>
           <p className="text-gray-500 text-sm mb-4">Eval runs will appear here after the first automated run.</p>
-          <button
-            onClick={() => triggerEval()}
-            disabled={triggering}
-            className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
-          >
-            {triggering ? '触发中...' : '🚀 触发全量 Eval'}
-          </button>
+          {isAdmin && (
+            <button
+              onClick={() => triggerEval()}
+              disabled={triggering}
+              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            >
+              {triggering ? '触发中...' : '🚀 触发全量 Eval'}
+            </button>
+          )}
           {triggerMsg && <p className="text-sm text-gray-500 mt-2">{triggerMsg}</p>}
         </div>
       </div>
@@ -254,20 +262,24 @@ export default function BenchmarkClient({ data }: Props) {
             <span className="text-xl font-bold tracking-tight">{t('benchmark.title')}</span>
           </div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => triggerEval()}
-              disabled={triggering}
-              className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-            >
-              {triggering ? '...' : `🚀 ${t('benchmark.runEval')}`}
-            </button>
-            <button
-              onClick={() => triggerEval('zama/fhevm-solidity,zama/relayer-sdk,zama/overview,zama/tfhe-rs')}
-              disabled={triggering}
-              className="px-3 py-1.5 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
-            >
-              {triggering ? '...' : t('benchmark.zamaSpecific')}
-            </button>
+            {isAdmin && (
+              <>
+                <button
+                  onClick={() => triggerEval()}
+                  disabled={triggering}
+                  className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                >
+                  {triggering ? '...' : `🚀 ${t('benchmark.runEval')}`}
+                </button>
+                <button
+                  onClick={() => triggerEval('zama/fhevm-solidity,zama/relayer-sdk,zama/overview,zama/tfhe-rs')}
+                  disabled={triggering}
+                  className="px-3 py-1.5 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+                >
+                  {triggering ? '...' : t('benchmark.zamaSpecific')}
+                </button>
+              </>
+            )}
             <a href="https://github.com/jueduizone/agentrel/tree/main/eval" target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
               <ExternalLink size={14} />

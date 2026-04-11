@@ -4,6 +4,7 @@ import { serviceClient } from '@/lib/supabase'
 import type { Bundle } from '@/lib/types'
 import { Navbar } from '@/components/navbar'
 import { PageHeader } from '@/components/PageHeader'
+import { CopyButton } from './CopyButton'
 
 export default async function BundlesPage() {
   const { data: bundles, error } = await serviceClient
@@ -66,10 +67,11 @@ export default async function BundlesPage() {
                   </div>
 
                   {/* Install command */}
-                  <div className="rounded-lg border border-border bg-muted/30 p-3">
-                    <code className="block font-mono text-xs text-foreground break-all">
+                  <div className="flex items-center rounded-lg border border-border bg-muted/30 p-3">
+                    <code className="block flex-1 font-mono text-xs text-foreground break-all">
                       {installCmd}
                     </code>
+                    <CopyButton text={installCmd} />
                   </div>
                 </div>
               )

@@ -12,7 +12,11 @@ export default function EditGrantPage() {
   const [sponsors, setSponsors] = useState<SponsorOption[]>([])
   const [error, setError] = useState('')
 
-  const apiKey = typeof window !== 'undefined' ? localStorage.getItem('agentrel_api_key') : null
+  const [apiKey, setApiKey] = useState<string | null>(null)
+
+  useEffect(() => {
+    setApiKey(localStorage.getItem('agentrel_api_key'))
+  }, [])
 
   useEffect(() => {
     fetch(`/api/v1/grants/${id}`)

@@ -1,0 +1,2236 @@
+{
+  "judge_model": "claude",
+  "faithfulness_enabled": false,
+  "timestamp": "2026-04-10T22:28:40.281263",
+  "mode": "full",
+  "skill_ids_filter": null,
+  "total_questions": 267,
+  "avg_control": 4.01,
+  "avg_test": 4.29,
+  "delta": 0.27,
+  "by_category": {
+    "SDK 版本变更题（AI 幻觉重灾区）": {
+      "control": 4.86,
+      "test": 5.0,
+      "n": 7
+    },
+    "链配置参数题（有固定正确答案）": {
+      "control": 4.25,
+      "test": 4.12,
+      "n": 8
+    },
+    "安全漏洞题（高风险幻觉区）": {
+      "control": 4.67,
+      "test": 5.0,
+      "n": 6
+    },
+    "DeFi 核心机制题": {
+      "control": 4.6,
+      "test": 4.4,
+      "n": 5
+    },
+    "Solana 生态题": {
+      "control": 4.0,
+      "test": 4.33,
+      "n": 6
+    },
+    "Zama fhEVM 题": {
+      "control": 3.8,
+      "test": 3.2,
+      "n": 5
+    },
+    "Grant / Hackathon 策略题": {
+      "control": 4.0,
+      "test": 4.5,
+      "n": 4
+    },
+    "跨链 / 工具选型题": {
+      "control": 4.2,
+      "test": 4.5,
+      "n": 10
+    },
+    "Sui — 30 题": {
+      "control": 4.53,
+      "test": 4.5,
+      "n": 30
+    },
+    "TON — 30 题": {
+      "control": 4.4,
+      "test": 4.5,
+      "n": 30
+    },
+    "Base — 30 题": {
+      "control": 3.83,
+      "test": 4.23,
+      "n": 30
+    },
+    "Ethereum/EVM 补充题（共补 25 题，合计 30 题）": {
+      "control": 4.44,
+      "test": 4.2,
+      "n": 25
+    },
+    "Solana 补充题（共补 24 题，合计 30 题）": {
+      "control": 4.67,
+      "test": 4.58,
+      "n": 24
+    },
+    "Monad 补充题（共补 26 题，合计 30 题）": {
+      "control": 2.92,
+      "test": 4.31,
+      "n": 26
+    },
+    "Zama/fhEVM 补充题（共补 26 题，合计 30 题）": {
+      "control": 3.42,
+      "test": 3.85,
+      "n": 26
+    },
+    "Zama SDK & TFHE-rs 补充题（Q31-Q50）": {
+      "control": 3.07,
+      "test": 3.67,
+      "n": 15
+    },
+    "Zama Overview & Ecosystem 题（Q46-Q55）": {
+      "control": 3.5,
+      "test": 4.1,
+      "n": 10
+    }
+  },
+  "results": [
+    {
+      "id": "Q01",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q02",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q03",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q04",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q05",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "standards/sdk-migration-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q06",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q07",
+      "category": "SDK 版本变更题（AI 幻觉重灾区）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q08",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q09",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "Q10",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "Q11",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "Q12",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "standards/erc-account-standards",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 2
+    },
+    {
+      "id": "Q13",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "standards/erc-account-standards",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q14",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "standards/erc-signature-standards",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q15",
+      "category": "链配置参数题（有固定正确答案）",
+      "skill_id": "standards/erc-token-standards",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q16",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/reentrancy-access-control",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q17",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/initialization-proxy",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q18",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/oracle-price-manipulation",
+      "skill_found": false,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "Q19",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/arithmetic-precision",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q20",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/reentrancy-access-control",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q21",
+      "category": "安全漏洞题（高风险幻觉区）",
+      "skill_id": "security/arithmetic-precision",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q22",
+      "category": "DeFi 核心机制题",
+      "skill_id": "ethereum/defi-math",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q23",
+      "category": "DeFi 核心机制题",
+      "skill_id": "ethereum/l2-comparison",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "Q24",
+      "category": "DeFi 核心机制题",
+      "skill_id": "ethereum/mev-protection",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q25",
+      "category": "DeFi 核心机制题",
+      "skill_id": "ethereum/gas-optimization",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q26",
+      "category": "DeFi 核心机制题",
+      "skill_id": "cryptoskills/chainlink",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q27",
+      "category": "Solana 生态题",
+      "skill_id": "solana/program-model",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q28",
+      "category": "Solana 生态题",
+      "skill_id": "solana/program-model",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q29",
+      "category": "Solana 生态题",
+      "skill_id": "solana/anchor-idl",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q30",
+      "category": "Solana 生态题",
+      "skill_id": "hackathon/solana-patterns",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "Q31",
+      "category": "Solana 生态题",
+      "skill_id": "solana/metaplex-nft",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "Q32",
+      "category": "Solana 生态题",
+      "skill_id": "solana/anchor-idl",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "Q33",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 3
+    },
+    {
+      "id": "Q34",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 2
+    },
+    {
+      "id": "Q34",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "Q35",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "Q36",
+      "category": "Zama fhEVM 题",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "Q37",
+      "category": "Grant / Hackathon 策略题",
+      "skill_id": "bounty/ethglobal-hackathon-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q38",
+      "category": "Grant / Hackathon 策略题",
+      "skill_id": "bounty/code4rena-audit-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "Q39",
+      "category": "Grant / Hackathon 策略题",
+      "skill_id": "grants/gitcoin-overview",
+      "skill_found": false,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "Q40",
+      "category": "Grant / Hackathon 策略题",
+      "skill_id": "bounty/immunefi-guide",
+      "skill_found": false,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q41",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "dev-tooling/ethers-vs-viem",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q42",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "dev-tooling/hardhat-vs-foundry",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 3
+    },
+    {
+      "id": "Q43",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "cryptoskills/layerzero",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "Q44",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "cryptoskills/wormhole",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "Q45",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "cryptoskills/safe",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q46",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "cryptoskills/the-graph",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q47",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "standards/erc-account-standards",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "Q48",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "near/dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "Q49",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "cosmos/ibc-integration",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "Q50",
+      "category": "跨链 / 工具选型题",
+      "skill_id": "polkadot/substrate-dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "SUI-Q01",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q02",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q03",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q04",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q05",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 3
+    },
+    {
+      "id": "SUI-Q06",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "SUI-Q07",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "SUI-Q08",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q09",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q10",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q11",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q12",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q13",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q14",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 2
+    },
+    {
+      "id": "SUI-Q15",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/docs-move-objects",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q16",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/docs-move-programmability",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q17",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "SUI-Q18",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q19",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q20",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q21",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "SUI-Q22",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q23",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q24",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "SUI-Q25",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q26",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "SUI-Q27",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 3
+    },
+    {
+      "id": "SUI-Q28",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SUI-Q29",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "SUI-Q30",
+      "category": "Sui — 30 题",
+      "skill_id": "sui/move-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q01",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q02",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q03",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q04",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q05",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q06",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "TON-Q07",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q08",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 3
+    },
+    {
+      "id": "TON-Q09",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q10",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q11",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q12",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "TON-Q13",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "TON-Q14",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "TON-Q15",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "TON-Q16",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "TON-Q17",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q18",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q19",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q20",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q21",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q22",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q23",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "TON-Q24",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q25",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q26",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 3
+    },
+    {
+      "id": "TON-Q27",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "TON-Q28",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "TON-Q29",
+      "category": "TON — 30 题",
+      "skill_id": "ton/development-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 3
+    },
+    {
+      "id": "TON-Q30",
+      "category": "TON — 30 题",
+      "skill_id": "ton/tact-dev",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "BASE-Q01",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "BASE-Q02",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q03",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q04",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "BASE-Q05",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q06",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q07",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q08",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q09",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q10",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q11",
+      "category": "Base — 30 题",
+      "skill_id": "base/ai-agents-overview",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 2
+    },
+    {
+      "id": "BASE-Q12",
+      "category": "Base — 30 题",
+      "skill_id": "base/ai-agents-payments-and-transactions",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q13",
+      "category": "Base — 30 题",
+      "skill_id": "base/ai-agents-wallets",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 2
+    },
+    {
+      "id": "BASE-Q14",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "BASE-Q15",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q16",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "BASE-Q17",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "BASE-Q18",
+      "category": "Base — 30 题",
+      "skill_id": "base/ai-agents-identity-verification-auth",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q19",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q20",
+      "category": "Base — 30 题",
+      "skill_id": "base/ai-agents-identity-verification-auth",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 3
+    },
+    {
+      "id": "BASE-Q21",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q22",
+      "category": "Base — 30 题",
+      "skill_id": "base/ai-agents-payments-and-transactions",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "BASE-Q23",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "BASE-Q24",
+      "category": "Base — 30 题",
+      "skill_id": "base/ai-agents-overview",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "BASE-Q25",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q26",
+      "category": "Base — 30 题",
+      "skill_id": "base/ai-agents-wallets",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "BASE-Q27",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "BASE-Q28",
+      "category": "Base — 30 题",
+      "skill_id": "base/ai-agents-payments-and-transactions",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "BASE-Q29",
+      "category": "Base — 30 题",
+      "skill_id": "base/l2-dev",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "BASE-Q30",
+      "category": "Base — 30 题",
+      "skill_id": "base/ai-agents-overview",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 3
+    },
+    {
+      "id": "ETH-Q06",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "dev-tooling/ethers-vs-viem",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q07",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "dev-tooling/ethers-vs-viem",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q08",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "dev-tooling/ethers-vs-viem",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q09",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "dev-tooling/hardhat-vs-foundry",
+      "skill_found": false,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "ETH-Q10",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "dev-tooling/hardhat-vs-foundry",
+      "skill_found": false,
+      "control_score": 4,
+      "test_score": 3
+    },
+    {
+      "id": "ETH-Q11",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "standards/erc-token-standards",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 2
+    },
+    {
+      "id": "ETH-Q12",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "ethereum/ethskills-standards",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "ETH-Q13",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "ethereum/ethskills-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "ETH-Q14",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "security/initialization-proxy",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q15",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "ethereum/ethskills-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q16",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "ethereum/ethskills-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "ETH-Q17",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "ethereum/ethskills-gas",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 3
+    },
+    {
+      "id": "ETH-Q18",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "defi/amm-lending-patterns",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q19",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "ethereum/ethskills-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "ETH-Q20",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "dev-tooling/hardhat-vs-foundry",
+      "skill_found": false,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q21",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "standards/erc-nft-standards",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q22",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "ethereum/ethskills-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q23",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "protocols/aave-v3-integration",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 3
+    },
+    {
+      "id": "ETH-Q24",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "cryptoskills/ens",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q25",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "ethereum/ethskills-protocol",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q26",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "ethereum/ethskills-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q27",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "standards/erc-signature-standards",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ETH-Q28",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "protocols/chainlink-integration",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 2
+    },
+    {
+      "id": "ETH-Q29",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "security/initialization-proxy",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 3
+    },
+    {
+      "id": "ETH-Q30",
+      "category": "Ethereum/EVM 补充题（共补 25 题，合计 30 题）",
+      "skill_id": "ethereum/ethskills-concepts",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "SOL-Q07",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q08",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q09",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q10",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q11",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q12",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "SOL-Q13",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 2,
+      "test_score": 4
+    },
+    {
+      "id": "SOL-Q14",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q15",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q16",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "SOL-Q17",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q18",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "SOL-Q19",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q20",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q21",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "SOL-Q22",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q23",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q24",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q25",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q26",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "SOL-Q27",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "SOL-Q28",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 3
+    },
+    {
+      "id": "SOL-Q29",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "SOL-Q30",
+      "category": "Solana 补充题（共补 24 题，合计 30 题）",
+      "skill_id": "solana/web3js-v2",
+      "skill_found": false,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "MON-Q05",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q06",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q07",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q08",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q09",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q10",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q11",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/overview",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q12",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q13",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/overview",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q14",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q15",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q16",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q17",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 2
+    },
+    {
+      "id": "MON-Q18",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "MON-Q19",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q20",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/overview",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "MON-Q21",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/overview",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 3
+    },
+    {
+      "id": "MON-Q22",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/overview",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q23",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 3
+    },
+    {
+      "id": "MON-Q24",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/dev-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q25",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/scaffold",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 2
+    },
+    {
+      "id": "MON-Q26",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q27",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/network-config",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q28",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/overview",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q29",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/overview",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "MON-Q30",
+      "category": "Monad 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "monad/wallet",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q05",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q06",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q07",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q08",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q09",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 3
+    },
+    {
+      "id": "ZAMA-Q10",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 2
+    },
+    {
+      "id": "ZAMA-Q11",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q12",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q13",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q14",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q15",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "ZAMA-Q16",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q17",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "ZAMA-Q18",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q19",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q20",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q21",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q22",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q23",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/grant-bounty",
+      "skill_found": false,
+      "control_score": 1,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q24",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q25",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q26",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 2
+    },
+    {
+      "id": "ZAMA-Q27",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q28",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q29",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q30",
+      "category": "Zama/fhEVM 补充题（共补 26 题，合计 30 题）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q31",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 1,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q32",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q33",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q34",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q35",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q36",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q37",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/gateway-decrypt",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q38",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 2
+    },
+    {
+      "id": "ZAMA-Q39",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q40",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 4
+    },
+    {
+      "id": "ZAMA-Q41",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q42",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q43",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q44",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q45",
+      "category": "Zama SDK & TFHE-rs 补充题（Q31-Q50）",
+      "skill_id": "zama/fhevm-dev-guide",
+      "skill_found": true,
+      "control_score": 0,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q46",
+      "category": "Zama Overview & Ecosystem 题（Q46-Q55）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q47",
+      "category": "Zama Overview & Ecosystem 题（Q46-Q55）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q48",
+      "category": "Zama Overview & Ecosystem 题（Q46-Q55）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 4,
+      "test_score": 2
+    },
+    {
+      "id": "ZAMA-Q49",
+      "category": "Zama Overview & Ecosystem 题（Q46-Q55）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q50",
+      "category": "Zama Overview & Ecosystem 题（Q46-Q55）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q51",
+      "category": "Zama Overview & Ecosystem 题（Q46-Q55）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 1
+    },
+    {
+      "id": "ZAMA-Q52",
+      "category": "Zama Overview & Ecosystem 题（Q46-Q55）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q53",
+      "category": "Zama Overview & Ecosystem 题（Q46-Q55）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 5,
+      "test_score": 5
+    },
+    {
+      "id": "ZAMA-Q54",
+      "category": "Zama Overview & Ecosystem 题（Q46-Q55）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 3,
+      "test_score": 3
+    },
+    {
+      "id": "ZAMA-Q55",
+      "category": "Zama Overview & Ecosystem 题（Q46-Q55）",
+      "skill_id": "zama/fhe-concepts",
+      "skill_found": true,
+      "control_score": 2,
+      "test_score": 5
+    }
+  ]
+}
