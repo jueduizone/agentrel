@@ -6,18 +6,18 @@ import { Navbar } from '@/components/navbar'
 import { CopySkillUrlButton } from './CopySkillUrlButton'
 
 function extractSkillUrl(content: string): string | null {
-  const match = content.match(/Skill URL:\\s*(https?:\/\/\\S+)/)
+  const match = content.match(/Skill URL:\s*(https?:\/\/\S+)/)
   return match ? match[1] : null
 }
 
 function getDescription(content: string): string {
   const stripped = content
-    .replace(/^---[\\s\\S]*?---\\s*/m, '')
-    .replace(/^#{1,6}\\s.*/gm, '')
-    .replace(/\\*\\*[^*]+\\*\\*/g, '')
-    .replace(/\\[([^\\]]+)\\]\\([^)]+\\)/g, '$1')
+    .replace(/^---[\s\S]*?---\s*/m, '')
+    .replace(/^#{1,6}\s.*/gm, '')
+    .replace(/\*\*[^*]+\*\*/g, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
     .trim()
-  const firstPara = stripped.split('\\n\\n').find((p) => p.trim().length > 20) ?? ''
+  const firstPara = stripped.split('\n\n').find((p) => p.trim().length > 20) ?? ''
   return firstPara.trim().slice(0, 120)
 }
 
