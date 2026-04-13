@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-AgentRel Eval v7 — pass/partial/fail verdicts, dual-model, uplift report
+AgentRel Eval v8 — pass/partial/fail verdicts, dual-model A/B (each model: bare vs with-skill)
 Answerer: local claude CLI or Zenmux Anthropic API
 Judge: pluggable (claude CLI, GPT-4o-mini via Zenmux, etc.)
 """
@@ -321,9 +321,9 @@ def aggregate_skill_stats(results: list[dict], model_key: str = "") -> dict:
     model_key: "" for primary model, "2" for secondary model suffix in result fields.
     Returns {skill_id: {pass_rate, partial_rate, fail_rate, ctrl_pass_rate, uplift, n, ...}}
     """
-    ctrl_score_key = "control_score"
+    ctrl_score_key = f"control_score{model_key}"
     test_score_key = f"test_score{model_key}"
-    verdict_ctrl_key = "verdict_ctrl"
+    verdict_ctrl_key = f"verdict_ctrl{model_key}"
     verdict_test_key = f"verdict_test{model_key}"
 
     by_skill = defaultdict(list)
@@ -334,12 +334,12 @@ def aggregate_skill_stats(results: list[dict], model_key: str = "") -> dict:
     stats = {}
     for sid, rows in by_skill.items():
         n = len(rows)
-        ctrl_scores = [r[ctrl_score_key] for r in rows]
-        test_scores = [r.get(test_score_key, r["test_score"]) for r in rows]
+        ctrl_scores = [r.get(ctrl_score_key, r.get("control_score", 0)) for r in rows]
+        test_scores = [r.get(test_score_key, r.get("test_score", 0)) for r in rows]
 
         # verdict counts
-        ctrl_verdicts = [r.get(verdict_ctrl_key, score_to_verdict(r[ctrl_score_key])) for r in rows]
-        test_verdicts = [r.get(verdict_test_key, score_to_verdict(r.get(test_score_key, r["test_score"]))) for r in rows]
+        ctrl_verdicts = [r.get(verdict_ctrl_key, score_to_verdict(r.get(ctrl_score_key, r.get("control_score", 0)))) for r in rows]
+        test_verdicts = [r.get(verdict_test_key, score_to_verdict(r.get(test_score_key, r.get("test_score", 0)))) for r in rows]
 
         ctrl_pass = ctrl_verdicts.count("pass") / n
         ctrl_partial = ctrl_verdicts.count("partial") / n
@@ -430,15 +430,15 @@ def generate_result_md(output: dict, out_path: str) -> str:
                 f"| {s['ctrl_avg']:.2f} | {s['test_avg']:.2f} | {s['uplift']:+.2f} {emoji} |"
             )
 
-    # Dual-model comparison table (if answerer2 used)
+    # Dual-model comparison table (if answerer2 used) — Mantle-style: both models show bare vs with-skill
     if answerer2 and results and any("test_score2" in r for r in results):
         skill_stats2 = output.get("skill_stats2", {})
         lines += [
             "",
-            f"## Dual-Model: {answerer} vs {answerer2}",
+            f"## Dual-Model A/B: {answerer} vs {answerer2}",
             "",
-            "| Skill | n | Strong Pass | Weak Pass | Strong Uplift | Weak Uplift |",
-            "|-------|---|-------------|-----------|---------------|-------------|",
+            "| Skill | n | Strong Bare | Strong+Skill | Strong↑ | Weak Bare | Weak+Skill | Weak↑ |",
+            "|-------|---|-------------|--------------|---------|-----------|------------|-------|",
         ]
         all_skills = sorted(set(list(skill_stats.keys()) + list(skill_stats2.keys())))
         for sid in all_skills:
@@ -446,8 +446,8 @@ def generate_result_md(output: dict, out_path: str) -> str:
             s2 = skill_stats2.get(sid, {})
             lines.append(
                 f"| `{sid}` | {s1.get('n', s2.get('n', 0))} "
-                f"| {s1.get('test_pass_rate', 0):.0%} | {s2.get('test_pass_rate', 0):.0%} "
-                f"| {s1.get('pass_uplift', 0):+.0%} | {s2.get('pass_uplift', 0):+.0%} |"
+                f"| {s1.get('ctrl_pass_rate', 0):.0%} | {s1.get('test_pass_rate', 0):.0%} | {s1.get('pass_uplift', 0):+.0%} "
+                f"| {s2.get('ctrl_pass_rate', 0):.0%} | {s2.get('test_pass_rate', 0):.0%} | {s2.get('pass_uplift', 0):+.0%} |"
             )
 
     # Per-category
@@ -528,7 +528,7 @@ def main():
 
     header = f"{'ID':<8} {'Category':<25} {'Ctrl':>5} {'Test':>5} {'Δ':>3} {'V_ctrl':<8} {'V_test':<8}"
     if dual:
-        header += f" {'Test2':>6} {'V2':<8}"
+        header += " {:>6} {:>6} {:>3} {:<8} {:<8}".format("Ctrl2", "Test2", "Δ2", "Vc2", "Vt2")
     print(f"\n{header}")
     print("-" * (len(header) + 4))
     print(f"Judge: {judge_model}  Answerer: {args.answerer}" + (f"  Answerer2: {args.answerer2}" if dual else ""))
@@ -567,14 +567,19 @@ def main():
         vc = score_to_verdict(sc)
         vt = score_to_verdict(st)
 
-        # ── Secondary model runs (dual) ───────────────────────────────────────
-        st2, vt2 = None, None
+        # ── Secondary model runs (dual) — Mantle-style A/B: bare vs with-skill ──
+        sc2, vc2, st2, vt2 = None, None, None, None
         if dual:
-            st2_runs, vt2_runs = [], []
+            sc2_runs, vc2_runs, st2_runs, vt2_runs = [], [], [], []
             for _ in range(num_runs):
+                ans_ctrl2 = answerer2_fn(q["question"])
                 ans_test2 = answerer2_fn(q["question"], system=sys_prompt) if sys_prompt else answerer2_fn(q["question"])
+                _sc2, _vc2 = judge(q["question"], ans_ctrl2, q["ground_truth"], answerer_fn, judge_model)
                 _st2, _vt2 = judge(q["question"], ans_test2, q["ground_truth"], answerer_fn, judge_model)
+                sc2_runs.append(_sc2); vc2_runs.append(_vc2)
                 st2_runs.append(_st2); vt2_runs.append(_vt2)
+            sc2 = round(statistics.median(sc2_runs))
+            vc2 = score_to_verdict(sc2)
             st2 = round(statistics.median(st2_runs))
             vt2 = score_to_verdict(st2)
 
@@ -588,7 +593,8 @@ def main():
         row = (f"{q['id']:<8} {q['category'][:25]:<25} {sc:>5} {st:>5} {delta_str:>3} "
                f"{verdict_emoji(vc)+vc:<8} {verdict_emoji(vt)+vt:<8}")
         if dual and st2 is not None:
-            row += f" {st2:>6} {verdict_emoji(vt2)+vt2:<8}"
+            delta2_str = f"{st2-sc2:+d}"
+            row += f" {sc2:>6} {st2:>6} {delta2_str:>3} {verdict_emoji(vc2)+vc2:<8} {verdict_emoji(vt2)+vt2:<8}"
         if faith_score is not None:
             row += f" faith={faith_score}"
         print(row)
@@ -599,7 +605,10 @@ def main():
             "skill_found": bool(skill),
             "control_score": sc, "test_score": st,
             "verdict_ctrl": vc, "verdict_test": vt,
-            **({f"test_score2": st2, "verdict_test2": vt2} if dual and st2 is not None else {}),
+            **({
+                "control_score2": sc2, "test_score2": st2,
+                "verdict_ctrl2": vc2, "verdict_test2": vt2,
+            } if dual and st2 is not None else {}),
             **({f"faithfulness": faith_score} if faith_score is not None else {}),
         }
         results.append(entry)
@@ -632,14 +641,14 @@ def main():
               f"{s['pass_uplift']:>+6.0%} {s['uplift']:>+6.2f} {emoji}")
 
     if dual and skill_stats2:
-        print(f"\n📊 Dual-Model Comparison ({args.answerer} vs {args.answerer2}):")
-        print(f"  {'Skill':<35} {'Strong%':>8} {'Weak%':>7} {'Strong↑':>8} {'Weak↑':>7}")
-        print("  " + "-" * 65)
+        print(f"\n📊 Dual-Model A/B ({args.answerer} vs {args.answerer2}):")
+        print(f"  {'Skill':<35} {'StrongBare':>10} {'Strong+':>8} {'S↑':>5} {'WeakBare':>9} {'Weak+':>7} {'W↑':>5}")
+        print("  " + "-" * 75)
         for sid in sorted(set(list(skill_stats.keys()) + list(skill_stats2.keys()))):
             s1 = skill_stats.get(sid, {})
             s2 = skill_stats2.get(sid, {})
-            print(f"  {sid[:35]:<35} {s1.get('test_pass_rate',0):>7.0%} {s2.get('test_pass_rate',0):>7.0%} "
-                  f"{s1.get('pass_uplift',0):>+7.0%} {s2.get('pass_uplift',0):>+7.0%}")
+            print(f"  {sid[:35]:<35} {s1.get('ctrl_pass_rate',0):>9.0%} {s1.get('test_pass_rate',0):>8.0%} {s1.get('pass_uplift',0):>+5.0%} "
+                  f"{s2.get('ctrl_pass_rate',0):>9.0%} {s2.get('test_pass_rate',0):>7.0%} {s2.get('pass_uplift',0):>+5.0%}")
 
     # ── Source tier breakdown ─────────────────────────────────────────────────
     unique_skills = list(set(r["skill_id"] for r in results))
@@ -660,7 +669,7 @@ def main():
     ts_str = datetime.now().strftime("%Y-%m-%d-%H%M")
     out_path = args.output if args.output else str(RESULTS_DIR / f"{ts_str}.json")
     output = {
-        "version": "v7",
+        "version": "v8",
         "judge_model": judge_model,
         "answerer": args.answerer,
         "answerer2": args.answerer2 or None,
