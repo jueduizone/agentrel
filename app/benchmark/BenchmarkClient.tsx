@@ -14,8 +14,23 @@ type SourceStats = {
   avg_control: number
   avg_test: number
   delta: number
+  ctrl_pass_rate?: number
+  test_pass_rate?: number
+  test_partial_rate?: number
+  test_fail_rate?: number
+  pass_uplift?: number
   catStats: Array<{ category: string; avg_control: number; avg_test: number; delta: number; question_count: number }>
-  topSkills: Array<{ skill_id: string; avg_control: number; avg_test: number; delta: number; question_count: number }>
+  topSkills: Array<{
+    skill_id: string
+    avg_control: number
+    avg_test: number
+    delta: number
+    question_count: number
+    ctrl_pass_rate?: number
+    test_pass_rate?: number
+    pass_uplift?: number
+    test_fail_rate?: number
+  }>
 } | null
 
 type Props = {
@@ -69,6 +84,9 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
     delta: s.delta,
   }))
 
+  const passRatePct = stats.test_pass_rate !== undefined ? Math.round(stats.test_pass_rate * 100) : null
+  const passUplift = stats.pass_uplift !== undefined ? stats.pass_uplift : null
+
   return (
     <div className="space-y-8">
       {/* Summary cards */}
@@ -85,6 +103,31 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
           </div>
         ))}
       </div>
+
+      {/* Verdict breakdown */}
+      {passRatePct !== null && (
+        <div className="grid grid-cols-3 gap-3">
+          <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl p-3 text-center">
+            <p className="text-xs text-muted-foreground/50 mb-1">✅ Pass</p>
+            <p className="text-xl font-bold text-green-600">{passRatePct}%</p>
+            {passUplift !== null && passUplift > 0 && (
+              <p className="text-xs text-green-500 mt-0.5">+{Math.round(passUplift * 100)}pp vs ctrl</p>
+            )}
+          </div>
+          {stats.test_partial_rate !== undefined && (
+            <div className="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-xl p-3 text-center">
+              <p className="text-xs text-muted-foreground/50 mb-1">🟡 Partial</p>
+              <p className="text-xl font-bold text-yellow-600">{Math.round(stats.test_partial_rate * 100)}%</p>
+            </div>
+          )}
+          {stats.test_fail_rate !== undefined && (
+            <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl p-3 text-center">
+              <p className="text-xs text-muted-foreground/50 mb-1">❌ Fail</p>
+              <p className="text-xl font-bold text-red-500">{Math.round(stats.test_fail_rate * 100)}%</p>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Bar chart */}
       {chartData.length > 0 && (
@@ -116,23 +159,40 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
                   <th className="text-right pb-2 font-medium">{t('benchmark.colControl')}</th>
                   <th className="text-right pb-2 font-medium">{t('benchmark.colWithSkill')}</th>
                   <th className="text-right pb-2 font-medium">{t('benchmark.colImpact')}</th>
+                  <th className="text-right pb-2 font-medium">Pass%</th>
+                  <th className="text-right pb-2 font-medium">Pass↑</th>
                   <th className="text-right pb-2 font-medium">{t('benchmark.colQuestions')}</th>
                 </tr>
               </thead>
               <tbody>
-                {stats.topSkills.map((s, i) => (
-                  <tr key={s.skill_id} className="border-b border-gray-50 hover:bg-muted/50 transition-colors">
-                    <td className="py-2 font-mono text-xs text-indigo-700">
-                      <Link href={`/skills/${s.skill_id}`} className="hover:underline">{s.skill_id}</Link>
-                    </td>
-                    <td className="text-right py-2 text-muted-foreground/70">{s.avg_control.toFixed(2)}</td>
-                    <td className="text-right py-2 text-foreground/80 font-medium">{s.avg_test.toFixed(2)}</td>
-                    <td className={`text-right py-2 font-semibold ${s.delta >= 0 ? 'text-green-600' : 'text-red-500'}`}>
-                      {s.delta > 0 ? '+' : ''}{s.delta.toFixed(2)}
-                    </td>
-                    <td className="text-right py-2 text-muted-foreground/50">{s.question_count}</td>
-                  </tr>
-                ))}
+                {stats.topSkills.map((s) => {
+                  const passRate = s.test_pass_rate !== undefined ? Math.round(s.test_pass_rate * 100) : null
+                  const passUpliftVal = s.pass_uplift !== undefined ? s.pass_uplift : null
+                  const failRate = s.test_fail_rate !== undefined ? Math.round(s.test_fail_rate * 100) : null
+                  const badge = passRate !== null
+                    ? passRate >= 60 ? '✅' : failRate !== null && failRate >= 60 ? '❌' : '🟡'
+                    : null
+                  return (
+                    <tr key={s.skill_id} className="border-b border-gray-50 hover:bg-muted/50 transition-colors">
+                      <td className="py-2 font-mono text-xs text-indigo-700">
+                        <Link href={`/skills/${s.skill_id}`} className="hover:underline">{s.skill_id}</Link>
+                        {badge && <span className="ml-1.5">{badge}</span>}
+                      </td>
+                      <td className="text-right py-2 text-muted-foreground/70">{s.avg_control.toFixed(2)}</td>
+                      <td className="text-right py-2 text-foreground/80 font-medium">{s.avg_test.toFixed(2)}</td>
+                      <td className={`text-right py-2 font-semibold ${s.delta >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                        {s.delta > 0 ? '+' : ''}{s.delta.toFixed(2)}
+                      </td>
+                      <td className="text-right py-2 text-foreground/70">
+                        {passRate !== null ? `${passRate}%` : '—'}
+                      </td>
+                      <td className={`text-right py-2 font-medium ${passUpliftVal !== null && passUpliftVal > 0 ? 'text-green-600' : passUpliftVal !== null && passUpliftVal < 0 ? 'text-red-500' : 'text-muted-foreground/50'}`}>
+                        {passUpliftVal !== null ? (passUpliftVal > 0 ? '+' : '') + Math.round(passUpliftVal * 100) + 'pp' : '—'}
+                      </td>
+                      <td className="text-right py-2 text-muted-foreground/50">{s.question_count}</td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>

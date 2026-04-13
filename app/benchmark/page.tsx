@@ -38,6 +38,12 @@ async function getBenchmarkData() {
     for (const s of skills ?? []) skillMetaMap[s.id] = { source: s.source, ecosystem: s.ecosystem }
   }
 
+  function toVerdict(score: number): 'pass' | 'partial' | 'fail' {
+    if (score >= 4) return 'pass'
+    if (score >= 2) return 'partial'
+    return 'fail'
+  }
+
   function computeStats(subset: typeof results | null) {
     if (!subset || subset.length === 0) return null
     const avg = (arr: number[]) => arr.length ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length * 100) / 100 : 0
@@ -54,24 +60,48 @@ async function getBenchmarkData() {
       question_count: control.length,
     })).sort((a, b) => b.delta - a.delta)
 
-    const skillMap: Record<string, { control: number[]; test: number[] }> = {}
+    const skillMap: Record<string, { control: number[]; test: number[]; ctrl_verdicts: string[]; test_verdicts: string[] }> = {}
     for (const r of subset) {
       if (!r.skill_id) continue
-      if (!skillMap[r.skill_id]) skillMap[r.skill_id] = { control: [], test: [] }
+      if (!skillMap[r.skill_id]) skillMap[r.skill_id] = { control: [], test: [], ctrl_verdicts: [], test_verdicts: [] }
       skillMap[r.skill_id].control.push(r.control_score)
       skillMap[r.skill_id].test.push(r.test_score)
+      // Use verdict column if available, otherwise derive from score
+      skillMap[r.skill_id].ctrl_verdicts.push(toVerdict(r.control_score))
+      skillMap[r.skill_id].test_verdicts.push((r as { verdict?: string }).verdict ?? toVerdict(r.test_score))
     }
-    const topSkills = Object.entries(skillMap).map(([id, { control, test }]) => ({
-      skill_id: id, avg_control: avg(control), avg_test: avg(test),
-      delta: Math.round((avg(test) - avg(control)) * 100) / 100,
-      question_count: control.length,
-    })).sort((a, b) => b.delta - a.delta).slice(0, 10)
+    const topSkills = Object.entries(skillMap).map(([id, { control, test, ctrl_verdicts, test_verdicts }]) => {
+      const n = control.length
+      const ctrl_pass_rate = Math.round(ctrl_verdicts.filter(v => v === 'pass').length / n * 100) / 100
+      const test_pass_rate = Math.round(test_verdicts.filter(v => v === 'pass').length / n * 100) / 100
+      const test_fail_rate = Math.round(test_verdicts.filter(v => v === 'fail').length / n * 100) / 100
+      return {
+        skill_id: id, avg_control: avg(control), avg_test: avg(test),
+        delta: Math.round((avg(test) - avg(control)) * 100) / 100,
+        question_count: n,
+        ctrl_pass_rate, test_pass_rate,
+        pass_uplift: Math.round((test_pass_rate - ctrl_pass_rate) * 100) / 100,
+        test_fail_rate,
+      }
+    }).sort((a, b) => b.pass_uplift - a.pass_uplift || b.delta - a.delta).slice(0, 10)
 
     const totalC = avg(subset.map(r => r.control_score))
     const totalT = avg(subset.map(r => r.test_score))
+
+    // Overall verdict rates
+    const n = subset.length
+    const ctrl_pass_rate = Math.round(subset.filter(r => toVerdict(r.control_score) === 'pass').length / n * 100) / 100
+    const test_verdicts = subset.map(r => (r as { verdict?: string }).verdict ?? toVerdict(r.test_score))
+    const test_pass_rate = Math.round(test_verdicts.filter(v => v === 'pass').length / n * 100) / 100
+    const test_partial_rate = Math.round(test_verdicts.filter(v => v === 'partial').length / n * 100) / 100
+    const test_fail_rate = Math.round(test_verdicts.filter(v => v === 'fail').length / n * 100) / 100
+
     return {
-      total_questions: subset.length, avg_control: totalC, avg_test: totalT,
-      delta: Math.round((totalT - totalC) * 100) / 100, catStats, topSkills,
+      total_questions: n, avg_control: totalC, avg_test: totalT,
+      delta: Math.round((totalT - totalC) * 100) / 100,
+      ctrl_pass_rate, test_pass_rate, test_partial_rate, test_fail_rate,
+      pass_uplift: Math.round((test_pass_rate - ctrl_pass_rate) * 100) / 100,
+      catStats, topSkills,
     }
   }
 
