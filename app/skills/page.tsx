@@ -20,7 +20,7 @@ export default async function SkillsPage({
   const initialSkills: Skill[] = skills ?? []
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <div className="mx-auto max-w-6xl px-4 py-8">
         <SkillsPageHeader />

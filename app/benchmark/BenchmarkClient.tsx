@@ -56,7 +56,7 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
 
   if (!stats) {
     return (
-      <div className="text-center py-12 text-gray-400 text-sm">
+      <div className="text-center py-12 text-muted-foreground/50 text-sm">
         {t('benchmark.noData')} ({title})
       </div>
     )
@@ -79,9 +79,9 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
           { label: t('benchmark.withSkillAvg'), value: stats.avg_test.toFixed(2) },
           { label: t('benchmark.delta'), value: (stats.delta > 0 ? '+' : '') + stats.delta.toFixed(2), highlight: stats.delta > 0 },
         ].map(({ label, value, highlight }) => (
-          <div key={label} className="bg-gray-50 rounded-xl p-4 text-center">
-            <p className="text-xs text-gray-400 mb-1">{label}</p>
-            <p className={`text-2xl font-bold ${highlight ? 'text-green-600' : 'text-gray-900'}`}>{value}</p>
+          <div key={label} className="bg-muted/50 rounded-xl p-4 text-center">
+            <p className="text-xs text-muted-foreground/50 mb-1">{label}</p>
+            <p className={`text-2xl font-bold ${highlight ? 'text-green-600' : 'text-foreground'}`}>{value}</p>
           </div>
         ))}
       </div>
@@ -89,7 +89,7 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
       {/* Bar chart */}
       {chartData.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">{t('benchmark.scoreByCategory')}</h3>
+          <h3 className="text-sm font-semibold text-foreground/80 mb-3">{t('benchmark.scoreByCategory')}</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={chartData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -107,11 +107,11 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
       {/* Top skills */}
       {stats.topSkills.length > 0 && (
         <div>
-          <h3 className="text-sm font-semibold text-gray-700 mb-3">{t('benchmark.topSkillsTitle')}</h3>
+          <h3 className="text-sm font-semibold text-foreground/80 mb-3">{t('benchmark.topSkillsTitle')}</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-gray-100 text-xs text-gray-400">
+                <tr className="border-b border-border text-xs text-muted-foreground/50">
                   <th className="text-left pb-2 font-medium">{t('benchmark.colSkill')}</th>
                   <th className="text-right pb-2 font-medium">{t('benchmark.colControl')}</th>
                   <th className="text-right pb-2 font-medium">{t('benchmark.colWithSkill')}</th>
@@ -121,16 +121,16 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
               </thead>
               <tbody>
                 {stats.topSkills.map((s, i) => (
-                  <tr key={s.skill_id} className="border-b border-gray-50 hover:bg-gray-50 transition-colors">
+                  <tr key={s.skill_id} className="border-b border-gray-50 hover:bg-muted/50 transition-colors">
                     <td className="py-2 font-mono text-xs text-indigo-700">
                       <Link href={`/skills/${s.skill_id}`} className="hover:underline">{s.skill_id}</Link>
                     </td>
-                    <td className="text-right py-2 text-gray-500">{s.avg_control.toFixed(2)}</td>
-                    <td className="text-right py-2 text-gray-700 font-medium">{s.avg_test.toFixed(2)}</td>
+                    <td className="text-right py-2 text-muted-foreground/70">{s.avg_control.toFixed(2)}</td>
+                    <td className="text-right py-2 text-foreground/80 font-medium">{s.avg_test.toFixed(2)}</td>
                     <td className={`text-right py-2 font-semibold ${s.delta >= 0 ? 'text-green-600' : 'text-red-500'}`}>
                       {s.delta > 0 ? '+' : ''}{s.delta.toFixed(2)}
                     </td>
-                    <td className="text-right py-2 text-gray-400">{s.question_count}</td>
+                    <td className="text-right py-2 text-muted-foreground/50">{s.question_count}</td>
                   </tr>
                 ))}
               </tbody>
@@ -178,13 +178,13 @@ function EcosystemSection({ byEcosystem }: { byEcosystem: Record<string, SourceS
   const activeStats = activeEco === 'all' ? allStats : byEcosystem[activeEco]
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-8 border-t border-gray-100 mt-4">
-      <h2 className="text-lg font-bold text-gray-800 mb-4">🌐 {t('benchmark.byEcosystem')}</h2>
-      <div className="flex gap-2 border-b border-gray-100 mb-8 overflow-x-auto pb-0 -mb-px">
+    <main className="max-w-5xl mx-auto px-6 py-8 border-t border-border mt-4">
+      <h2 className="text-lg font-bold text-foreground mb-4">🌐 {t('benchmark.byEcosystem')}</h2>
+      <div className="flex gap-2 border-b border-border mb-8 overflow-x-auto pb-0 -mb-px">
         {['all', ...ecoKeys].map(eco => (
           <button key={eco} onClick={() => setActiveEco(eco)}
             className={`flex items-center gap-1 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-              activeEco === eco ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-gray-500 hover:text-gray-700'
+              activeEco === eco ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-muted-foreground/70 hover:text-foreground/80'
             }`}>
             {ECO_LABELS[eco] ?? eco}
           </button>
@@ -227,10 +227,10 @@ export default function BenchmarkClient({ data }: Props) {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
-          <p className="text-2xl font-bold text-gray-800 mb-2">Benchmark data not yet available</p>
-          <p className="text-gray-500 text-sm mb-4">Eval runs will appear here after the first automated run.</p>
+          <p className="text-2xl font-bold text-foreground mb-2">Benchmark data not yet available</p>
+          <p className="text-muted-foreground/70 text-sm mb-4">Eval runs will appear here after the first automated run.</p>
           {isAdmin && (
             <button
               onClick={() => triggerEval()}
@@ -240,7 +240,7 @@ export default function BenchmarkClient({ data }: Props) {
               {triggering ? '触发中...' : '🚀 触发全量 Eval'}
             </button>
           )}
-          {triggerMsg && <p className="text-sm text-gray-500 mt-2">{triggerMsg}</p>}
+          {triggerMsg && <p className="text-sm text-muted-foreground/70 mt-2">{triggerMsg}</p>}
         </div>
       </div>
     )
@@ -251,12 +251,12 @@ export default function BenchmarkClient({ data }: Props) {
   const activeTabInfo = SOURCE_TABS.find(t => t.key === activeTab)!
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-gray-100 px-6 py-4 sticky top-0 bg-white/95 backdrop-blur z-10">
+      <header className="border-b border-border px-6 py-4 sticky top-0 bg-background/95 backdrop-blur z-10">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/" className="text-gray-400 hover:text-gray-700 transition-colors">
+            <Link href="/" className="text-muted-foreground/50 hover:text-foreground/80 transition-colors">
               <ArrowLeft size={18} />
             </Link>
             <span className="text-xl font-bold tracking-tight">{t('benchmark.title')}</span>
@@ -281,7 +281,7 @@ export default function BenchmarkClient({ data }: Props) {
               </>
             )}
             <a href="https://github.com/jueduizone/agentrel/tree/main/eval" target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition-colors">
+              className="flex items-center gap-1.5 text-sm text-muted-foreground/70 hover:text-foreground transition-colors">
               <ExternalLink size={14} />
               <span className="hidden sm:inline">{t('benchmark.methodology')}</span>
             </a>
@@ -296,7 +296,7 @@ export default function BenchmarkClient({ data }: Props) {
 
       <main className="max-w-5xl mx-auto px-6 py-8">
         {/* Run meta */}
-        <div className="mb-6 flex flex-wrap gap-3 text-xs text-gray-400">
+        <div className="mb-6 flex flex-wrap gap-3 text-xs text-muted-foreground/50">
           <span>Run: {new Date(run.run_at).toLocaleString()}</span>
           <span>·</span>
           <span>Judge: {run.judge_model}</span>
@@ -305,7 +305,7 @@ export default function BenchmarkClient({ data }: Props) {
         </div>
 
         {/* Source Tabs */}
-        <div className="flex gap-2 border-b border-gray-100 mb-8 overflow-x-auto pb-0">
+        <div className="flex gap-2 border-b border-border mb-8 overflow-x-auto pb-0">
           {SOURCE_TABS.map(tab => (
             <button
               key={tab.key}
@@ -313,7 +313,7 @@ export default function BenchmarkClient({ data }: Props) {
               className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
                 activeTab === tab.key
                   ? 'border-indigo-600 text-indigo-700'
-                  : 'border-transparent text-gray-500 hover:text-gray-700'
+                  : 'border-transparent text-muted-foreground/70 hover:text-foreground/80'
               }`}
             >
               <span>{tab.emoji}</span>
@@ -323,7 +323,7 @@ export default function BenchmarkClient({ data }: Props) {
         </div>
 
         {/* Tab description */}
-        <p className="text-sm text-gray-500 mb-6">{activeTabInfo.desc}</p>
+        <p className="text-sm text-muted-foreground/70 mb-6">{activeTabInfo.desc}</p>
 
         {/* Stats panel */}
         <StatsPanel stats={activeStats} title={activeTabInfo.label} />

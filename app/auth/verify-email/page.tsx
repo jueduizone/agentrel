@@ -8,9 +8,9 @@ function VerifyEmailContent() {
   const email = searchParams.get('email') || ''
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-muted/50 flex items-center justify-center px-4">
       <div className="w-full max-w-md text-center">
-        <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
+        <div className="bg-background rounded-2xl border border-border p-8 shadow-sm">
           {/* Email icon */}
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-indigo-50">
             <svg className="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -18,14 +18,14 @@ function VerifyEmailContent() {
             </svg>
           </div>
 
-          <h1 className="text-xl font-bold text-gray-900 mb-2">请验证您的邮箱</h1>
-          <p className="text-gray-500 text-sm mb-4">
+          <h1 className="text-xl font-bold text-foreground mb-2">请验证您的邮箱</h1>
+          <p className="text-muted-foreground/70 text-sm mb-4">
             验证邮件已发送至
           </p>
           {email && (
-            <p className="font-medium text-gray-800 mb-4 break-all">{email}</p>
+            <p className="font-medium text-foreground mb-4 break-all">{email}</p>
           )}
-          <p className="text-gray-500 text-sm mb-6">
+          <p className="text-muted-foreground/70 text-sm mb-6">
             请点击邮件中的链接完成注册。如未收到，请检查垃圾邮件文件夹。
           </p>
 
@@ -38,7 +38,7 @@ function VerifyEmailContent() {
             </Link>
             <Link
               href="/auth/register"
-              className="block w-full border border-gray-300 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors text-center"
+              className="block w-full border border-border/80 rounded-lg py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted/50 transition-colors text-center"
             >
               重新注册
             </Link>
@@ -51,7 +51,7 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><p className="text-gray-500">Loading...</p></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-muted/50 flex items-center justify-center"><p className="text-muted-foreground/70">Loading...</p></div>}>
       <VerifyEmailContent />
     </Suspense>
   )

@@ -43,12 +43,12 @@ export default async function GrantsPage({
   const displayed = filter === 'all' ? allGrants : filter === 'closed' ? closed : open
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/50">
       <Navbar />
       <main className="max-w-4xl mx-auto px-6 py-10">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Grants & Bounties</h1>
-          <p className="text-sm text-gray-500 mt-1">Web3 developer grants &amp; bounties — apply with your AI agent</p>
+          <h1 className="text-2xl font-bold text-foreground">Grants & Bounties</h1>
+          <p className="text-sm text-muted-foreground/70 mt-1">Web3 developer grants &amp; bounties — apply with your AI agent</p>
         </div>
 
         <Suspense fallback={null}>
@@ -61,7 +61,7 @@ export default async function GrantsPage({
         </Suspense>
 
         {displayed.length === 0 && (
-          <p className="text-center text-gray-400 py-16">
+          <p className="text-center text-muted-foreground/50 py-16">
             {filter === 'open' ? 'No open grants at the moment.' : filter === 'closed' ? 'No closed grants.' : 'No grants found.'}
           </p>
         )}
@@ -86,12 +86,12 @@ function GrantCard({ grant }: { grant: {
 
   return (
     <Link href={`/build/${grant.id}`} className="block group">
-      <div className="bg-white rounded-xl border border-gray-200 p-5 hover:border-indigo-300 hover:shadow-sm transition-all">
+      <div className="bg-background rounded-xl border border-border p-5 hover:border-indigo-300 hover:shadow-sm transition-all">
         {/* Title row */}
         <div className="flex items-start justify-between gap-4 mb-2">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="font-semibold text-gray-900 text-base group-hover:text-indigo-700 transition-colors">{grant.title}</h3>
+              <h3 className="font-semibold text-foreground text-base group-hover:text-indigo-700 transition-colors">{grant.title}</h3>
               {grant.source_type === 'external' && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200">External</span>
               )}
@@ -99,23 +99,23 @@ function GrantCard({ grant }: { grant: {
                 <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-200">Native</span>
               )}
               {grant.track && (
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">{grant.track}</span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-muted text-muted-foreground">{grant.track}</span>
               )}
             </div>
           </div>
           {/* Reward + status badge */}
           <div className="text-right shrink-0">
             {grant.reward && <p className="font-bold text-indigo-700 text-sm">{grant.reward}</p>}
-            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-0.5 ${isOpen && !isPast ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
+            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-0.5 ${isOpen && !isPast ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground/70'}`}>
               {isOpen && !isPast ? 'Open' : 'Closed'}
             </span>
           </div>
         </div>
 
         {/* Info bar: Sponsor · deadline · count */}
-        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+        <div className="flex items-center gap-1.5 text-xs text-muted-foreground/70 mb-2">
           {(grant.sponsors || grant.sponsor) ? (
-            <span className="flex items-center gap-1 font-medium text-gray-700">
+            <span className="flex items-center gap-1 font-medium text-foreground/80">
               {grant.sponsors?.logo_url
                 ? <img src={grant.sponsors.logo_url} alt={grant.sponsors.name} className="w-4 h-4 rounded-full object-cover" />
                 : <span>🏢</span>}
@@ -136,7 +136,7 @@ function GrantCard({ grant }: { grant: {
 
         {/* Description */}
         {grant.description && (
-          <p className="text-sm text-gray-500 line-clamp-2">{grant.description}</p>
+          <p className="text-sm text-muted-foreground/70 line-clamp-2">{grant.description}</p>
         )}
       </div>
     </Link>

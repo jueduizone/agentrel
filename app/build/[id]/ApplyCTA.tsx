@@ -42,7 +42,7 @@ export function ApplyCTA({ grantId, isOpen }: Props) {
   }
 
   if (!isOpen) {
-    return <p className="text-center text-sm text-gray-400 py-2">此 Grant 已截止，无法申请</p>
+    return <p className="text-center text-sm text-muted-foreground/50 py-2">此 Grant 已截止，无法申请</p>
   }
 
   return (
@@ -69,7 +69,7 @@ export function ApplyCTA({ grantId, isOpen }: Props) {
         {copyError ? <><span>❌</span> 复制失败，请手动复制</> : copied ? <><span>✅</span> 已复制</> : <><span>🤖</span> Agent 帮我申请</>}
       </button>
 
-      <p className="text-xs text-gray-400 text-center -mt-1">
+      <p className="text-xs text-muted-foreground/50 text-center -mt-1">
         {copyError
           ? `https://agentrel.vercel.app/api/v1/grants/${grantId}/context`
           : copied

@@ -62,13 +62,13 @@ export default function EditGrantPage() {
     }
   }
 
-  if (!initial) return <div className="min-h-screen bg-gray-50 flex items-center justify-center"><p className="text-gray-400 text-sm">加载中...</p></div>
+  if (!initial) return <div className="min-h-screen bg-muted/50 flex items-center justify-center"><p className="text-muted-foreground/50 text-sm">加载中...</p></div>
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/50">
       <main className="max-w-2xl mx-auto px-6 py-10">
-        <Link href={`/admin/grants/${id}`} className="text-sm text-gray-400 hover:text-gray-600 mb-6 inline-block">← 返回详情</Link>
-        <h1 className="text-xl font-bold text-gray-900 mb-6">编辑 Grant</h1>
+        <Link href={`/admin/grants/${id}`} className="text-sm text-muted-foreground/50 hover:text-muted-foreground mb-6 inline-block">← 返回详情</Link>
+        <h1 className="text-xl font-bold text-foreground mb-6">编辑 Grant</h1>
         {error && <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2 mb-4">{error}</p>}
         <GrantForm initial={initial} onSubmit={handleSubmit} saving={saving} submitLabel="保存修改" sponsors={sponsors} />
       </main>

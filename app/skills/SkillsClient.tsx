@@ -39,9 +39,9 @@ function ecosystemClass(eco: string) {
     optimism: 'bg-red-100 text-red-700 border-red-200',
     polygon:  'bg-violet-100 text-violet-700 border-violet-200',
     starknet: 'bg-orange-100 text-orange-700 border-orange-200',
-    zksync:   'bg-gray-100 text-gray-700 border-gray-200',
+    zksync:   'bg-muted text-foreground/80 border-border',
   }
-  return map[eco.toLowerCase()] ?? 'bg-gray-100 text-gray-700 border-gray-200'
+  return map[eco.toLowerCase()] ?? 'bg-muted text-foreground/80 border-border'
 }
 
 type Props = {
@@ -162,7 +162,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
           />
           {/* Search suggestions dropdown */}
           {showSuggestions && suggestions.length > 0 && (
-            <div className="absolute top-10 left-0 z-50 w-full rounded-lg border border-border bg-white shadow-md">
+            <div className="absolute top-10 left-0 z-50 w-full rounded-lg border border-border bg-background shadow-md">
               {suggestions.map((s) => (
                 <Link
                   key={s.id}
@@ -285,7 +285,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                   </span>
                   <button
                     onClick={(e) => handleCopy(e, skill)}
-                    className={`shrink-0 text-xs font-medium transition-colors px-1.5 py-0.5 rounded hover:bg-gray-100 ${copied ? 'text-green-600' : 'text-muted-foreground'}`}
+                    className={`shrink-0 text-xs font-medium transition-colors px-1.5 py-0.5 rounded hover:bg-muted ${copied ? 'text-green-600' : 'text-muted-foreground'}`}
                   >
                     {copied ? t('skills.copied') : t('skills.copyUrl')}
                   </button>

@@ -53,17 +53,17 @@ export default function NewGrantPage() {
 
   if (!authChecked) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <p className="text-sm text-gray-400">验证身份中...</p>
+      <div className="min-h-screen bg-muted/50 flex items-center justify-center">
+        <p className="text-sm text-muted-foreground/50">验证身份中...</p>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/50">
       <main className="max-w-2xl mx-auto px-6 py-10">
-        <Link href="/admin/grants" className="text-sm text-gray-400 hover:text-gray-600 mb-6 inline-block">← 所有 Grants</Link>
-        <h1 className="text-xl font-bold text-gray-900 mb-6">新建 Grant</h1>
+        <Link href="/admin/grants" className="text-sm text-muted-foreground/50 hover:text-muted-foreground mb-6 inline-block">← 所有 Grants</Link>
+        <h1 className="text-xl font-bold text-foreground mb-6">新建 Grant</h1>
         {error && <p className="text-sm text-red-500 bg-red-50 rounded-lg px-3 py-2 mb-4">{error}</p>}
         <GrantForm onSubmit={handleSubmit} saving={saving} submitLabel="创建 Grant" sponsors={sponsors} />
       </main>

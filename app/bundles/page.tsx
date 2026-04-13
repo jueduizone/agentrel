@@ -13,7 +13,7 @@ export default async function BundlesPage() {
     .order('created_at', { ascending: false })
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <div className="mx-auto max-w-6xl px-4 py-8">
         <PageHeader titleKey="bundles.title" descKey="bundles.desc" />

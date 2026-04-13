@@ -20,26 +20,26 @@ export function TemplateModal({ templateMd, grantTitle }: { templateMd: string; 
         </button>
       ) : (
         <button disabled
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-gray-200 text-sm font-medium text-gray-400 cursor-not-allowed">
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border text-sm font-medium text-muted-foreground/50 cursor-not-allowed">
           📄 暂无申请模板
         </button>
       )}
 
       {open && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <div className="bg-white rounded-2xl shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
+          <div className="bg-background rounded-2xl shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b">
-              <h3 className="font-semibold text-gray-900">申请模板 — {grantTitle}</h3>
+              <h3 className="font-semibold text-foreground">申请模板 — {grantTitle}</h3>
               <div className="flex items-center gap-2">
                 <button onClick={copy}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${copied ? 'bg-green-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}>
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${copied ? 'bg-green-600 text-white' : 'bg-muted text-foreground/80 hover:bg-muted'}`}>
                   {copied ? '✓ 已复制' : '复制 Markdown'}
                 </button>
-                <button onClick={() => setOpen(false)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+                <button onClick={() => setOpen(false)} className="text-muted-foreground/50 hover:text-muted-foreground text-xl leading-none">×</button>
               </div>
             </div>
             <div className="flex-1 overflow-auto p-6">
-              <pre className="text-sm text-gray-700 whitespace-pre-wrap font-mono bg-gray-50 rounded-lg p-4">{templateMd}</pre>
+              <pre className="text-sm text-foreground/80 whitespace-pre-wrap font-mono bg-muted/50 rounded-lg p-4">{templateMd}</pre>
             </div>
           </div>
         </div>

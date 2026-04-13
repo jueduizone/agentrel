@@ -37,22 +37,22 @@ export default async function AdminGrantsPage() {
   const grants = await getAdminGrants()
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/50">
       <Navbar />
       <main className="max-w-4xl mx-auto px-6 py-10">
         <div className="mb-8">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900">Admin — Grants</h1>
+            <h1 className="text-2xl font-bold text-foreground">Admin — Grants</h1>
             <Link href="/admin/grants/new" className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors">
               + 新建 Grant
             </Link>
           </div>
-          <p className="text-gray-500 text-sm mt-1">Manage grant applications</p>
+          <p className="text-muted-foreground/70 text-sm mt-1">Manage grant applications</p>
         </div>
 
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-background rounded-xl border border-border overflow-hidden">
           <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider border-b">
+            <thead className="bg-muted/50 text-muted-foreground/70 text-xs uppercase tracking-wider border-b">
               <tr>
                 <th className="text-left px-4 py-3">Grant</th>
                 <th className="text-left px-4 py-3">Sponsor</th>
@@ -62,12 +62,12 @@ export default async function AdminGrantsPage() {
             </thead>
             <tbody>
               {grants.map(g => (
-                <tr key={g.id} className="border-t border-gray-50 hover:bg-gray-50/50">
-                  <td className="px-4 py-3 font-medium text-gray-900">{g.title}</td>
-                  <td className="px-4 py-3 text-gray-500">{g.sponsor ?? '—'}</td>
+                <tr key={g.id} className="border-t border-gray-50 hover:bg-muted/30">
+                  <td className="px-4 py-3 font-medium text-foreground">{g.title}</td>
+                  <td className="px-4 py-3 text-muted-foreground/70">{g.sponsor ?? '—'}</td>
                   <td className="px-4 py-3 text-center">
                     <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
-                      g.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                      g.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground/70'
                     }`}>
                       {g.status}
                     </span>

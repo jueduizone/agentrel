@@ -74,22 +74,22 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-muted/50 flex flex-col">
       <Navbar />
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <Link href="/" className="text-2xl font-bold text-black">AgentRel</Link>
-            <p className="text-gray-500 mt-2 text-sm">Create your account</p>
+            <p className="text-muted-foreground/70 mt-2 text-sm">Create your account</p>
           </div>
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm space-y-4">
+          <div className="bg-background rounded-2xl border border-border p-6 shadow-sm space-y-4">
 
             {/* OAuth buttons */}
             <div className="space-y-2">
               <button
                 onClick={() => handleOAuth('github')}
                 disabled={oauthLoading !== null}
-                className="w-full flex items-center justify-center gap-2.5 border border-gray-300 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2.5 border border-border/80 rounded-lg py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted/50 transition-colors disabled:opacity-50"
               >
                 <GitHubIcon />
                 {oauthLoading === 'github' ? 'Redirecting...' : 'Continue with GitHub'}
@@ -97,7 +97,7 @@ export default function RegisterPage() {
               <button
                 onClick={() => handleOAuth('google')}
                 disabled={oauthLoading !== null}
-                className="w-full flex items-center justify-center gap-2.5 border border-gray-300 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                className="w-full flex items-center justify-center gap-2.5 border border-border/80 rounded-lg py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted/50 transition-colors disabled:opacity-50"
               >
                 <GoogleIcon />
                 {oauthLoading === 'google' ? 'Redirecting...' : 'Continue with Google'}
@@ -106,22 +106,22 @@ export default function RegisterPage() {
 
             {/* Divider */}
             <div className="flex items-center gap-3">
-              <div className="flex-1 h-px bg-gray-200" />
-              <span className="text-xs text-gray-400">或</span>
-              <div className="flex-1 h-px bg-gray-200" />
+              <div className="flex-1 h-px bg-muted" />
+              <span className="text-xs text-muted-foreground/50">或</span>
+              <div className="flex-1 h-px bg-muted" />
             </div>
 
             {/* Email/password form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <label className="block text-sm font-medium text-foreground/80 mb-1">Email</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
+                  className="w-full border border-border/80 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Password <span className="text-gray-400">(min 8 chars)</span></label>
+                <label className="block text-sm font-medium text-foreground/80 mb-1">Password <span className="text-muted-foreground/50">(min 8 chars)</span></label>
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={8}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
+                  className="w-full border border-border/80 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <button type="submit" disabled={loading || oauthLoading !== null}
@@ -130,7 +130,7 @@ export default function RegisterPage() {
               </button>
             </form>
 
-            <p className="text-center text-sm text-gray-500">
+            <p className="text-center text-sm text-muted-foreground/70">
               Already have an account?{' '}
               <Link href="/auth/login" className="text-indigo-600 hover:underline">Sign In</Link>
             </p>

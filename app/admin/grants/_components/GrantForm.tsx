@@ -43,15 +43,15 @@ export function GrantForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-gray-200 p-8 space-y-5">
+    <form onSubmit={handleSubmit} className="bg-background rounded-2xl border border-border p-8 space-y-5">
       {/* source_type */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">类型</label>
+        <label className="block text-sm font-medium text-foreground/80 mb-2">类型</label>
         <div className="flex gap-6">
           {['native', 'external'].map(t => (
             <label key={t} className="flex items-center gap-2 cursor-pointer">
               <input type="radio" name="source_type" value={t} checked={form.source_type === t} onChange={set('source_type')} />
-              <span className="text-sm text-gray-700 capitalize">{t === 'native' ? 'Native（平台原生）' : 'External（外部链接）'}</span>
+              <span className="text-sm text-foreground/80 capitalize">{t === 'native' ? 'Native（平台原生）' : 'External（外部链接）'}</span>
             </label>
           ))}
         </div>
@@ -102,16 +102,16 @@ export function GrantForm({
   )
 }
 
-const inputCls = 'w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500'
+const inputCls = 'w-full border border-border/80 rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500'
 
 function Field({ label, required, hint, children }: { label: string; required?: boolean; hint?: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+      <label className="block text-sm font-medium text-foreground/80 mb-1.5">
         {label}{required && <span className="text-red-500 ml-0.5">*</span>}
       </label>
       {children}
-      {hint && <p className="text-xs text-gray-400 mt-1">{hint}</p>}
+      {hint && <p className="text-xs text-muted-foreground/50 mt-1">{hint}</p>}
     </div>
   )
 }

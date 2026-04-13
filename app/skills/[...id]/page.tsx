@@ -24,13 +24,13 @@ function ecosystemClass(eco: string) {
     cosmos: 'bg-indigo-100 text-indigo-700 border-indigo-200',
     polkadot: 'bg-pink-100 text-pink-700 border-pink-200',
   }
-  return map[eco.toLowerCase()] ?? 'bg-gray-100 text-gray-700 border-gray-200'
+  return map[eco.toLowerCase()] ?? 'bg-muted text-foreground/80 border-border'
 }
 
 const SOURCE_BADGE: Record<string, { label: string; className: string }> = {
   official:       { label: '🏛️ Official',  className: 'bg-blue-100 text-blue-700 border border-blue-200' },
   verified:       { label: '✅ Verified',   className: 'bg-green-100 text-green-700 border border-green-200' },
-  community:      { label: '👥 Community',  className: 'bg-gray-100 text-gray-600 border border-gray-200' },
+  community:      { label: '👥 Community',  className: 'bg-muted text-muted-foreground border border-border' },
   'ai-generated': { label: '🤖 AI Draft',  className: 'bg-yellow-100 text-yellow-700 border border-yellow-200' },
 }
 
@@ -59,7 +59,7 @@ export default async function SkillDetailPage({
     : `https://agentrel.vercel.app/api/skills/${skill.id}.md`
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* Breadcrumb */}
@@ -96,7 +96,7 @@ export default async function SkillDetailPage({
                     {SOURCE_BADGE[skill.source].label}
                   </span>
                 ) : (
-                  <span className="inline-flex rounded-full border border-gray-200 bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-600">
+                  <span className="inline-flex rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
                     {skill.source}
                   </span>
                 )}

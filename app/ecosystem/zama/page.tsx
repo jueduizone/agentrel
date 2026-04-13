@@ -41,7 +41,7 @@ function getDescription(content: string): string {
 const SOURCE_BADGE: Record<string, { label: string; className: string }> = {
   official: { label: '🏛️ Official', className: 'bg-blue-100 text-blue-700 border border-blue-200' },
   verified: { label: '✅ Verified', className: 'bg-green-100 text-green-700 border border-green-200' },
-  community: { label: '👥 Community', className: 'bg-gray-100 text-gray-600 border border-gray-200' },
+  community: { label: '👥 Community', className: 'bg-muted text-muted-foreground border border-border' },
   'ai-generated': { label: '🤖 AI Draft', className: 'bg-yellow-100 text-yellow-700 border border-yellow-200' },
 }
 export default function ZamaEcosystemPage() {
@@ -56,7 +56,7 @@ export default function ZamaEcosystemPage() {
       .then(({ data }) => setSkills(data ?? []))
   }, [])
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <div className="mx-auto max-w-6xl px-4 py-8">
         {/* Breadcrumb */}

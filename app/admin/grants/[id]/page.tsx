@@ -44,20 +44,20 @@ export default async function AdminGrantDetailPage({
   const approved = applications.filter(a => a.status === 'approved').length
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-muted/50">
       <Navbar />
       <main className="max-w-3xl mx-auto px-6 py-10">
         <div className="mb-8">
-          <Link href="/admin/grants" className="text-sm text-gray-400 hover:text-gray-600 mb-3 inline-block">
+          <Link href="/admin/grants" className="text-sm text-muted-foreground/50 hover:text-muted-foreground mb-3 inline-block">
             ← All Grants
           </Link>
           <div className="flex items-start justify-between gap-4">
-            <h1 className="text-2xl font-bold text-gray-900">{grant.title}</h1>
-            <Link href={`/admin/grants/${id}/edit`} className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 text-sm font-medium text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+            <h1 className="text-2xl font-bold text-foreground">{grant.title}</h1>
+            <Link href={`/admin/grants/${id}/edit`} className="shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 border border-border/80 text-sm font-medium text-foreground/80 rounded-lg hover:bg-muted/50 transition-colors">
               ✏️ 编辑
             </Link>
           </div>
-          <div className="flex gap-4 mt-2 text-sm text-gray-500">
+          <div className="flex gap-4 mt-2 text-sm text-muted-foreground/70">
             <span>{applications.length} total</span>
             <span className="text-yellow-600">{pending} pending</span>
             <span className="text-green-600">{approved} approved</span>
@@ -65,7 +65,7 @@ export default async function AdminGrantDetailPage({
         </div>
 
         {applications.length === 0 ? (
-          <p className="text-gray-400 text-center py-12">No applications yet.</p>
+          <p className="text-muted-foreground/50 text-center py-12">No applications yet.</p>
         ) : (
           <div className="space-y-4">
             {applications.map(app => (

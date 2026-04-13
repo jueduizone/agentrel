@@ -43,22 +43,22 @@ export default function SubmitSkillPage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <main className="max-w-2xl mx-auto px-6 py-16">
         <div className="mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-700 mb-6">
+          <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground/50 hover:text-foreground/80 mb-6">
             <ArrowLeft size={16} />
             Back to AgentRel
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('submit.title')}</h1>
-          <p className="text-gray-500 text-base">{t('submit.desc')}</p>
+          <h1 className="text-3xl font-bold text-foreground mb-2">{t('submit.title')}</h1>
+          <p className="text-muted-foreground/70 text-base">{t('submit.desc')}</p>
         </div>
 
         {/* Format guide */}
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-5 mb-8">
-          <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Required format</p>
-          <pre className="text-xs text-gray-700 font-mono leading-relaxed">{`---
+        <div className="bg-muted/50 border border-border rounded-xl p-5 mb-8">
+          <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider mb-3">Required format</p>
+          <pre className="text-xs text-foreground/80 font-mono leading-relaxed">{`---
 name: My Web3 Skill
 ecosystem: ethereum
 type: technical-doc
@@ -71,7 +71,7 @@ version: 1.0
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-foreground/80 mb-2">
               Skill URL
             </label>
             <input
@@ -79,7 +79,7 @@ version: 1.0
               value={url}
               onChange={e => setUrl(e.target.value)}
               placeholder="https://example.com/my-skill.md"
-              className="w-full border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
+              className="w-full border border-border/80 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               required
             />
           </div>

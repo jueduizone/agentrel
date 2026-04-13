@@ -34,12 +34,12 @@ export function ApplicationRow({ app, grantId, apiKey }: { app: Application; gra
   const rep = app.reputation_snapshot ?? {}
 
   return (
-    <div className="border border-gray-200 rounded-xl p-5 bg-white space-y-3">
+    <div className="border border-border rounded-xl p-5 bg-background space-y-3">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="font-medium text-gray-900">{app._user?.email ?? 'Unknown'}</p>
+          <p className="font-medium text-foreground">{app._user?.email ?? 'Unknown'}</p>
           {app._user?.wallet_address && (
-            <p className="text-xs text-gray-400 font-mono">{app._user.wallet_address.slice(0, 12)}...</p>
+            <p className="text-xs text-muted-foreground/50 font-mono">{app._user.wallet_address.slice(0, 12)}...</p>
           )}
           {app._user?.human_did && (
             <p className="text-xs text-indigo-500">DID: {app._user.human_did}</p>
@@ -55,22 +55,22 @@ export function ApplicationRow({ app, grantId, apiKey }: { app: Application; gra
       </div>
 
       {app.pitch && (
-        <div className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 border border-gray-100">
-          <p className="text-xs text-gray-400 mb-1 uppercase tracking-wider">Pitch</p>
+        <div className="text-sm text-foreground/80 bg-muted/50 rounded-lg p-3 border border-border">
+          <p className="text-xs text-muted-foreground/50 mb-1 uppercase tracking-wider">Pitch</p>
           {app.pitch}
         </div>
       )}
 
       {app.custom_fields && Object.keys(app.custom_fields).length > 0 && (
-        <div className="text-sm text-gray-700 bg-gray-50 rounded-lg p-3 border border-gray-100">
-          <p className="text-xs text-gray-400 mb-2 uppercase tracking-wider">Application Fields</p>
+        <div className="text-sm text-foreground/80 bg-muted/50 rounded-lg p-3 border border-border">
+          <p className="text-xs text-muted-foreground/50 mb-2 uppercase tracking-wider">Application Fields</p>
           {Object.entries(app.custom_fields).map(([k, v]) => (
             <p key={k}><span className="font-medium">{k}:</span> {String(v)}</p>
           ))}
         </div>
       )}
 
-      <div className="flex gap-4 text-xs text-gray-500">
+      <div className="flex gap-4 text-xs text-muted-foreground/70">
         <span>Grant apps: <strong>{String(rep.grant_applications ?? 0)}</strong></span>
         <span>Approved: <strong>{String(rep.approved_grants ?? 0)}</strong></span>
         {!!rep.wallet_address && <span>Has wallet</span>}
@@ -90,7 +90,7 @@ export function ApplicationRow({ app, grantId, apiKey }: { app: Application; gra
           <button
             onClick={() => updateStatus('rejected')}
             disabled={loading}
-            className="flex-1 bg-gray-100 hover:bg-red-50 text-gray-700 hover:text-red-600 text-sm font-medium py-2 rounded-lg transition-colors disabled:opacity-50"
+            className="flex-1 bg-muted hover:bg-red-50 text-foreground/80 hover:text-red-600 text-sm font-medium py-2 rounded-lg transition-colors disabled:opacity-50"
           >
             ✗ Reject
           </button>

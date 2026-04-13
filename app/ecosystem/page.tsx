@@ -86,7 +86,7 @@ const ecosystems = [
 
 export default function EcosystemPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
       <div className="mx-auto max-w-6xl px-4 py-8">
         <div className="mb-8">
