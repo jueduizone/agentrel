@@ -42,7 +42,7 @@ export default async function HomePage() {
   const stats = await getStats()
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Navbar />
 
       <HeroSection />

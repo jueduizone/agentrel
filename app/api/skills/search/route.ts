@@ -10,34 +10,32 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'q is required' }, { status: 400 })
   }
 
-  // 尝试语义搜索（需要 embedding）
-  const useSemanticSearch = request.nextUrl.searchParams.get('semantic') === '1'
+  // 语义搜索（默认开启，semantic=0 时强制跳过）
+  const skipSemantic = request.nextUrl.searchParams.get('semantic') === '0'
+  const apiKey = process.env.OPENAI_API_KEY
 
-  if (useSemanticSearch) {
-    const apiKey = process.env.OPENAI_API_KEY
-    if (apiKey) {
-      try {
-        const embRes = await fetch('https://api.openai.com/v1/embeddings', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-          body: JSON.stringify({ input: q, model: 'text-embedding-3-small' }),
+  if (!skipSemantic && apiKey) {
+    try {
+      const embRes = await fetch('https://api.openai.com/v1/embeddings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+        body: JSON.stringify({ input: q, model: 'text-embedding-3-small' }),
+      })
+      const embJson = await embRes.json()
+      const embedding = embJson.data?.[0]?.embedding
+
+      if (embedding) {
+        const { data, error } = await serviceClient.rpc('match_skills', {
+          query_embedding: embedding,
+          match_count: limit,
+          filter_ecosystem: ecosystem || null,
         })
-        const embJson = await embRes.json()
-        const embedding = embJson.data?.[0]?.embedding
-
-        if (embedding) {
-          const { data, error } = await serviceClient.rpc('match_skills', {
-            query_embedding: embedding,
-            match_count: limit,
-            filter_ecosystem: ecosystem || null,
-          })
-          if (!error && data?.length) {
-            return NextResponse.json({ data, mode: 'semantic' })
-          }
+        if (!error && data?.length) {
+          return NextResponse.json({ data, mode: 'semantic' })
         }
-      } catch {
-        // fall through to keyword search
       }
+    } catch {
+      // fall through to keyword search
     }
   }
 

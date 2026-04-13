@@ -7,61 +7,125 @@ export function Footer() {
   const { t } = useLang()
 
   return (
-    <footer className="border-t border-border bg-white">
+    <footer className="border-t border-border bg-muted/20">
       <div className="mx-auto max-w-6xl px-6 py-12">
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-1">
-            <div className="flex items-center gap-1.5 mb-3">
-              <span className="text-base font-bold text-black">AgentRel</span>
-              <span className="text-xs text-gray-400">by <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">OpenBuild</a></span>
+            <div className="flex items-baseline gap-1.5 mb-3">
+              <span className="font-display text-sm font-semibold text-foreground">AgentRel</span>
+              <span className="text-xs text-muted-foreground">
+                by{' '}
+                <a
+                  href="https://openbuild.xyz"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors"
+                >
+                  OpenBuild
+                </a>
+              </span>
             </div>
-            <p className="text-sm text-gray-500 leading-relaxed">{t('footer.infra')}</p>
-            <p className="text-xs text-gray-400 mt-3">{t('footer.openSource')}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed">{t('footer.infra')}</p>
+            <p className="text-xs text-muted-foreground/60 mt-3">{t('footer.openSource')}</p>
           </div>
 
           {/* Product */}
           <div>
-            <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">{t('footer.product')}</h4>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li><Link href="/skills" className="hover:text-gray-900 transition-colors">{t('footer.skills')}</Link></li>
-              <li><Link href="/build" className="hover:text-gray-900 transition-colors">{t('footer.build')}</Link></li>
-              <li><Link href="/benchmark" className="hover:text-gray-900 transition-colors">{t('footer.benchmark')}</Link></li>
-              <li><Link href="/bundles" className="hover:text-gray-900 transition-colors">{t('footer.bundles')}</Link></li>
-              <li><a href="https://ian-docs.vercel.app/docs/agentforum" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">{t('footer.docs')}</a></li>
+            <h4 className="font-mono text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest mb-4">
+              {t('footer.product')}
+            </h4>
+            <ul className="space-y-2.5 text-sm text-muted-foreground">
+              <li><Link href="/skills" className="hover:text-foreground transition-colors">{t('footer.skills')}</Link></li>
+              <li><Link href="/build" className="hover:text-foreground transition-colors">{t('footer.build')}</Link></li>
+              <li><Link href="/benchmark" className="hover:text-foreground transition-colors">{t('footer.benchmark')}</Link></li>
+              <li><Link href="/bundles" className="hover:text-foreground transition-colors">{t('footer.bundles')}</Link></li>
+              <li>
+                <a
+                  href="https://ian-docs.vercel.app/docs/agentforum"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-foreground transition-colors"
+                >
+                  {t('footer.docs')}
+                </a>
+              </li>
             </ul>
           </div>
 
           {/* Community */}
           <div>
-            <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">{t('footer.community')}</h4>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li><a href="https://github.com/jueduizone/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">GitHub</a></li>
-              <li><a href="https://discord.gg/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">Discord</a></li>
-              <li><Link href="/submit" className="hover:text-gray-900 transition-colors">{t('footer.submitSkill')}</Link></li>
-              <li><a href="https://t.me/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">Telegram</a></li>
+            <h4 className="font-mono text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest mb-4">
+              {t('footer.community')}
+            </h4>
+            <ul className="space-y-2.5 text-sm text-muted-foreground">
+              <li>
+                <a href="https://github.com/jueduizone/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+                  GitHub
+                </a>
+              </li>
+              <li>
+                <a href="https://discord.gg/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+                  Discord
+                </a>
+              </li>
+              <li>
+                <Link href="/submit" className="hover:text-foreground transition-colors">
+                  {t('footer.submitSkill')}
+                </Link>
+              </li>
+              <li>
+                <a href="https://t.me/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+                  Telegram
+                </a>
+              </li>
             </ul>
           </div>
 
-          {/* OpenBuild Ecosystem */}
+          {/* Ecosystem */}
           <div>
-            <h4 className="text-xs font-semibold text-gray-900 uppercase tracking-wider mb-3">{t('footer.ecosystem')}</h4>
-            <ul className="space-y-2 text-sm text-gray-500">
-              <li><a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">openbuild.xyz</a></li>
-              <li><a href="https://github.com/openbuildxyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">GitHub</a></li>
-              <li><a href="https://twitter.com/openbuildxyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-900 transition-colors">Twitter / X</a></li>
+            <h4 className="font-mono text-[10px] font-medium text-muted-foreground/60 uppercase tracking-widest mb-4">
+              {t('footer.ecosystem')}
+            </h4>
+            <ul className="space-y-2.5 text-sm text-muted-foreground">
+              <li>
+                <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+                  openbuild.xyz
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com/openbuildxyz" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+                  GitHub
+                </a>
+              </li>
+              <li>
+                <a href="https://twitter.com/openbuildxyz" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+                  Twitter / X
+                </a>
+              </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-8 text-center">
-          <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="text-xs text-gray-400 hover:text-gray-600 transition-colors">Powered by OpenBuild</a>
-        </div>
-        <div className="mt-4 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-gray-400">
-          <span>© 2026 AgentRel · MIT License</span>
-          <div className="flex items-center gap-4">
-            <a href="https://github.com/jueduizone/agentrel/blob/main/LICENSE" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">MIT License</a>
-            <a href="https://openbuild.xyz" target="_blank" rel="noopener noreferrer" className="hover:text-gray-600 transition-colors">OpenBuild</a>
+        <div className="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <span className="font-mono text-xs text-muted-foreground/50">© 2026 AgentRel · MIT License</span>
+          <div className="flex items-center gap-5">
+            <a
+              href="https://github.com/jueduizone/agentrel/blob/main/LICENSE"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            >
+              MIT License
+            </a>
+            <a
+              href="https://openbuild.xyz"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-mono text-xs text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+            >
+              OpenBuild
+            </a>
           </div>
         </div>
       </div>

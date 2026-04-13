@@ -19,7 +19,11 @@ async function getGrants() {
   const countMap: Record<string, number> = {}
   for (const a of apps ?? []) countMap[a.grant_id] = (countMap[a.grant_id] ?? 0) + 1
 
-  return (grants ?? []).map(g => ({ ...g, application_count: countMap[g.id] ?? 0 }))
+  return (grants ?? []).map(g => ({
+    ...g,
+    sponsors: Array.isArray(g.sponsors) ? (g.sponsors[0] ?? null) : g.sponsors,
+    application_count: countMap[g.id] ?? 0,
+  }))
 }
 
 type StatusFilter = 'open' | 'closed' | 'all'

@@ -6,7 +6,7 @@ export const revalidate = 3600
 export async function GET() {
   const { data: skills } = await serviceClient
     .from('skills')
-    .select('id, name, ecosystem, type, access')
+    .select('id, name, ecosystem, type, access, description, source, source_repo')
     .order('ecosystem', { ascending: true })
     .order('name', { ascending: true })
 
@@ -97,9 +97,12 @@ export async function GET() {
     lines.push(`### ${label}`)
     lines.push('')
     for (const skill of (ecoSkills ?? [])) {
-      const url = `${BASE}/api/skills/${skill.id}.md`
+      const isOfficialMd = skill.source === 'official' && skill.source_repo &&
+        (skill.source_repo.endsWith('.md') || skill.source_repo.includes('raw.githubusercontent'))
+      const url = isOfficialMd ? skill.source_repo : `${BASE}/api/skills/${skill.id}.md`
       const accessTag = skill.access && skill.access !== 'free' ? ` *(${skill.access})*` : ''
-      lines.push(`- [${skill.name}](${url})${accessTag}`)
+      const desc = skill.description ? ` — ${skill.description.slice(0, 60)}${skill.description.length > 60 ? '…' : ''}` : ''
+      lines.push(`- [${skill.name}](${url})${accessTag}${desc}`)
     }
     lines.push('')
   }
