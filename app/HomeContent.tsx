@@ -38,22 +38,22 @@ export function HomeContent({ stats }: {
         <h2 className="mb-12 text-center text-3xl font-bold text-black">{t('home.whyTitle')}</h2>
         <div className="grid gap-6 md:grid-cols-3">
           <div className="rounded-xl border border-border p-6">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-red-100">
-              <Zap className="h-5 w-5 text-red-600" />
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-black/5">
+              <Zap className="h-5 w-5 text-black/60" />
             </div>
             <h3 className="mb-2 font-semibold text-black">{t('home.why1Title')}</h3>
             <p className="text-sm text-muted-foreground">{t('home.why1Desc')}</p>
           </div>
           <div className="rounded-xl border border-border p-6">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100">
-              <RefreshCw className="h-5 w-5 text-blue-600" />
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-black/5">
+              <RefreshCw className="h-5 w-5 text-black/60" />
             </div>
             <h3 className="mb-2 font-semibold text-black">{t('home.why2Title')}</h3>
             <p className="text-sm text-muted-foreground">{t('home.why2Desc')}</p>
           </div>
           <div className="rounded-xl border border-border p-6">
-            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-green-100">
-              <FileText className="h-5 w-5 text-green-600" />
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-black/5">
+              <FileText className="h-5 w-5 text-black/60" />
             </div>
             <h3 className="mb-2 font-semibold text-black">{t('home.why3Title')}</h3>
             <p className="text-sm text-muted-foreground">{t('home.why3Desc')}</p>
