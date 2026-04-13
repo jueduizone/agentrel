@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-AgentRel Eval v6 — --skill-ids, --judge-model, --faithfulness
+AgentRel Eval v7 — pass/partial/fail verdicts, dual-model, uplift report
 Answerer: local claude CLI or Zenmux Anthropic API
 Judge: pluggable (claude CLI, GPT-4o-mini via Zenmux, etc.)
 """
-import argparse, re, json, os, requests, subprocess
+import argparse, re, json, os, requests, subprocess, statistics
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
@@ -51,8 +51,21 @@ ZENMUX_KEY = os.environ.get("ZENMUX_API_KEY", "")
 MD_PATH = "/home/bre/.openclaw/workspace-prd-bot/agentrel-eval-questions.md"
 RESULTS_DIR = Path(__file__).parent / "results"
 
+# ── Verdict helpers ───────────────────────────────────────────────────────────
+def score_to_verdict(score: int) -> str:
+    """Convert 0-5 score to pass/partial/fail."""
+    if score >= 4:
+        return "pass"
+    elif score >= 2:
+        return "partial"
+    else:
+        return "fail"
+
+def verdict_emoji(v: str) -> str:
+    return {"pass": "✅", "partial": "🟡", "fail": "❌"}.get(v, "❓")
+
 # ── Arg parse ────────────────────────────────────────────────────────────────
-parser = argparse.ArgumentParser(description="AgentRel Eval")
+parser = argparse.ArgumentParser(description="AgentRel Eval v7")
 parser.add_argument("--skill-ids", type=str, default="")
 parser.add_argument("--questions-file", type=str, default=MD_PATH)
 parser.add_argument("--output", type=str, default="")
@@ -61,7 +74,9 @@ parser.add_argument("--judge-model", type=str, default="claude",
 parser.add_argument("--runs", type=int, default=1,
                     help="Number of eval runs per question (final score = median)")
 parser.add_argument("--answerer", choices=["claude-cli", "zenmux"], default="zenmux",
-                    help="Answerer model: zenmux (default) or claude-cli")
+                    help="Primary answerer model")
+parser.add_argument("--answerer2", type=str, default="",
+                    help="Optional secondary answerer for dual-model comparison: 'zenmux-mini' (gpt-4o-mini via Zenmux)")
 parser.add_argument("--faithfulness", action="store_true",
                     help="Add faithfulness scoring (is answer grounded in Skill?)")
 
@@ -71,13 +86,12 @@ def parse_questions(md_path):
         content = f.read()
     questions = []
     cat_pattern = r'## (?:📁\s*)(?:类别[一二三四五六七八九]?[：:]\s*)?(.+)'
-    # q_pattern: capture optional 注入策略 field after Skill line
     q_pattern = (
         r'### ([A-Z]{1,5}(?:-Q)?\d+)[^\n]*\n'
         r'\*\*问题：\*\* (.+?)\n'
         r'\*\*标准答案：\*\* (.+?)\n'
         r'\*\*Skill：\*\* `([^`]+)`'
-        r'(?:\n\*\*注入策略：\*\* (\w+))?'  # optional inject_strategy field
+        r'(?:\n\*\*注入策略：\*\* (\w+))?'
     )
     cats = [(m.start(), m.group(1).strip()) for m in re.finditer(cat_pattern, content)]
     for m in re.finditer(q_pattern, content, re.S):
@@ -89,7 +103,7 @@ def parse_questions(md_path):
             "question": question.strip(),
             "ground_truth": answer.strip(),
             "skill_id": skill_id.strip(),
-            "inject_strategy": (inject_strategy or "slice").lower(),  # default: slice
+            "inject_strategy": (inject_strategy or "slice").lower(),
         })
     return questions
 
@@ -117,14 +131,9 @@ def extract_relevant_section(skill_content: str, question: str, max_chars: int =
     """Split skill by ## headings, return the most question-relevant section(s)."""
     if not skill_content:
         return ""
-
-    # Split into sections: [intro, section1, section2, ...]
     raw_sections = re.split(r'\n(?=## )', skill_content)
     if len(raw_sections) <= 1:
-        # No headings — just truncate
         return skill_content[:max_chars]
-
-    # Score each section by keyword overlap with question
     q_words = set(re.findall(r'\b\w{3,}\b', question.lower()))
 
     def score_section(s: str) -> int:
@@ -132,52 +141,46 @@ def extract_relevant_section(skill_content: str, question: str, max_chars: int =
         return len(q_words & s_words)
 
     scored = sorted(enumerate(raw_sections), key=lambda x: score_section(x[1]), reverse=True)
-
-    # Take the intro (always include first 300 chars) + top 1-2 sections
     intro = raw_sections[0][:300] if raw_sections[0] else ""
     result = intro
     for idx, sec in scored[:2]:
         if idx == 0:
-            continue  # already included intro
+            continue
         candidate = "\n## " + sec if not sec.startswith("## ") else "\n" + sec
         if len(result) + len(candidate) <= max_chars:
             result += candidate
         else:
-            # Truncate the section to fit
             remaining = max_chars - len(result)
             if remaining > 200:
                 result += candidate[:remaining]
             break
-
     return result.strip()
 
 
-# ── Answerer: claude CLI or Anthropic API ────────────────────────────────────
-def ask_claude_cli(prompt):
-    result = subprocess.run([CLAUDE_CLI, "--print", "--dangerously-skip-permissions"], input=prompt,
+# ── Answerer: claude CLI or Zenmux API ───────────────────────────────────────
+def ask_claude_cli(prompt, system=""):
+    full = f"<system>\n{system}\n</system>\n\n{prompt}" if system else prompt
+    result = subprocess.run([CLAUDE_CLI, "--print", "--dangerously-skip-permissions"], input=full,
                             capture_output=True, text=True, timeout=600)
     return result.stdout.strip()
 
 
 def ask_anthropic_api(prompt, api_key):
     import anthropic
-    # Zenmux uses Anthropic-compatible API at a custom base_url
-    # Header: x-api-key (standard Anthropic SDK maps api_key to this header)
     client = anthropic.Anthropic(
         api_key=api_key,
-        base_url="https://zenmux.ai/api/anthropic",  # Zenmux Anthropic-compatible endpoint
+        base_url="https://zenmux.ai/api/anthropic",
     )
     msg = client.messages.create(
-        model="claude-sonnet-4-6",   # Zenmux model name
+        model="claude-sonnet-4-6",
         max_tokens=500,
         messages=[{"role": "user", "content": prompt}]
     )
     return msg.content[0].text.strip()
 
 
-
 def ask_zenmux(prompt, system=""):
-    """Use Zenmux Anthropic-compatible API as answerer (no rate limit issues)."""
+    """Use Zenmux claude-sonnet as answerer."""
     import anthropic, time as _time
     key = os.environ.get("ZENMUX_API_KEY", "")
     client = anthropic.Anthropic(api_key=key, base_url="https://zenmux.ai/api/anthropic")
@@ -189,7 +192,7 @@ def ask_zenmux(prompt, system=""):
                 max_tokens=800,
                 messages=[{"role": "user", "content": full_prompt}],
             )
-            _time.sleep(0.5)  # small delay to avoid rate limits
+            _time.sleep(0.5)
             return resp.content[0].text.strip()
         except Exception as e:
             if attempt < 2:
@@ -199,20 +202,45 @@ def ask_zenmux(prompt, system=""):
     return "[ERROR] max retries"
 
 
-def get_answerer(api_key=None, answerer_type="claude-cli"):
-    """Return answerer function based on --answerer arg."""
+def ask_zenmux_mini(prompt, system=""):
+    """Use Zenmux gpt-4o-mini as answerer (weak model for dual comparison)."""
+    import time as _time
+    full = f"{system}\n\n{prompt}" if system else prompt
+    for attempt in range(3):
+        try:
+            r = requests.post(
+                ZENMUX_OAI_URL,
+                headers={"Authorization": f"Bearer {ZENMUX_KEY}", "Content-Type": "application/json"},
+                json={"model": "openai/gpt-4o-mini", "messages": [{"role": "user", "content": full}],
+                      "max_tokens": 800, "temperature": 0.3},
+                timeout=30,
+            )
+            r.raise_for_status()
+            _time.sleep(0.3)
+            return r.json()["choices"][0]["message"]["content"].strip()
+        except Exception as e:
+            if attempt < 2:
+                _time.sleep(3 * (attempt + 1))
+            else:
+                return f"[ERROR] {e}"
+    return "[ERROR] max retries"
+
+
+def get_answerer_fn(answerer_type: str):
+    """Return answerer function (signature: fn(prompt, system='') -> str)."""
     if answerer_type == "zenmux":
         return ask_zenmux
-    if os.path.exists(CLAUDE_CLI):
-        return ask_claude_cli
-    elif api_key:
-        def fn(prompt): return ask_anthropic_api(prompt, api_key)
-        return fn
+    elif answerer_type == "zenmux-mini":
+        return ask_zenmux_mini
+    elif answerer_type == "claude-cli":
+        if os.path.exists(CLAUDE_CLI):
+            return ask_claude_cli
+        raise RuntimeError("claude CLI not found")
     else:
-        raise RuntimeError("No answerer available: claude CLI not found and ZENMUX_API_KEY not set")
+        raise RuntimeError(f"Unknown answerer: {answerer_type}")
 
 
-# ── Judge ────────────────────────────────────────────────────────────────────
+# ── Judge ─────────────────────────────────────────────────────────────────────
 def _call_gpt(prompt: str) -> str:
     """Call GPT-4o-mini via Zenmux OpenAI-compatible endpoint."""
     try:
@@ -236,7 +264,8 @@ def _extract_score(txt: str) -> int:
     return int(nums[-1]) if nums else 3
 
 
-def judge(question, answer, ground_truth, answerer_fn, judge_model="claude"):
+def judge(question, answer, ground_truth, answerer_fn, judge_model="claude") -> tuple[int, str]:
+    """Returns (score 0-5, verdict pass/partial/fail)."""
     prompt = f"""You are a strict Web3 technical judge. Score this answer 0-5.
 
 Ground truth: {ground_truth}
@@ -251,16 +280,17 @@ Rules:
 
 Think briefly, then output ONLY the final integer on the last line."""
     if judge_model == "gpt-4o-mini":
-        return _extract_score(_call_gpt(prompt))
+        raw = _call_gpt(prompt)
     else:
-        return _extract_score(answerer_fn(prompt))
+        raw = answerer_fn(prompt)
+    score = _extract_score(raw)
+    return score, score_to_verdict(score)
 
 
 def faithfulness_score(question, answer, skill_content, answerer_fn, judge_model="claude") -> int:
-    """Score 0-5: how much of the answer is grounded in skill_content (not hallucinated).
-    5 = all claims traceable to skill; 0 = answer ignores/contradicts skill or makes up facts."""
+    """Score 0-5: how much of the answer is grounded in skill_content."""
     if not skill_content:
-        return -1  # N/A — no skill content to compare against
+        return -1
     prompt = f"""You are evaluating whether an AI answer is grounded in provided documentation.
 
 Documentation (Skill content):
@@ -284,16 +314,191 @@ Output ONLY the final integer on the last line."""
         return _extract_score(answerer_fn(prompt))
 
 
-# ── Main ─────────────────────────────────────────────────────────────────────
+# ── Per-skill aggregation ─────────────────────────────────────────────────────
+def aggregate_skill_stats(results: list[dict], model_key: str = "") -> dict:
+    """
+    Build per-skill stats dict.
+    model_key: "" for primary model, "2" for secondary model suffix in result fields.
+    Returns {skill_id: {pass_rate, partial_rate, fail_rate, ctrl_pass_rate, uplift, n, ...}}
+    """
+    ctrl_score_key = "control_score"
+    test_score_key = f"test_score{model_key}"
+    verdict_ctrl_key = "verdict_ctrl"
+    verdict_test_key = f"verdict_test{model_key}"
+
+    by_skill = defaultdict(list)
+    for r in results:
+        sid = r.get("skill_id", "unknown")
+        by_skill[sid].append(r)
+
+    stats = {}
+    for sid, rows in by_skill.items():
+        n = len(rows)
+        ctrl_scores = [r[ctrl_score_key] for r in rows]
+        test_scores = [r.get(test_score_key, r["test_score"]) for r in rows]
+
+        # verdict counts
+        ctrl_verdicts = [r.get(verdict_ctrl_key, score_to_verdict(r[ctrl_score_key])) for r in rows]
+        test_verdicts = [r.get(verdict_test_key, score_to_verdict(r.get(test_score_key, r["test_score"]))) for r in rows]
+
+        ctrl_pass = ctrl_verdicts.count("pass") / n
+        ctrl_partial = ctrl_verdicts.count("partial") / n
+        ctrl_fail = ctrl_verdicts.count("fail") / n
+
+        test_pass = test_verdicts.count("pass") / n
+        test_partial = test_verdicts.count("partial") / n
+        test_fail = test_verdicts.count("fail") / n
+
+        avg_ctrl = sum(ctrl_scores) / n
+        avg_test = sum(test_scores) / n
+        uplift = avg_test - avg_ctrl
+        pass_uplift = test_pass - ctrl_pass
+
+        stats[sid] = {
+            "n": n,
+            "ctrl_avg": round(avg_ctrl, 2),
+            "test_avg": round(avg_test, 2),
+            "uplift": round(uplift, 2),
+            "ctrl_pass_rate": round(ctrl_pass, 3),
+            "ctrl_partial_rate": round(ctrl_partial, 3),
+            "ctrl_fail_rate": round(ctrl_fail, 3),
+            "test_pass_rate": round(test_pass, 3),
+            "test_partial_rate": round(test_partial, 3),
+            "test_fail_rate": round(test_fail, 3),
+            "pass_uplift": round(pass_uplift, 3),
+        }
+    return stats
+
+
+# ── RESULT.md generator ───────────────────────────────────────────────────────
+def generate_result_md(output: dict, out_path: str) -> str:
+    """Generate a mantle-style RESULT.md and write it. Returns path."""
+    ts = output.get("timestamp", "")[:16].replace("T", " ")
+    mode = output.get("mode", "full")
+    judge_model = output.get("judge_model", "")
+    answerer = output.get("answerer", "")
+    answerer2 = output.get("answerer2", "")
+    n = output.get("total_questions", 0)
+    avg_c = output.get("avg_control", 0)
+    avg_t = output.get("avg_test", 0)
+    delta = output.get("delta", 0)
+
+    lines = [
+        "# AgentRel Eval Results",
+        "",
+        f"**Run:** {ts}  |  **Mode:** {mode}  |  **Questions:** {n}",
+        f"**Judge:** {judge_model}  |  **Answerer:** {answerer}" + (f"  |  **Answerer2:** {answerer2}" if answerer2 else ""),
+        "",
+        "## Overall",
+        "",
+        f"| Metric | Control | With Skill | Uplift |",
+        f"|--------|---------|------------|--------|",
+        f"| Avg Score | {avg_c:.2f} | {avg_t:.2f} | {delta:+.2f} |",
+    ]
+
+    # Overall verdict counts
+    results = output.get("results", [])
+    if results:
+        n_r = len(results)
+        ctrl_pass = sum(1 for r in results if r.get("verdict_ctrl") == "pass") / n_r
+        ctrl_partial = sum(1 for r in results if r.get("verdict_ctrl") == "partial") / n_r
+        ctrl_fail = sum(1 for r in results if r.get("verdict_ctrl") == "fail") / n_r
+        test_pass = sum(1 for r in results if r.get("verdict_test") == "pass") / n_r
+        test_partial = sum(1 for r in results if r.get("verdict_test") == "partial") / n_r
+        test_fail = sum(1 for r in results if r.get("verdict_test") == "fail") / n_r
+        lines += [
+            f"| Pass Rate | {ctrl_pass:.0%} | {test_pass:.0%} | {test_pass-ctrl_pass:+.0%} |",
+            f"| Partial Rate | {ctrl_partial:.0%} | {test_partial:.0%} | {test_partial-ctrl_partial:+.0%} |",
+            f"| Fail Rate | {ctrl_fail:.0%} | {test_fail:.0%} | {test_fail-ctrl_fail:+.0%} |",
+        ]
+
+    # Per-skill table
+    skill_stats = output.get("skill_stats", {})
+    if skill_stats:
+        lines += [
+            "",
+            "## Per-Skill Breakdown",
+            "",
+            "| Skill | n | Ctrl Pass | Test Pass | Pass Uplift | Ctrl Avg | Test Avg | Score Uplift |",
+            "|-------|---|-----------|-----------|-------------|----------|----------|--------------|",
+        ]
+        for sid, s in sorted(skill_stats.items(), key=lambda x: -x[1]["pass_uplift"]):
+            emoji = "✅" if s["pass_uplift"] > 0 else ("🟡" if s["pass_uplift"] == 0 else "❌")
+            lines.append(
+                f"| `{sid}` | {s['n']} "
+                f"| {s['ctrl_pass_rate']:.0%} | {s['test_pass_rate']:.0%} | {s['pass_uplift']:+.0%} "
+                f"| {s['ctrl_avg']:.2f} | {s['test_avg']:.2f} | {s['uplift']:+.2f} {emoji} |"
+            )
+
+    # Dual-model comparison table (if answerer2 used)
+    if answerer2 and results and any("test_score2" in r for r in results):
+        skill_stats2 = output.get("skill_stats2", {})
+        lines += [
+            "",
+            f"## Dual-Model: {answerer} vs {answerer2}",
+            "",
+            "| Skill | n | Strong Pass | Weak Pass | Strong Uplift | Weak Uplift |",
+            "|-------|---|-------------|-----------|---------------|-------------|",
+        ]
+        all_skills = sorted(set(list(skill_stats.keys()) + list(skill_stats2.keys())))
+        for sid in all_skills:
+            s1 = skill_stats.get(sid, {})
+            s2 = skill_stats2.get(sid, {})
+            lines.append(
+                f"| `{sid}` | {s1.get('n', s2.get('n', 0))} "
+                f"| {s1.get('test_pass_rate', 0):.0%} | {s2.get('test_pass_rate', 0):.0%} "
+                f"| {s1.get('pass_uplift', 0):+.0%} | {s2.get('pass_uplift', 0):+.0%} |"
+            )
+
+    # Per-category
+    by_cat = output.get("by_category", {})
+    if by_cat:
+        lines += [
+            "",
+            "## By Category",
+            "",
+            "| Category | n | Ctrl | Test | Uplift |",
+            "|----------|---|------|------|--------|",
+        ]
+        for cat, v in sorted(by_cat.items(), key=lambda x: -(x[1].get("test", 0) - x[1].get("control", 0))):
+            d = v["test"] - v["control"]
+            lines.append(f"| {cat} | {v['n']} | {v['control']:.2f} | {v['test']:.2f} | {d:+.2f} |")
+
+    # Per-question detail
+    if results:
+        lines += [
+            "",
+            "## Question Detail",
+            "",
+            "| ID | Skill | Ctrl | Test | Δ | Ctrl Verdict | Test Verdict |",
+            "|----|-------|------|------|---|-------------|-------------|",
+        ]
+        for r in results:
+            sc = r["control_score"]
+            st = r["test_score"]
+            vc = verdict_emoji(r.get("verdict_ctrl", score_to_verdict(sc)))
+            vt = verdict_emoji(r.get("verdict_test", score_to_verdict(st)))
+            lines.append(
+                f"| {r['id']} | `{r['skill_id']}` | {sc} | {st} | {st-sc:+d} | {vc} | {vt} |"
+            )
+
+    md_content = "\n".join(lines) + "\n"
+    md_path = str(RESULTS_DIR / "RESULT.md")
+    with open(md_path, "w", encoding="utf-8") as f:
+        f.write(md_content)
+    print(f"\n📄 RESULT.md → {md_path}")
+    return md_path
+
+
+# ── Main ──────────────────────────────────────────────────────────────────────
 def main():
     args = parser.parse_args()
-    api_key = os.environ.get("ZENMUX_API_KEY", "")
-    answerer_fn = get_answerer(api_key or None, answerer_type=args.answerer)
+    answerer_fn = get_answerer_fn(args.answerer)
+    answerer2_fn = get_answerer_fn(args.answerer2) if args.answerer2 else None
 
     all_questions = parse_questions(args.questions_file)
     skill_map = build_skill_map(all_questions)
 
-    # Filter by --skill-ids if provided
     if args.skill_ids.strip():
         target_skills = [s.strip() for s in args.skill_ids.split(",") if s.strip()]
         target_qids = set()
@@ -316,16 +521,17 @@ def main():
     skill_cache = {}
     category_results = defaultdict(list)
 
-    print(f"\n{'ID':<5} {'Category':<28} {'Ctrl':>5} {'Test':>5} {'Δ':>3}")
-    print("-" * 48)
-
-    # parse args here so judge_model and faithfulness are available in loop
     judge_model = args.judge_model
     do_faithfulness = args.faithfulness
-
-    print(f"Judge: {judge_model}" + (" + faithfulness" if do_faithfulness else ""))
-
     num_runs = args.runs
+    dual = answerer2_fn is not None
+
+    header = f"{'ID':<8} {'Category':<25} {'Ctrl':>5} {'Test':>5} {'Δ':>3} {'V_ctrl':<8} {'V_test':<8}"
+    if dual:
+        header += f" {'Test2':>6} {'V2':<8}"
+    print(f"\n{header}")
+    print("-" * (len(header) + 4))
+    print(f"Judge: {judge_model}  Answerer: {args.answerer}" + (f"  Answerer2: {args.answerer2}" if dual else ""))
 
     for q in questions:
         sid = q["skill_id"]
@@ -333,7 +539,6 @@ def main():
             skill_cache[sid] = fetch_skill(sid)
         skill = skill_cache[sid]
 
-        # Choose inject strategy per question
         strategy = q.get("inject_strategy", "slice")
         if strategy == "full":
             skill_context = skill[:3000] if skill else ""
@@ -345,79 +550,98 @@ def main():
             f"{skill_context}\n\n"
             "Answer based on this documentation when relevant."
         ) if skill_context else ""
-        test_input = f"<system>\n{sys_prompt}\n</system>\n\n{q['question']}" if sys_prompt else q["question"]
 
-        # Run multiple times and take median to reduce Judge noise
+        # ── Primary model runs ────────────────────────────────────────────────
         sc_runs, st_runs = [], []
-        for run_i in range(num_runs):
+        vc_runs, vt_runs = [], []
+        for _ in range(num_runs):
             ans_ctrl = answerer_fn(q["question"])
-            ans_test = answerer_fn(test_input)
-            _sc = judge(q["question"], ans_ctrl, q["ground_truth"], answerer_fn, judge_model)
-            _st = judge(q["question"], ans_test, q["ground_truth"], answerer_fn, judge_model)
-            sc_runs.append(_sc)
-            st_runs.append(_st)
+            ans_test = answerer_fn(q["question"], system=sys_prompt) if sys_prompt else answerer_fn(q["question"])
+            _sc, _vc = judge(q["question"], ans_ctrl, q["ground_truth"], answerer_fn, judge_model)
+            _st, _vt = judge(q["question"], ans_test, q["ground_truth"], answerer_fn, judge_model)
+            sc_runs.append(_sc); vc_runs.append(_vc)
+            st_runs.append(_st); vt_runs.append(_vt)
 
-        import statistics
         sc = round(statistics.median(sc_runs))
         st = round(statistics.median(st_runs))
+        vc = score_to_verdict(sc)
+        vt = score_to_verdict(st)
 
-        # Faithfulness scoring (test group only — does test answer stick to Skill?)
+        # ── Secondary model runs (dual) ───────────────────────────────────────
+        st2, vt2 = None, None
+        if dual:
+            st2_runs, vt2_runs = [], []
+            for _ in range(num_runs):
+                ans_test2 = answerer2_fn(q["question"], system=sys_prompt) if sys_prompt else answerer2_fn(q["question"])
+                _st2, _vt2 = judge(q["question"], ans_test2, q["ground_truth"], answerer_fn, judge_model)
+                st2_runs.append(_st2); vt2_runs.append(_vt2)
+            st2 = round(statistics.median(st2_runs))
+            vt2 = score_to_verdict(st2)
+
+        # ── Faithfulness ──────────────────────────────────────────────────────
         faith_score = None
         if do_faithfulness and skill:
-            ans_test_last = answerer_fn(test_input)
+            ans_test_last = answerer_fn(q["question"], system=sys_prompt) if sys_prompt else answerer_fn(q["question"])
             faith_score = faithfulness_score(q["question"], ans_test_last, skill, answerer_fn, judge_model)
 
-        runs_str = f" ({sc_runs}→{st_runs})" if num_runs > 1 else ""
-        delta = f"+{st-sc}" if st > sc else ("=" if st == sc else str(st-sc))
-        faith_str = f" faith={faith_score}" if faith_score is not None else ""
-        strat_str = f" [{q.get('inject_strategy','slice')}]"
-        cat_short = q["category"][:28]
-        print(f"{q['id']:<5} {cat_short:<28} {sc:>5} {st:>5} {delta:>3}{faith_str}{strat_str}{runs_str}")
+        delta_str = f"{st-sc:+d}"
+        row = (f"{q['id']:<8} {q['category'][:25]:<25} {sc:>5} {st:>5} {delta_str:>3} "
+               f"{verdict_emoji(vc)+vc:<8} {verdict_emoji(vt)+vt:<8}")
+        if dual and st2 is not None:
+            row += f" {st2:>6} {verdict_emoji(vt2)+vt2:<8}"
+        if faith_score is not None:
+            row += f" faith={faith_score}"
+        print(row)
 
-        results.append({
+        entry = {
             "id": q["id"], "category": q["category"], "skill_id": sid,
-            "skill_found": bool(skill), "control_score": sc, "test_score": st,
-            **({"faithfulness": faith_score} if faith_score is not None else {}),
-        })
+            "question": q["question"],
+            "skill_found": bool(skill),
+            "control_score": sc, "test_score": st,
+            "verdict_ctrl": vc, "verdict_test": vt,
+            **({f"test_score2": st2, "verdict_test2": vt2} if dual and st2 is not None else {}),
+            **({f"faithfulness": faith_score} if faith_score is not None else {}),
+        }
+        results.append(entry)
         category_results[q["category"]].append((sc, st))
 
     avg_c = sum(r["control_score"] for r in results) / len(results)
     avg_t = sum(r["test_score"] for r in results) / len(results)
 
-    print("\n" + "=" * 48)
-    print(f"\n{'类别':<30} {'Ctrl':>5} {'Test':>5} {'提升':>6}")
-    print("-" * 48)
+    # ── Category summary ──────────────────────────────────────────────────────
+    print("\n" + "=" * 55)
+    print(f"\n{'类别':<30} {'n':>3} {'Ctrl':>5} {'Test':>5} {'提升':>6}")
+    print("-" * 55)
     for cat, scores in category_results.items():
         c = sum(s[0] for s in scores) / len(scores)
         t = sum(s[1] for s in scores) / len(scores)
-        print(f"{cat[:30]:<30} {c:>5.2f} {t:>5.2f} {t-c:>+6.2f}")
-    print("-" * 48)
-    print(f"{'总体平均':<30} {avg_c:>5.2f} {avg_t:>5.2f} {avg_t-avg_c:>+6.2f}")
-    print(f"\n平均：control={avg_c:.2f} test={avg_t:.2f}  提升：{avg_t-avg_c:+.2f}")
+        print(f"{cat[:30]:<30} {len(scores):>3} {c:>5.2f} {t:>5.2f} {t-c:>+6.2f}")
+    print("-" * 55)
+    print(f"{'总体平均':<30} {len(results):>3} {avg_c:>5.2f} {avg_t:>5.2f} {avg_t-avg_c:>+6.2f}")
 
-    # Save results
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    ts = datetime.now().strftime("%Y-%m-%d-%H%M")
-    out_path = args.output if args.output else str(RESULTS_DIR / f"{ts}.json")
-    output = {
-        "judge_model": judge_model,
-        "faithfulness_enabled": do_faithfulness,
-        "timestamp": datetime.now().isoformat(),
-        "mode": "incremental" if args.skill_ids else "full",
-        "skill_ids_filter": args.skill_ids or None,
-        "total_questions": len(results),
-        "avg_control": round(avg_c, 2),
-        "avg_test": round(avg_t, 2),
-        "delta": round(avg_t - avg_c, 2),
-        "by_category": {
-            cat: {"control": round(sum(s[0] for s in scores)/len(scores), 2),
-                  "test": round(sum(s[1] for s in scores)/len(scores), 2),
-                  "n": len(scores)}
-            for cat, scores in category_results.items()
-        },
-        "results": results,
-    }
-    # Source tier breakdown
+    # ── Per-skill stats ───────────────────────────────────────────────────────
+    skill_stats = aggregate_skill_stats(results)
+    skill_stats2 = aggregate_skill_stats(results, model_key="2") if dual else {}
+
+    print("\n📊 Per-Skill Summary:")
+    print(f"  {'Skill':<35} {'n':>3} {'Ctrl%':>6} {'Test%':>6} {'Pass↑':>7} {'δavg':>6}")
+    print("  " + "-" * 65)
+    for sid, s in sorted(skill_stats.items(), key=lambda x: -x[1]["pass_uplift"]):
+        emoji = "✅" if s["pass_uplift"] > 0 else ("🟡" if s["pass_uplift"] == 0 else "❌")
+        print(f"  {sid[:35]:<35} {s['n']:>3} {s['ctrl_pass_rate']:>5.0%} {s['test_pass_rate']:>6.0%} "
+              f"{s['pass_uplift']:>+6.0%} {s['uplift']:>+6.2f} {emoji}")
+
+    if dual and skill_stats2:
+        print(f"\n📊 Dual-Model Comparison ({args.answerer} vs {args.answerer2}):")
+        print(f"  {'Skill':<35} {'Strong%':>8} {'Weak%':>7} {'Strong↑':>8} {'Weak↑':>7}")
+        print("  " + "-" * 65)
+        for sid in sorted(set(list(skill_stats.keys()) + list(skill_stats2.keys()))):
+            s1 = skill_stats.get(sid, {})
+            s2 = skill_stats2.get(sid, {})
+            print(f"  {sid[:35]:<35} {s1.get('test_pass_rate',0):>7.0%} {s2.get('test_pass_rate',0):>7.0%} "
+                  f"{s1.get('pass_uplift',0):>+7.0%} {s2.get('pass_uplift',0):>+7.0%}")
+
+    # ── Source tier breakdown ─────────────────────────────────────────────────
     unique_skills = list(set(r["skill_id"] for r in results))
     tier_meta = fetch_skill_meta(unique_skills)
     tier_results: dict[str, list] = {}
@@ -431,63 +655,99 @@ def main():
             tt = sum(s[1] for s in scores) / len(scores)
             print(f"  {tier:<12}: ctrl={tc:.2f} test={tt:.2f} δ={tt-tc:+.2f}  (n={len(scores)})")
 
+    # ── Save JSON ─────────────────────────────────────────────────────────────
+    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
+    ts_str = datetime.now().strftime("%Y-%m-%d-%H%M")
+    out_path = args.output if args.output else str(RESULTS_DIR / f"{ts_str}.json")
+    output = {
+        "version": "v7",
+        "judge_model": judge_model,
+        "answerer": args.answerer,
+        "answerer2": args.answerer2 or None,
+        "faithfulness_enabled": do_faithfulness,
+        "timestamp": datetime.now().isoformat(),
+        "mode": "incremental" if args.skill_ids else "full",
+        "skill_ids_filter": args.skill_ids or None,
+        "total_questions": len(results),
+        "avg_control": round(avg_c, 2),
+        "avg_test": round(avg_t, 2),
+        "delta": round(avg_t - avg_c, 2),
+        "by_category": {
+            cat: {
+                "control": round(sum(s[0] for s in scores) / len(scores), 2),
+                "test": round(sum(s[1] for s in scores) / len(scores), 2),
+                "n": len(scores),
+            }
+            for cat, scores in category_results.items()
+        },
+        "skill_stats": skill_stats,
+        **({"skill_stats2": skill_stats2} if dual else {}),
+        "results": results,
+    }
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2, ensure_ascii=False)
     print(f"\nSaved: {out_path}")
 
-    # Print skill → question mapping summary
-    print("\n📋 Skill → Question mapping (from this run):")
+    # ── Print skill → question mapping ────────────────────────────────────────
+    print("\n📋 Skill → Question mapping:")
     for sid, qids in sorted(skill_map.items()):
         if any(q["id"] in qids for q in questions):
             print(f"  {sid}: {qids}")
 
-    # ③ Save results to Supabase eval_results table (for Benchmark page)
+    # ── Generate RESULT.md ────────────────────────────────────────────────────
+    generate_result_md(output, out_path)
+
+    # ── Save to Supabase ──────────────────────────────────────────────────────
     _save_results_to_db(output)
 
-    # ④ Auto-flag skills with negative delta in DB
+    # ── Auto-flag skills ──────────────────────────────────────────────────────
     _auto_flag_skills(output)
 
-    # ④ sessions_send summary to prd-bot
+    # ── Send summary to prd-bot ───────────────────────────────────────────────
     _send_eval_summary(output, out_path)
 
 
 def _save_results_to_db(output: dict):
-    """Save eval results to Supabase eval_results table for the Benchmark page."""
+    """Save eval results to Supabase eval_results table.
+    NOTE: To enable verdict column, run in Supabase SQL editor:
+      ALTER TABLE eval_results ADD COLUMN IF NOT EXISTS verdict text;
+    Until then, verdict field is silently dropped on insert failure.
+    """
     try:
         results = output.get("results", [])
         if not results:
             return
 
-        # Use ISO timestamp as run_at
         run_at = output.get("timestamp", datetime.utcnow().isoformat() + "+00:00")
         if not run_at.endswith("+00:00") and not run_at.endswith("Z"):
             run_at = run_at + "+00:00"
         judge_model = output.get("judge_model", "gpt-4o-mini")
         inject_strategy = output.get("mode", "full")
 
-        rows = []
-        for r in results:
-            qid = r.get("id", "")
-            cat = qid.split("-Q")[0] if "-Q" in qid else "General"
-            rows.append({
-                "run_at": run_at,
-                "judge_model": judge_model,
-                "inject_strategy": inject_strategy,
-                "category": cat,
-                "question_id": qid,
-                "question_label": r.get("question", "")[:200],
-                "control_score": r.get("control_score", 0),
-                "test_score": r.get("test_score", 0),
-                "faithfulness": None,
-                "skill_id": r.get("skill_id", ""),
-                "skill_found": bool(r.get("skill_id")),
-            })
+        def make_rows(include_verdict: bool) -> list[dict]:
+            rows = []
+            for r in results:
+                qid = r.get("id", "")
+                cat = qid.split("-Q")[0] if "-Q" in qid else "General"
+                row = {
+                    "run_at": run_at,
+                    "judge_model": judge_model,
+                    "inject_strategy": inject_strategy,
+                    "category": cat,
+                    "question_id": qid,
+                    "question_label": r.get("question", "")[:200],
+                    "control_score": r.get("control_score", 0),
+                    "test_score": r.get("test_score", 0),
+                    "faithfulness": r.get("faithfulness"),
+                    "skill_id": r.get("skill_id", ""),
+                    "skill_found": bool(r.get("skill_id")),
+                }
+                if include_verdict:
+                    row["verdict"] = r.get("verdict_test", "")
+                rows.append(row)
+            return rows
 
-        # Insert in batches of 50
-        batch_size = 50
-        inserted = 0
-        for i in range(0, len(rows), batch_size):
-            batch = rows[i:i + batch_size]
+        def _insert_batch(batch: list[dict]) -> int:
             resp = requests.post(
                 f"{SUPABASE_URL}/rest/v1/eval_results",
                 json=batch,
@@ -499,43 +759,58 @@ def _save_results_to_db(output: dict):
                 },
                 timeout=15,
             )
-            if resp.status_code in (200, 201):
-                inserted += len(batch)
-            else:
-                print(f"  ⚠️  DB insert batch {i // batch_size} failed: {resp.status_code}")
+            return resp.status_code, resp.text
 
-        print(f"\n📊 Saved {inserted}/{len(rows)} eval results to DB (run_at={run_at})")
+        # Try with verdict first; fall back to without if column missing
+        rows = make_rows(include_verdict=True)
+        batch_size = 50
+        inserted = 0
+        verdict_supported = True
+
+        for i in range(0, len(rows), batch_size):
+            batch = rows[i:i + batch_size]
+            status, text = _insert_batch(batch)
+            if status in (200, 201):
+                inserted += len(batch)
+            elif "verdict" in text and "PGRST204" in text:
+                # verdict column doesn't exist yet — retry without it
+                if verdict_supported:
+                    print("  ⚠️  verdict column missing — retrying without it")
+                    print("  💡 Run in Supabase SQL editor: ALTER TABLE eval_results ADD COLUMN IF NOT EXISTS verdict text;")
+                    verdict_supported = False
+                    rows = make_rows(include_verdict=False)
+                batch2 = rows[i:i + batch_size]
+                status2, text2 = _insert_batch(batch2)
+                if status2 in (200, 201):
+                    inserted += len(batch2)
+                else:
+                    print(f"  ❌ DB insert batch {i // batch_size} failed: {status2} {text2[:100]}")
+            else:
+                print(f"  ⚠️  DB insert batch {i // batch_size} failed: {status} {text[:100]}")
+
+        print(f"\n📊 Saved {inserted}/{len(rows)} eval results to DB" +
+              ("" if verdict_supported else " (verdict column not yet added)"))
     except Exception as e:
         print(f"\n⚠️  _save_results_to_db error: {e}")
 
 
 def _auto_flag_skills(output: dict):
-    """After a full eval run, flag skills with Δ<0 in Supabase (health_score=-2).
-    health_score=-1: manually disabled
-    health_score=-2: auto-flagged by eval (Δ<0), pending review
-    """
+    """Flag skills with negative score delta in Supabase (health_score=-2)."""
     try:
         results = output.get("results", [])
-        # Aggregate delta per skill_id
-        from collections import defaultdict
         skill_deltas: dict[str, list[int]] = defaultdict(list)
         for r in results:
             sid = r.get("skill_id", "")
             if sid:
                 skill_deltas[sid].append(r.get("test_score", 0) - r.get("control_score", 0))
 
-        flagged = []
-        for sid, deltas in skill_deltas.items():
-            total = sum(deltas)
-            if total < 0:
-                flagged.append(sid)
+        flagged = [sid for sid, deltas in skill_deltas.items() if sum(deltas) < 0]
 
         if not flagged:
             print("\n✅ No skills to auto-flag (all Δ >= 0)")
             return
 
-        print(f"\n🚩 Auto-flagging {len(flagged)} skills with negative delta: {flagged}")
-
+        print(f"\n🚩 Auto-flagging {len(flagged)} skills: {flagged}")
         for sid in flagged:
             r = requests.patch(
                 f"{SUPABASE_URL}/rest/v1/skills?id=eq.{sid}",
@@ -549,10 +824,13 @@ def _auto_flag_skills(output: dict):
                 timeout=10,
             )
             status = "✅" if r.status_code in (200, 204) else f"❌ {r.status_code}"
-            print(f"  {status} {sid} → health_score=-2 (flagged)")
+            print(f"  {status} {sid} → health_score=-2")
 
-        # Notify Telegram
-        flag_msg = f"🚩 Eval 自动标记 {len(flagged)} 个降分 skill（health_score=-2）:\n" + "\n".join(f"  • {s}" for s in flagged) + "\n\n7天内无人处理将自动下架（health_score=-1）。"
+        flag_msg = (
+            f"🚩 Eval 自动标记 {len(flagged)} 个降分 skill（health_score=-2）:\n"
+            + "\n".join(f"  • {s}" for s in flagged)
+            + "\n\n7天内无人处理将自动下架（health_score=-1）。"
+        )
         subprocess.run(
             ["/home/bre/.npm-global/bin/openclaw", "message", "send",
              "--channel", "telegram", "--target", "-1003776690352", "--message", flag_msg],
@@ -563,7 +841,7 @@ def _auto_flag_skills(output: dict):
 
 
 def _send_eval_summary(output: dict, out_path: str):
-    """Send eval summary to prd-bot via openclaw session send."""
+    """Send eval summary to group via openclaw."""
     ts = output.get("timestamp", "")[:16].replace("T", " ")
     mode = output.get("mode", "full")
     n = output.get("total_questions", 0)
@@ -571,44 +849,44 @@ def _send_eval_summary(output: dict, out_path: str):
     avg_t = output.get("avg_test", 0)
     delta = output.get("delta", 0)
 
-    # Build per-result lines
-    lines = []
-    for r in output.get("results", []):
-        sc, st = r["control_score"], r["test_score"]
-        d = f"+{st-sc}" if st > sc else ("=" if st == sc else str(st-sc))
-        lines.append(f"{r['id']}: control={sc} test={st} {d}")
+    # Per-skill verdict summary
+    skill_lines = []
+    for sid, s in sorted(output.get("skill_stats", {}).items(), key=lambda x: -x[1]["pass_uplift"]):
+        emoji = "✅" if s["pass_uplift"] > 0 else ("🟡" if s["pass_uplift"] == 0 else "❌")
+        skill_lines.append(
+            f"{emoji} {sid}: ctrl={s['ctrl_pass_rate']:.0%} test={s['test_pass_rate']:.0%} "
+            f"pass_uplift={s['pass_uplift']:+.0%} δ={s['uplift']:+.2f}"
+        )
 
-    # Category summary
     cat_lines = []
     for cat, v in output.get("by_category", {}).items():
         d = v["test"] - v["control"]
-        cat_lines.append(f"  {cat[:25]}: control={v['control']} test={v['test']} {d:+.2f}")
+        cat_lines.append(f"  {cat[:25]}: ctrl={v['control']} test={v['test']} {d:+.2f}")
 
     summary = (
-        f"[eval] {ts} | {mode} | {n} 题\n\n"
-        + "\n".join(lines)
-        + "\n\n分类：\n" + "\n".join(cat_lines)
-        + f"\n\n平均：control={avg_c:.2f} test={avg_t:.2f} 提升={delta:+.2f}\n"
-        + f"结果文件：{out_path}"
+        f"[eval v7] {ts} | {mode} | {n} 题\n\n"
+        + "Skill 维度:\n" + "\n".join(skill_lines)
+        + "\n\n分类:\n" + "\n".join(cat_lines)
+        + f"\n\n总体: ctrl={avg_c:.2f} test={avg_t:.2f} 提升={delta:+.2f}\n"
+        + f"结果: {out_path}"
     )
 
     try:
-        # Use openclaw message send to deliver to the prd-bot session's Telegram group
         result = subprocess.run(
             [
                 "/home/bre/.npm-global/bin/openclaw", "message", "send",
                 "--channel", "telegram",
                 "--target", "-1003776690352",
-                "--message", f"🦞 [eval] {summary}",
+                "--message", f"🦞 {summary}",
             ],
             capture_output=True, text=True, timeout=15,
         )
         if result.returncode == 0:
-            print("\n✅ Summary sent to prd-bot")
+            print("\n✅ Summary sent to group")
         else:
-            print(f"\n⚠️  session send failed: {result.stderr.strip()[:200]}")
+            print(f"\n⚠️  send failed: {result.stderr.strip()[:200]}")
     except Exception as e:
-        print(f"\n⚠️  session send error: {e}")
+        print(f"\n⚠️  send error: {e}")
 
 
 if __name__ == "__main__":

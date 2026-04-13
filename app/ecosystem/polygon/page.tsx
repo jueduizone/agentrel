@@ -52,7 +52,7 @@ export default async function PolygonEcosystemPage() {
             <h1 className="text-3xl font-bold text-foreground">Polygon</h1>
           </div>
           <p className="text-muted-foreground max-w-2xl">
-            Ethereum's internet of blockchains — scaling solution with multiple chains including Polygon PoS, zkEVM, and CDK. Use these skills to give AI agents accurate context when building on Polygon.
+            Ethereum&apos;s internet of blockchains — scaling solution with multiple chains including Polygon PoS, zkEVM, and CDK. Use these skills to give AI agents accurate context when building on Polygon.
           </p>
 
           {/* Stats */}

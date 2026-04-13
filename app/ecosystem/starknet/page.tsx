@@ -52,7 +52,7 @@ export default async function StarknetEcosystemPage() {
             <h1 className="text-3xl font-bold text-foreground">Starknet</h1>
           </div>
           <p className="text-muted-foreground max-w-2xl">
-            Ethereum's ZK-rollup L2 built by StarkWare, using STARK proofs for scalability and security without trusted setup. Use these skills to give AI agents accurate context when building with Cairo and Starknet.
+            Ethereum&apos;s ZK-rollup L2 built by StarkWare, using STARK proofs for scalability and security without trusted setup. Use these skills to give AI agents accurate context when building with Cairo and Starknet.
           </p>
 
           {/* Stats */}
