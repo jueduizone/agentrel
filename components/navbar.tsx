@@ -15,6 +15,12 @@ const ECOSYSTEMS = [
   { name: 'Sui', slug: 'sui' },
   { name: 'TON', slug: 'ton' },
   { name: 'Zama', slug: 'zama' },
+  { name: 'Starknet', slug: 'starknet' },
+  { name: 'Aptos', slug: 'aptos' },
+  { name: 'Polygon', slug: 'polygon' },
+  { name: 'Mantle', slug: 'mantle' },
+  { name: 'Arbitrum', slug: 'arbitrum' },
+  { name: 'Optimism', slug: 'optimism' },
 ]
 
 function Dropdown({
