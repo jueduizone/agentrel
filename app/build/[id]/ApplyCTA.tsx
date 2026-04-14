@@ -11,16 +11,17 @@ export function ApplyCTA({ grantId, isOpen }: Props) {
   const [copied, setCopied] = useState(false)
   const [copyError, setCopyError] = useState(false)
 
+  const contextUrl = `https://agentrel.vercel.app/api/v1/grants/${grantId}/context.md`
+
   const handleAgentCopy = async () => {
-    const url = `https://agentrel.vercel.app/api/v1/grants/${grantId}/context`
     let success = false
     try {
-      await navigator.clipboard.writeText(url)
+      await navigator.clipboard.writeText(contextUrl)
       success = true
     } catch {
       try {
         const el = document.createElement('textarea')
-        el.value = url
+        el.value = contextUrl
         el.style.position = 'fixed'
         el.style.opacity = '0'
         document.body.appendChild(el)
@@ -45,12 +46,18 @@ export function ApplyCTA({ grantId, isOpen }: Props) {
     return <p className="text-center text-sm text-muted-foreground/50 py-2">此 Grant 已截止，无法申请</p>
   }
 
+  const secondaryClass = copyError
+    ? 'bg-red-500/10 text-red-600 border border-red-500/30'
+    : copied
+    ? 'bg-green-500/10 text-green-600 border border-green-500/30'
+    : 'border border-border text-foreground hover:bg-muted'
+
   return (
     <div className="flex flex-col gap-3 w-full max-w-sm mx-auto pt-2">
       {/* Primary: Apply now */}
       <Link
         href={`/build/${grantId}/apply`}
-        className="group inline-flex items-center justify-center gap-2 w-full px-7 py-3 bg-gray-900 text-white text-sm font-semibold rounded-xl hover:bg-black transition-all shadow-sm hover:shadow-md active:scale-[0.98] whitespace-nowrap"
+        className="group inline-flex items-center justify-center gap-2 w-full px-7 py-3 bg-primary text-primary-foreground text-sm font-semibold rounded-xl hover:bg-primary/90 transition-all shadow-sm hover:shadow-md active:scale-[0.98] whitespace-nowrap"
       >
         立即申请
         <span className="transition-transform group-hover:translate-x-0.5">→</span>
@@ -59,22 +66,17 @@ export function ApplyCTA({ grantId, isOpen }: Props) {
       {/* Secondary: Agent apply — copies context API URL */}
       <button
         onClick={handleAgentCopy}
-        className={`inline-flex items-center justify-center gap-2 w-full px-7 py-3 text-sm font-semibold rounded-xl transition-all active:scale-[0.98] whitespace-nowrap
-          ${copyError ? 'bg-red-50 text-red-600 border border-red-300' : copied ? 'bg-green-50 text-green-700 border border-green-300' : 'border border-transparent text-indigo-700 hover:bg-indigo-50'}`}
-        style={copied || copyError ? {} : {
-          background: 'linear-gradient(white, white) padding-box, linear-gradient(135deg, #6366f1, #a855f7) border-box',
-          border: '1.5px solid transparent',
-        }}
+        className={`inline-flex items-center justify-center gap-2 w-full px-7 py-3 text-sm font-semibold rounded-xl transition-all active:scale-[0.98] whitespace-nowrap ${secondaryClass}`}
       >
         {copyError ? <><span>❌</span> 复制失败，请手动复制</> : copied ? <><span>✅</span> 已复制</> : <><span>🤖</span> Agent 帮我申请</>}
       </button>
 
       <p className="text-xs text-muted-foreground/50 text-center -mt-1">
         {copyError
-          ? `https://agentrel.vercel.app/api/v1/grants/${grantId}/context`
+          ? contextUrl
           : copied
           ? '已复制 Grant Context URL，粘贴给你的 AI Agent 即可申请'
-          : '立即申请需登录 · Agent 申请复制 Grant Context URL 给 AI'}
+          : '立即申请需登录 · Agent 申请复制 Grant Context (.md) 给 AI'}
       </p>
     </div>
   )
