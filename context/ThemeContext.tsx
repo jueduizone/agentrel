@@ -12,18 +12,21 @@ const ThemeContext = createContext<{
   toggleTheme: () => {},
 })
 
+// Read theme synchronously from DOM (set by inline script in layout.tsx)
+function getInitialTheme(): Theme {
+  if (typeof window === 'undefined') return 'light'
+  return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>('light')
-  const [mounted, setMounted] = useState(false)
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  const [theme, setTheme] = useState<Theme>(getInitialTheme)
 
   useEffect(() => {
-    setMounted(true)
-    const saved = localStorage.getItem('agentrel_theme') as Theme | null
-    const preferred = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-    const initial = saved ?? preferred
-    setTheme(initial)
-    document.documentElement.classList.toggle('dark', initial === 'dark')
-  }, [])
+    // Sync state with DOM in case getInitialTheme ran before hydration
+    const current = document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+    if (current !== theme) setTheme(current) // eslint-disable-line react-hooks/set-state-in-effect
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const toggleTheme = () => {
     const next: Theme = theme === 'light' ? 'dark' : 'light'
@@ -33,7 +36,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <ThemeContext.Provider value={{ theme: mounted ? theme : 'light', toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme }}>
       {children}
     </ThemeContext.Provider>
   )
