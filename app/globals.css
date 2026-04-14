@@ -30,24 +30,24 @@
 .dark {
   /* OKLCH color tokens — dark mode */
   --background: oklch(8.5% 0.015 265);
-  --foreground: oklch(92% 0.007 265);
+  --foreground: oklch(94% 0.007 265);
   --primary: oklch(70% 0.17 265);
   --primary-foreground: oklch(8.5% 0.015 265);
-  --muted: oklch(14.5% 0.010 265);
-  --muted-foreground: oklch(54% 0.010 265);
+  --muted: oklch(17% 0.010 265);
+  --muted-foreground: oklch(68% 0.010 265);
   --accent: oklch(70% 0.17 265);
   --accent-foreground: oklch(8.5% 0.015 265);
-  --border: oklch(20% 0.012 265);
-  --input: oklch(20% 0.012 265);
+  --border: oklch(28% 0.012 265);
+  --input: oklch(24% 0.012 265);
   --ring: oklch(70% 0.17 265);
-  --card: oklch(12% 0.012 265);
-  --card-foreground: oklch(92% 0.007 265);
+  --card: oklch(13% 0.012 265);
+  --card-foreground: oklch(94% 0.007 265);
   --destructive: oklch(62% 0.22 25);
-  --destructive-foreground: oklch(92% 0.007 265);
-  --secondary: oklch(14.5% 0.010 265);
-  --secondary-foreground: oklch(92% 0.007 265);
-  --popover: oklch(12% 0.012 265);
-  --popover-foreground: oklch(92% 0.007 265);
+  --destructive-foreground: oklch(94% 0.007 265);
+  --secondary: oklch(17% 0.010 265);
+  --secondary-foreground: oklch(94% 0.007 265);
+  --popover: oklch(13% 0.012 265);
+  --popover-foreground: oklch(94% 0.007 265);
 }
 
 body {
