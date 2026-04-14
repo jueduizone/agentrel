@@ -80,15 +80,15 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
                     : <span>{grant.sponsors?.name ?? grant.sponsor}</span>}
                 </span>
               )}
-              {(grant.sponsors || grant.sponsor) && <span className="text-gray-300">·</span>}
+              {(grant.sponsors || grant.sponsor) && <span className="text-muted-foreground">·</span>}
               {deadlineIso && (
                 <span className={isPast ? 'text-red-500' : ''} suppressHydrationWarning>
                   Deadline: {formatDateShort(deadlineIso)}
                 </span>
               )}
-              {deadlineIso && <span className="text-gray-300">·</span>}
+              {deadlineIso && <span className="text-muted-foreground">·</span>}
               <span>{grant.application_count} applied</span>
-              <span className="text-gray-300">·</span>
+              <span className="text-muted-foreground">·</span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${isOpen && !isPast ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground/70'}`}>
                   {isOpen && !isPast ? 'Open' : 'Closed'}
               </span>

@@ -130,13 +130,13 @@ function GrantCard({ grant }: { grant: {
                 : <span>{grant.sponsors?.name ?? grant.sponsor}</span>}
             </span>
           ) : null}
-          {(grant.sponsors || grant.sponsor) && deadlineIso && <span className="text-gray-300">·</span>}
+          {(grant.sponsors || grant.sponsor) && deadlineIso && <span className="text-muted-foreground">·</span>}
           {deadlineIso && (
             <span className={isPast ? 'text-red-400' : ''} suppressHydrationWarning>
               Deadline: {formatDateShort(deadlineIso)}
             </span>
           )}
-          {(grant.sponsor || deadlineIso) && <span className="text-gray-300">·</span>}
+          {(grant.sponsor || deadlineIso) && <span className="text-muted-foreground">·</span>}
           <span>{grant.application_count} applied</span>
         </div>
 

@@ -174,7 +174,7 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
                     ? passRate >= 60 ? '✅' : failRate !== null && failRate >= 60 ? '❌' : '🟡'
                     : null
                   return (
-                    <tr key={s.skill_id} className="border-b border-gray-50 hover:bg-muted/50 transition-colors">
+                    <tr key={s.skill_id} className="border-b border-border hover:bg-muted/50 transition-colors">
                       <td className="py-2 font-mono text-xs text-indigo-700">
                         <Link href={`/skills/${s.skill_id}`} className="hover:underline">{s.skill_id}</Link>
                         {badge && <span className="ml-1.5">{badge}</span>}

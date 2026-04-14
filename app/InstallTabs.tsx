@@ -24,7 +24,7 @@ export function InstallTabs() {
             onClick={() => setActive(i)}
             className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
               i === active
-                ? 'bg-black text-white'
+                ? 'bg-foreground text-background'
                 : 'bg-muted text-muted-foreground hover:text-foreground'
             }`}
           >

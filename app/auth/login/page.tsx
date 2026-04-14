@@ -76,7 +76,7 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
-            <Link href="/" className="text-2xl font-bold text-black">AgentRel</Link>
+            <Link href="/" className="text-2xl font-bold text-foreground">AgentRel</Link>
             <p className="text-muted-foreground/70 mt-2 text-sm">Sign in to your account</p>
           </div>
           <div className="bg-background rounded-2xl border border-border p-6 shadow-sm space-y-4">
@@ -122,7 +122,7 @@ export default function LoginPage() {
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <button type="submit" disabled={loading || oauthLoading !== null}
-                className="w-full bg-black text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-black/80 transition-colors disabled:opacity-50">
+                className="w-full bg-foreground text-background rounded-lg py-2.5 text-sm font-semibold hover:bg-foreground/80 transition-colors disabled:opacity-50">
                 {loading ? 'Signing in...' : 'Sign In'}
               </button>
             </form>

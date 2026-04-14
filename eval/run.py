@@ -534,7 +534,8 @@ def main():
     print(f"Judge: {judge_model}  Answerer: {args.answerer}" + (f"  Answerer2: {args.answerer2}" if dual else ""))
 
     for q in questions:
-        sid = q["skill_id"]
+      try:
+        sid = q[\"skill_id\"]
         if sid not in skill_cache:
             skill_cache[sid] = fetch_skill(sid)
         skill = skill_cache[sid]

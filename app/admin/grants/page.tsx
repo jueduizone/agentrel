@@ -62,7 +62,7 @@ export default async function AdminGrantsPage() {
             </thead>
             <tbody>
               {grants.map(g => (
-                <tr key={g.id} className="border-t border-gray-50 hover:bg-muted/30">
+                <tr key={g.id} className="border-t border-border hover:bg-muted/30">
                   <td className="px-4 py-3 font-medium text-foreground">{g.title}</td>
                   <td className="px-4 py-3 text-muted-foreground/70">{g.sponsor ?? '—'}</td>
                   <td className="px-4 py-3 text-center">

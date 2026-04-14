@@ -182,7 +182,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
             onClick={() => setSelectedEcosystem('all')}
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               selectedEcosystem === 'all'
-                ? 'bg-black text-white'
+                ? 'bg-foreground text-background'
                 : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
             }`}
           >
@@ -196,7 +196,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                 onClick={() => setSelectedEcosystem(eco === selectedEcosystem ? 'all' : eco)}
                 className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
                   selectedEcosystem === eco
-                    ? 'bg-black text-white'
+                    ? 'bg-foreground text-background'
                     : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
                 }`}
               >
@@ -221,7 +221,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
               onClick={() => setSelectedType(key === 'all' ? 'all' : key)}
               className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 (key === 'all' ? selectedType === 'all' : selectedType === key)
-                  ? 'bg-black text-white'
+                  ? 'bg-foreground text-background'
                   : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
               }`}
             >
@@ -245,7 +245,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                 onClick={() => setSelectedSource(src)}
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                   selectedSource === src
-                    ? 'bg-black text-white'
+                    ? 'bg-foreground text-background'
                     : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
                 }`}
               >
@@ -292,7 +292,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                 </div>
 
                 {/* Name */}
-                <h3 className="mb-1.5 font-medium text-black">
+                <h3 className="mb-1.5 font-medium text-foreground">
                   {lang === 'zh' && skill.name_zh ? skill.name_zh : skill.name}
                 </h3>
 

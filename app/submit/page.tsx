@@ -86,7 +86,7 @@ version: 1.0
           <button
             type="submit"
             disabled={loading || !url.trim()}
-            className="w-full bg-black text-white py-3 rounded-lg text-sm font-semibold hover:bg-black/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-foreground text-background py-3 rounded-lg text-sm font-semibold hover:bg-foreground/80 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {loading ? (
               <>

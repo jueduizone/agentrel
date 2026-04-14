@@ -113,7 +113,7 @@ export default function EcosystemPage() {
                     <h2 className="font-semibold text-foreground">{eco.name}</h2>
                   </div>
                   {eco.available ? (
-                    <span className="rounded-full bg-black px-2 py-0.5 text-xs font-medium text-white">
+                    <span className="rounded-full bg-foreground px-2 py-0.5 text-xs font-medium text-background">
                       Live
                     </span>
                   ) : (

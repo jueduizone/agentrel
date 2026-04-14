@@ -1,0 +1,29 @@
+# AgentRel Eval — Promptfoo 配置
+# 双模型 A/B：claude-sonnet vs gpt-4o-mini，每模型各跑 bare vs with_skill
+# 跑法：promptfoo eval --config promptfoo.yaml --concurrency 10
+
+description: "AgentRel Skill Eval — Dual Model A/B"
+
+providers:
+  - id: "file://provider.py"
+    label: "claude-sonnet (zenmux)"
+    config:
+      env:
+        PROVIDER_MODEL: "anthropic/claude-sonnet-4-6"
+
+  - id: "file://provider.py"
+    label: "gpt-4o-mini (zenmux)"
+    config:
+      env:
+        PROVIDER_MODEL: "openai/gpt-4o-mini"
+
+# prompt 直接透传给 provider（provider 内部自己组装）
+prompts:
+  - "{{question}}"
+
+tests: file://questions.json
+
+# 评分由 push_results.py 负责，promptfoo 这里不做 assert
+
+evaluateOptions:
+  maxConcurrency: 8

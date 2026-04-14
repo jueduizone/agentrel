@@ -26,7 +26,7 @@ export function TemplateModal({ templateMd, grantTitle }: { templateMd: string; 
       )}
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-foreground/50">
           <div className="bg-background rounded-2xl shadow-xl w-full max-w-2xl max-h-[80vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b">
               <h3 className="font-semibold text-foreground">申请模板 — {grantTitle}</h3>

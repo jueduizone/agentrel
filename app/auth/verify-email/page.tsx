@@ -32,7 +32,7 @@ function VerifyEmailContent() {
           <div className="space-y-3">
             <Link
               href="/auth/login"
-              className="block w-full bg-black text-white rounded-lg py-2.5 text-sm font-semibold hover:bg-black/80 transition-colors text-center"
+              className="block w-full bg-foreground text-background rounded-lg py-2.5 text-sm font-semibold hover:bg-foreground/80 transition-colors text-center"
             >
               前往登录
             </Link>

@@ -83,7 +83,7 @@ export function ApplicationRow({ app, grantId, apiKey }: { app: Application; gra
           <button
             onClick={() => updateStatus('approved')}
             disabled={loading}
-            className="flex-1 bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-2 rounded-lg transition-colors disabled:opacity-50"
+            className="flex-1 bg-green-600 text-white text-sm font-medium py-2 rounded-lg transition-colors disabled:opacity-50"
           >
             ✅ Approve
           </button>

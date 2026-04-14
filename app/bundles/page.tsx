@@ -45,7 +45,7 @@ export default async function BundlesPage() {
                     )}
                   </div>
 
-                  <h2 className="mb-2 text-lg font-semibold text-black">{bundle.name}</h2>
+                  <h2 className="mb-2 text-lg font-semibold text-foreground">{bundle.name}</h2>
                   <p className="mb-4 text-sm text-muted-foreground">{bundle.description}</p>
 
                   {/* Skills list */}

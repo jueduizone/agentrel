@@ -15,7 +15,7 @@ export function HomeCopyButton({ text }: { text: string }) {
   return (
     <button
       onClick={handleCopy}
-      className="shrink-0 rounded p-1.5 text-muted-foreground/50 transition-colors hover:bg-gray-700 hover:text-white"
+      className="shrink-0 rounded p-1.5 text-muted-foreground/50 transition-colors hover:bg-gray-700 hover:text-background"
       aria-label="Copy command"
     >
       {copied ? <Check className="h-4 w-4 text-green-400" /> : <Copy className="h-4 w-4" />}

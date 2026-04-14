@@ -89,7 +89,7 @@ export default async function SkillDetailPage({
                   </span>
                 )}
               </div>
-              <h1 className="text-3xl font-bold text-black">{skill.name}</h1>
+              <h1 className="text-3xl font-bold text-foreground">{skill.name}</h1>
               <div className="mt-2 flex flex-wrap items-center gap-2">
                 {SOURCE_BADGE[skill.source] ? (
                   <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium ${SOURCE_BADGE[skill.source].className}`}>
@@ -133,7 +133,7 @@ export default async function SkillDetailPage({
             <div className="sticky top-20 space-y-4">
               {/* Usage */}
               <div className="rounded-xl border border-border p-4">
-                <h3 className="mb-3 font-medium text-black">Usage</h3>
+                <h3 className="mb-3 font-medium text-foreground">Usage</h3>
                 <div className="mb-2 rounded-lg border border-border bg-muted/30 p-3">
                   <code className="block font-mono text-xs text-foreground break-all">
                     {installCmd}
@@ -144,7 +144,7 @@ export default async function SkillDetailPage({
 
               {/* Raw */}
               <div className="rounded-xl border border-border p-4">
-                <h3 className="mb-3 font-medium text-black">Raw</h3>
+                <h3 className="mb-3 font-medium text-foreground">Raw</h3>
                 <a
                   href={`https://agentrel.vercel.app/api/skills/${skill.id}.md`}
                   target="_blank"
@@ -157,7 +157,7 @@ export default async function SkillDetailPage({
 
               {/* Meta */}
               <div className="rounded-xl border border-border p-4">
-                <h3 className="mb-3 font-medium text-black">Details</h3>
+                <h3 className="mb-3 font-medium text-foreground">Details</h3>
                 <dl className="space-y-2 text-sm">
                   <div className="flex justify-between">
                     <dt className="text-muted-foreground">ID</dt>
