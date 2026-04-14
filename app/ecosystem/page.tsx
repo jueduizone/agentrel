@@ -90,7 +90,7 @@ export default function EcosystemPage() {
       <Navbar />
       <div className="mx-auto max-w-6xl px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-black">Ecosystems</h1>
+          <h1 className="text-3xl font-bold text-foreground">Ecosystems</h1>
           <p className="mt-2 text-muted-foreground">
             Browse AI context skills by blockchain ecosystem
           </p>
@@ -110,7 +110,7 @@ export default function EcosystemPage() {
                 <div className="mb-3 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className={`h-2.5 w-2.5 rounded-full ${eco.dotColor}`} />
-                    <h2 className="font-semibold text-black">{eco.name}</h2>
+                    <h2 className="font-semibold text-foreground">{eco.name}</h2>
                   </div>
                   {eco.available ? (
                     <span className="rounded-full bg-black px-2 py-0.5 text-xs font-medium text-white">

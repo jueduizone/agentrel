@@ -56,7 +56,7 @@ export default async function BaseEcosystemPage() {
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-sky-100 text-lg font-bold text-sky-700">
               B
             </div>
-            <h1 className="text-3xl font-bold text-black">Base</h1>
+            <h1 className="text-3xl font-bold text-foreground">Base</h1>
           </div>
           <p className="text-muted-foreground max-w-2xl">
             Coinbase&apos;s Ethereum L2 built on the OP Stack, bringing billions onchain with low fees and fast transactions.
@@ -75,7 +75,7 @@ export default async function BaseEcosystemPage() {
                 key={stat.label}
                 className="rounded-xl border border-border px-4 py-3 text-center min-w-[100px]"
               >
-                <div className="text-lg font-bold text-black">{stat.value}</div>
+                <div className="text-lg font-bold text-foreground">{stat.value}</div>
                 <div className="text-xs text-muted-foreground mt-0.5">{stat.label}</div>
               </div>
             ))}
@@ -84,7 +84,7 @@ export default async function BaseEcosystemPage() {
 
         {/* Skills */}
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-black">
+          <h2 className="text-xl font-semibold text-foreground">
             Skills{' '}
             <span className="ml-1 rounded-full bg-muted px-2 py-0.5 text-sm font-normal text-muted-foreground">
               {ecosystemSkills.length}
@@ -124,7 +124,7 @@ export default async function BaseEcosystemPage() {
 
                   {/* Name */}
                   <Link href={`/skills/${skill.id}`}>
-                    <h3 className="mb-2 font-medium text-black hover:text-foreground transition-colors">
+                    <h3 className="mb-2 font-medium text-foreground hover:text-foreground transition-colors">
                       {skill.name}
                     </h3>
                   </Link>
@@ -158,7 +158,7 @@ export default async function BaseEcosystemPage() {
 
         {/* Footer note */}
         <div className="mt-10 rounded-xl border border-border bg-muted/30 p-6">
-          <h3 className="mb-1 font-medium text-black">Using these skills</h3>
+          <h3 className="mb-1 font-medium text-foreground">Using these skills</h3>
           <p className="text-sm text-muted-foreground">
             Copy a Skill URL and fetch it from your AI agent to provide accurate, up-to-date context
             for building on Base. Skills are maintained by the AgentRel community.
