@@ -16,7 +16,7 @@ export function CopySkillUrlButton({ url }: { url: string }) {
     <button
       onClick={handleCopy}
       title={url}
-      className="flex w-full items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-black hover:text-foreground overflow-hidden"
+      className="flex w-full items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-foreground/60 hover:text-foreground overflow-hidden"
     >
       {copied ? <Check className="h-3 w-3 shrink-0 text-green-600" /> : <Copy className="h-3 w-3 shrink-0" />}
       <span className="truncate font-mono">{copied ? 'Copied!' : url}</span>

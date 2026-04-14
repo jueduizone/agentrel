@@ -27,7 +27,7 @@ async function getStats() {
   })
   const ecosystemList = Object.entries(countMap)
     .sort((a, b) => b[1] - a[1])
-    .slice(0, 12)
+    .slice(0, 19)
     .map(([name, count]) => ({ name, count }))
 
   return {

@@ -39,7 +39,7 @@ export function HeroSection() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              LIVE&nbsp;·&nbsp;212+ skills&nbsp;·&nbsp;open source
+              LIVE&nbsp;·&nbsp;230+ skills&nbsp;·&nbsp;open source
             </div>
 
             {/* Headline */}

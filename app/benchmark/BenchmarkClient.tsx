@@ -2,12 +2,13 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft, ExternalLink, Sun, Moon } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer,
 } from 'recharts'
 import { useLang } from '@/context/LanguageContext'
+import { useTheme } from '@/context/ThemeContext'
 
 type SourceStats = {
   total_questions: number
@@ -260,11 +261,14 @@ export default function BenchmarkClient({ data }: Props) {
   const [triggering, setTriggering] = useState(false)
   const [triggerMsg, setTriggerMsg] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
+  const [mounted, setMounted] = useState(false)
   const { t } = useLang()
+  const { theme, toggleTheme } = useTheme()
   const SOURCE_TABS = useSourceTabs()
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
+    setMounted(true) // eslint-disable-line
     setIsAdmin(!!localStorage.getItem('agentrel_api_key')) // eslint-disable-line
   }, [])
 
@@ -345,6 +349,14 @@ export default function BenchmarkClient({ data }: Props) {
               <ExternalLink size={14} />
               <span className="hidden sm:inline">{t('benchmark.methodology')}</span>
             </a>
+            <button
+              onClick={toggleTheme}
+              className="flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+              aria-label="Toggle theme"
+            >
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            </button>
           </div>
         </div>
         {triggerMsg && (
@@ -357,7 +369,7 @@ export default function BenchmarkClient({ data }: Props) {
       <main className="max-w-5xl mx-auto px-6 py-8">
         {/* Run meta */}
         <div className="mb-6 flex flex-wrap gap-3 text-xs text-muted-foreground/50">
-          <span>Run: {new Date(run.run_at).toLocaleString()}</span>
+          <span suppressHydrationWarning>Run: {mounted ? new Date(run.run_at).toLocaleString() : run.run_at}</span>
           <span>·</span>
           <span>Judge: {run.judge_model}</span>
           <span>·</span>

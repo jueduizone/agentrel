@@ -102,7 +102,7 @@ export default function EcosystemPage() {
               <div
                 className={`flex flex-col rounded-xl border p-5 transition-colors ${
                   eco.available
-                    ? 'border-border hover:border-black hover:bg-muted/20 cursor-pointer'
+                    ? 'border-border hover:border-foreground/60 hover:bg-muted/50 cursor-pointer'
                     : 'border-border opacity-60 cursor-default'
                 }`}
               >

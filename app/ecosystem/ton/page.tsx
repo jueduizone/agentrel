@@ -112,7 +112,7 @@ export default async function TonEcosystemPage() {
               return (
                 <div
                   key={skill.id}
-                  className="flex flex-col rounded-xl border border-border p-4 transition-colors hover:border-sky-200 hover:bg-sky-50/30"
+                  className="flex flex-col rounded-xl border border-border p-4 transition-colors hover:border-border dark:hover:border-border/60 hover:bg-muted/50 dark:hover:bg-muted/30"
                 >
                   {/* ID + source */}
                   <div className="mb-2 flex items-center justify-between gap-2">
@@ -124,7 +124,7 @@ export default async function TonEcosystemPage() {
 
                   {/* Name */}
                   <Link href={`/skills/${skill.id}`}>
-                    <h3 className="mb-2 font-medium text-black hover:text-sky-600 transition-colors">
+                    <h3 className="mb-2 font-medium text-black hover:text-foreground transition-colors">
                       {skill.name}
                     </h3>
                   </Link>

@@ -4,6 +4,12 @@ import { Navbar } from '@/components/navbar'
 import { Suspense } from 'react'
 import { BuildTabs } from './BuildClient'
 
+const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+function formatDateShort(iso: string): string {
+  const d = new Date(iso)
+  return `${MONTHS_SHORT[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`
+}
+
 async function getGrants() {
   const db = serviceClient
   const { data: grants } = await db
@@ -81,8 +87,8 @@ function GrantCard({ grant }: { grant: {
   source_type?: string; track?: string | null; application_count: number
 }}) {
   const isOpen = grant.status === 'open'
-  const deadlineDate = grant.deadline ? new Date(grant.deadline) : null
-  const isPast = deadlineDate && deadlineDate < new Date()
+  const deadlineIso = grant.deadline ?? null
+  const isPast = deadlineIso ? new Date(deadlineIso) < new Date() : false
 
   return (
     <Link href={`/build/${grant.id}`} className="block group">
@@ -124,13 +130,13 @@ function GrantCard({ grant }: { grant: {
                 : <span>{grant.sponsors?.name ?? grant.sponsor}</span>}
             </span>
           ) : null}
-          {(grant.sponsors || grant.sponsor) && deadlineDate && <span className="text-gray-300">·</span>}
-          {deadlineDate && (
-            <span className={isPast ? 'text-red-400' : ''}>
-              Deadline: {deadlineDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+          {(grant.sponsors || grant.sponsor) && deadlineIso && <span className="text-gray-300">·</span>}
+          {deadlineIso && (
+            <span className={isPast ? 'text-red-400' : ''} suppressHydrationWarning>
+              Deadline: {formatDateShort(deadlineIso)}
             </span>
           )}
-          {(grant.sponsor || deadlineDate) && <span className="text-gray-300">·</span>}
+          {(grant.sponsor || deadlineIso) && <span className="text-gray-300">·</span>}
           <span>{grant.application_count} applied</span>
         </div>
 

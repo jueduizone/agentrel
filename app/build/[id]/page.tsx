@@ -4,6 +4,17 @@ import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
 import { ApplyCTA } from './ApplyCTA'
 
+const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+const MONTHS_LONG = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+function formatDateShort(iso: string): string {
+  const d = new Date(iso)
+  return `${MONTHS_SHORT[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`
+}
+function formatDateLong(iso: string): string {
+  const d = new Date(iso)
+  return `${MONTHS_LONG[d.getUTCMonth()]} ${d.getUTCDate()}, ${d.getUTCFullYear()}`
+}
+
 type SponsorInfo = { name: string; logo_url: string | null; website_url: string | null }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,8 +38,8 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
   if (!grant) notFound()
 
   const isOpen = grant.status === 'open'
-  const deadline = grant.deadline ? new Date(grant.deadline) : null
-  const isPast = deadline && deadline < new Date()
+  const deadlineIso: string | null = grant.deadline ?? null
+  const isPast = deadlineIso ? new Date(deadlineIso) < new Date() : false
 
   return (
     <div className="min-h-screen bg-muted/50">
@@ -70,12 +81,12 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
                 </span>
               )}
               {(grant.sponsors || grant.sponsor) && <span className="text-gray-300">·</span>}
-              {deadline && (
-                <span className={isPast ? 'text-red-500' : ''}>
-                  Deadline: {deadline.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+              {deadlineIso && (
+                <span className={isPast ? 'text-red-500' : ''} suppressHydrationWarning>
+                  Deadline: {formatDateShort(deadlineIso)}
                 </span>
               )}
-              {deadline && <span className="text-gray-300">·</span>}
+              {deadlineIso && <span className="text-gray-300">·</span>}
               <span>{grant.application_count} applied</span>
               <span className="text-gray-300">·</span>
               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${isOpen && !isPast ? 'bg-green-100 text-green-700' : 'bg-muted text-muted-foreground/70'}`}>
@@ -93,11 +104,11 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
 
           {/* Meta info */}
           <div className="grid grid-cols-2 gap-4 mb-6 text-sm">
-            {deadline && (
+            {deadlineIso && (
               <div className="bg-muted/50 rounded-lg p-3">
                 <p className="text-xs text-muted-foreground/50 mb-0.5">Deadline</p>
-                <p className={`font-medium ${isPast ? 'text-red-500' : 'text-foreground'}`}>
-                  {deadline.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+                <p className={`font-medium ${isPast ? 'text-red-500' : 'text-foreground'}`} suppressHydrationWarning>
+                  {formatDateLong(deadlineIso)}
                 </p>
               </div>
             )}
