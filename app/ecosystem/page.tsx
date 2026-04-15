@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
 
@@ -10,7 +11,7 @@ const ecosystems = [
     available: true,
     stats: ['10,000 tps', '400ms blocks', 'EVM'],
     color: 'bg-purple-100 text-purple-700 border-purple-200',
-    dotColor: 'bg-purple-500',
+    logo: '/logos/monad.png',
   },
   {
     id: 'zama',
@@ -20,7 +21,7 @@ const ecosystems = [
     available: true,
     stats: ['FHE', 'Solidity', 'On-chain Privacy'],
     color: 'bg-red-100 text-red-700 border-red-200',
-    dotColor: 'bg-red-500',
+    logo: '/logos/zama.webp',
   },
   {
     id: 'ethereum',
@@ -30,7 +31,7 @@ const ecosystems = [
     available: true,
     stats: ['EVM', 'PoS', 'L1'],
     color: 'bg-blue-100 text-blue-700 border-blue-200',
-    dotColor: 'bg-blue-500',
+    logo: '/logos/ethereum.png',
   },
   {
     id: 'solana',
@@ -40,7 +41,7 @@ const ecosystems = [
     available: true,
     stats: ['65,000 tps', '400ms blocks', 'Rust'],
     color: 'bg-green-100 text-green-700 border-green-200',
-    dotColor: 'bg-green-500',
+    logo: '/logos/solana.png',
   },
   {
     id: 'base',
@@ -50,7 +51,7 @@ const ecosystems = [
     available: true,
     stats: ['OP Stack', 'L2', 'EVM', 'Low fees'],
     color: 'bg-sky-100 text-sky-700 border-sky-200',
-    dotColor: 'bg-sky-500',
+    logo: '/logos/base.png',
   },
   {
     id: 'sui',
@@ -60,7 +61,7 @@ const ecosystems = [
     available: true,
     stats: ['Move', 'Parallel', 'L1', 'BFT'],
     color: 'bg-cyan-100 text-cyan-700 border-cyan-200',
-    dotColor: 'bg-cyan-500',
+    logo: '/logos/sui.png',
   },
   {
     id: 'ton',
@@ -70,7 +71,7 @@ const ecosystems = [
     available: true,
     stats: ['Sharding', '100k+ tps', 'L1', 'Telegram'],
     color: 'bg-sky-100 text-sky-600 border-sky-200',
-    dotColor: 'bg-sky-400',
+    logo: '/logos/ton.png',
   },
   {
     id: 'aptos',
@@ -80,7 +81,7 @@ const ecosystems = [
     available: false,
     stats: ['Move', 'BFT', 'L1'],
     color: 'bg-teal-100 text-teal-700 border-teal-200',
-    dotColor: 'bg-teal-400',
+    logo: '/logos/aptos.png',
   },
 ]
 
@@ -108,8 +109,16 @@ export default function EcosystemPage() {
               >
                 {/* Header */}
                 <div className="mb-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className={`h-2.5 w-2.5 rounded-full ${eco.dotColor}`} />
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-7 w-7 flex-shrink-0 overflow-hidden rounded-full">
+                      <Image
+                        src={eco.logo}
+                        alt={eco.name}
+                        width={28}
+                        height={28}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
                     <h2 className="font-semibold text-foreground">{eco.name}</h2>
                   </div>
                   {eco.available ? (
