@@ -57,7 +57,7 @@ export function FeedbackForm({ skillId }: Props) {
     return (
       <button
         onClick={() => setOpen(true)}
-        className="w-full rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-black hover:text-foreground"
+        className="w-full rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
       >
         Report an issue
       </button>

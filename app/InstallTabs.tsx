@@ -36,8 +36,8 @@ export function InstallTabs() {
         </span>
       </div>
       {/* Command */}
-      <div className="flex items-center justify-between rounded-lg border border-border bg-gray-900 px-4 py-3">
-        <code className="font-mono text-xs text-gray-100 truncate mr-3">{cmd}</code>
+      <div className="flex items-center justify-between rounded-lg border border-border bg-foreground px-4 py-3">
+        <code className="font-mono text-xs text-background truncate mr-3">{cmd}</code>
         <HomeCopyButton text={cmd} />
       </div>
     </div>

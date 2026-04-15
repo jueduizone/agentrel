@@ -183,7 +183,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
             className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
               selectedEcosystem === 'all'
                 ? 'bg-foreground text-background'
-                : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
+                : 'border border-border bg-transparent text-muted-foreground hover:border-foreground hover:text-foreground'
             }`}
           >
             {t('skills.allSources')} ({skills.length})
@@ -197,7 +197,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                 className={`rounded-full px-3 py-1 text-xs font-medium capitalize transition-colors ${
                   selectedEcosystem === eco
                     ? 'bg-foreground text-background'
-                    : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
+                    : 'border border-border bg-transparent text-muted-foreground hover:border-foreground hover:text-foreground'
                 }`}
               >
                 {eco.charAt(0).toUpperCase() + eco.slice(1)} ({count})
@@ -222,7 +222,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
               className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                 (key === 'all' ? selectedType === 'all' : selectedType === key)
                   ? 'bg-foreground text-background'
-                  : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
+                  : 'border border-border bg-transparent text-muted-foreground hover:border-foreground hover:text-foreground'
               }`}
             >
               {label}
@@ -246,7 +246,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                 className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
                   selectedSource === src
                     ? 'bg-foreground text-background'
-                    : 'border border-border bg-transparent text-muted-foreground hover:border-black hover:text-foreground'
+                    : 'border border-border bg-transparent text-muted-foreground hover:border-foreground hover:text-foreground'
                 }`}
               >
                 {label}
@@ -275,7 +275,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                 className={`group flex flex-col rounded-xl border p-4 text-left transition-all no-underline ${
                   copied
                     ? 'border-green-400 bg-green-50'
-                    : 'border-border hover:border-black hover:bg-muted/30'
+                    : 'border-border hover:border-foreground hover:bg-muted/30'
                 }`}
               >
                 {/* Header row */}

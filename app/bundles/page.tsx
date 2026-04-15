@@ -32,7 +32,7 @@ export default async function BundlesPage() {
               return (
                 <div
                   key={bundle.id}
-                  className="rounded-xl border border-border p-6 transition-colors hover:border-black"
+                  className="rounded-xl border border-border p-6 transition-colors hover:border-foreground"
                 >
                   <div className="mb-4 flex items-start justify-between">
                     <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">

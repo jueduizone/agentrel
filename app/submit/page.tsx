@@ -56,7 +56,7 @@ export default function SubmitSkillPage() {
         </div>
 
         {/* Format guide */}
-        <div className="bg-gray-100 dark:bg-gray-800 border border-border rounded-xl p-5 mb-8">
+        <div className="bg-muted border border-border rounded-xl p-5 mb-8">
           <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider mb-3">Required format</p>
           <pre className="text-xs text-foreground/80 font-mono leading-relaxed">{`---
 name: My Web3 Skill

@@ -149,7 +149,7 @@ export default async function SkillDetailPage({
                   href={`https://agentrel.vercel.app/api/skills/${skill.id}.md`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block text-center w-full rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-black hover:text-foreground"
+                  className="block text-center w-full rounded-lg border border-border px-4 py-2 text-sm text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                 >
                   curl …/{skill.id}.md
                 </a>
@@ -205,7 +205,7 @@ export default async function SkillDetailPage({
                     href={`https://github.com/jueduizone/agentrel/tree/main/skills`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-black hover:text-foreground"
+                    className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                   >
                     ✏️ Improve this skill
                   </a>
@@ -213,7 +213,7 @@ export default async function SkillDetailPage({
                     href="https://github.com/jueduizone/agentrel/blob/main/CONTRIBUTING.md"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-black hover:text-foreground"
+                    className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                   >
                     📖 Contribution guide
                   </a>
