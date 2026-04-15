@@ -9,8 +9,10 @@ import os, re, json, requests, time, fcntl
 from pathlib import Path
 
 AGENTREL_BASE = "https://agentrel.vercel.app/api/skills"
-ZENMUX_OAI_URL = "https://zenmux.ai/api/v1/chat/completions"
-ZENMUX_KEY = os.environ.get("ZENMUX_API_KEY", "")
+SUPABASE_URL = "https://zkpeutvzmrfhlzpsbyhr.supabase.co"
+SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InprcGV1dHZ6bXJmaGx6cHNieWhyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mjk1MTI0MSwiZXhwIjoyMDg4NTI3MjQxfQ.DtvWVp2SrwNrfR503XjPUiW_H_T4GRrHqCTnjMZb9hI")
+PROVIDER_API_URL = os.environ.get("PROVIDER_API_URL", "https://api.commonstack.ai/v1/chat/completions")
+PROVIDER_API_KEY = os.environ.get("PROVIDER_API_KEY", "ak-9e4757e086036058f5e95f13d89d188d41559e8a39488a232b8d66f8dcb69679")
 MODEL = os.environ.get("PROVIDER_MODEL", "openai/gpt-4o-mini")
 
 _skill_cache: dict[str, str] = {}
@@ -49,6 +51,22 @@ def load_raw_done() -> set:
 def fetch_skill(skill_id: str) -> str:
     if skill_id in _skill_cache:
         return _skill_cache[skill_id]
+    # 优先从 Supabase DB 读（更稳定，不依赖 agentrel.xyz 网络）
+    try:
+        r = requests.get(
+            f"{SUPABASE_URL}/rest/v1/skills?id=eq.{skill_id}&select=content",
+            headers={"apikey": SUPABASE_KEY, "Authorization": f"Bearer {SUPABASE_KEY}"},
+            timeout=15
+        )
+        if r.status_code == 200:
+            data = r.json()
+            text = data[0]["content"][:4000] if data else ""
+            if text:
+                _skill_cache[skill_id] = text
+                return text
+    except Exception:
+        pass
+    # fallback: 从 agentrel.vercel.app 拉
     try:
         r = requests.get(f"{AGENTREL_BASE}/{skill_id}.md", timeout=15)
         text = r.text[:4000] if r.status_code == 200 else ""
@@ -95,8 +113,8 @@ def call_model(prompt: str, system: str = "") -> str:
                 messages.append({"role": "system", "content": system})
             messages.append({"role": "user", "content": prompt})
             r = requests.post(
-                ZENMUX_OAI_URL,
-                headers={"Authorization": f"Bearer {ZENMUX_KEY}", "Content-Type": "application/json"},
+                PROVIDER_API_URL,
+                headers={"Authorization": f"Bearer {PROVIDER_API_KEY}", "Content-Type": "application/json"},
                 json={"model": model, "messages": messages, "max_tokens": 800, "temperature": 0.3},
                 timeout=30,
             )

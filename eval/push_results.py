@@ -26,13 +26,22 @@ SUPABASE_KEY = os.environ.get(
     "SUPABASE_SERVICE_KEY",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InprcGV1dHZ6bXJmaGx6cHNieWhyIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3Mjk1MTI0MSwiZXhwIjoyMDg4NTI3MjQxfQ.DtvWVp2SrwNrfR503XjPUiW_H_T4GRrHqCTnjMZb9hI"
 )
-ZENMUX_OAI_URL = "https://zenmux.ai/api/v1/chat/completions"
-ZENMUX_KEY = os.environ.get("ZENMUX_API_KEY", "")
+JUDGE_API_URL = os.environ.get("JUDGE_API_URL", "https://api.commonstack.ai/v1/chat/completions")
+JUDGE_API_KEY = os.environ.get("JUDGE_API_KEY", "ak-9e4757e086036058f5e95f13d89d188d41559e8a39488a232b8d66f8dcb69679")
+JUDGE_MODEL = os.environ.get("JUDGE_MODEL", "google/gemini-2.5-flash")
 
 # 本地 checkpoint 文件路径
 CHECKPOINT_DIR = Path(__file__).parent / "results"
 CHECKPOINT_FILE = CHECKPOINT_DIR / "checkpoint.json"
 RAW_ANSWERS_FILE = CHECKPOINT_DIR / "raw_answers.jsonl"  # provider 实时写入的原始答题记录
+
+# 加载 expected_facts 查找表
+_QUESTIONS_FILE = Path(__file__).parent / "questions.json"
+_FACTS_MAP: dict[str, list] = {}
+if _QUESTIONS_FILE.exists():
+    with open(_QUESTIONS_FILE, encoding="utf-8") as _f:
+        for _q in json.load(_f):
+            _FACTS_MAP[_q["question_id"]] = _q.get("expected_facts") or []
 
 
 # ── Checkpoint 读写 ──────────────────────────────────────────
@@ -66,35 +75,77 @@ def score_to_verdict(score: int) -> str:
     return "fail"
 
 
-def judge_answer(question: str, answer: str, ground_truth: str) -> int:
-    """用 gpt-4o-mini 评分 0-5"""
-    prompt = f"""You are a strict Web3 technical judge. Score this answer 0-5.
+def judge_answer(question: str, answer: str, ground_truth: str,
+                 expected_facts: list | None = None) -> int:
+    """Factuality Judge — 用 Claude 逐条核查 expected_facts 覆盖率，返回 0-5 分。
+    若无 expected_facts，降级为 ground_truth 文本比较。
+    """
+    if expected_facts and len(expected_facts) > 0:
+        facts_str = "\n".join(f"{i+1}. {f}" for i, f in enumerate(expected_facts))
+        prompt = f"""You are a strict Web3 technical fact-checker.
+
+Question: {question}
+
+Expected facts (ground truth broken into atomic claims):
+{facts_str}
+
+Model answer:
+{answer[:800]}
+
+Task: For each expected fact, determine if the model answer covers it (YES/COVERED) or misses it (NO/MISSING).
+
+Output format — one line per fact, then a summary:
+1. [YES/NO] <brief reason>
+2. [YES/NO] <brief reason>
+...
+SCORE: X/Y (covered/total)
+
+Be strict: partial or vague coverage counts as NO. Exact match or clear equivalent counts as YES."""
+    else:
+        # 降级：无 expected_facts，用 ground_truth 文本比较
+        facts_str = None
+        prompt = f"""You are a strict Web3 technical judge. Score this answer 0-5.
 
 Ground truth: {ground_truth}
 Question: {question}
-Answer: {answer[:500]}
+Answer: {answer[:600]}
 
 Rules:
-- Wrong API name/address/version when ground truth has the correct specific value → max 2
-- Claims deprecated/removed thing still works → max 1
-- Direction right but missing specific facts (exact address, version, path) → max 3
-- All key facts match ground truth → 4 or 5
+- Wrong address/version/API name → max 2
+- Deprecated thing claimed to work → max 1
+- Direction right but missing key specifics → max 3
+- All key facts correct → 4 or 5
 
 Think briefly, then output ONLY the final integer on the last line."""
+
     try:
         r = requests.post(
-            ZENMUX_OAI_URL,
-            headers={"Authorization": f"Bearer {ZENMUX_KEY}", "Content-Type": "application/json"},
-            json={"model": "openai/gpt-4o-mini", "messages": [{"role": "user", "content": prompt}],
-                  "max_tokens": 20, "temperature": 0},
-            timeout=30,
+            JUDGE_API_URL,
+            headers={"Authorization": f"Bearer {JUDGE_API_KEY}", "Content-Type": "application/json"},
+            json={"model": JUDGE_MODEL,
+                  "messages": [{"role": "user", "content": prompt}],
+                  "max_tokens": 300, "temperature": 0},
+            timeout=45,
         )
         r.raise_for_status()
         txt = r.json()["choices"][0]["message"]["content"].strip()
-        nums = re.findall(r'[0-5]', (txt.split('\n')[-1] if txt else ''))
-        if not nums:
-            nums = re.findall(r'[0-5]', txt)
-        return int(nums[-1]) if nums else 3
+
+        if expected_facts and len(expected_facts) > 0:
+            # 解析 "SCORE: X/Y"
+            m = re.search(r'SCORE:\s*(\d+)\s*/\s*(\d+)', txt, re.IGNORECASE)
+            if m:
+                covered, total = int(m.group(1)), int(m.group(2))
+                if total > 0:
+                    return round((covered / total) * 5)
+            # 降级：数 YES 的个数
+            yes_count = len(re.findall(r'\bYES\b', txt, re.IGNORECASE))
+            total = len(expected_facts)
+            return round((yes_count / total) * 5) if total > 0 else 3
+        else:
+            nums = re.findall(r'[0-5]', (txt.split('\n')[-1] if txt else ''))
+            if not nums:
+                nums = re.findall(r'[0-5]', txt)
+            return int(nums[-1]) if nums else 3
     except Exception:
         return 3
 
@@ -201,8 +252,9 @@ def cmd_append(pf_path: str, label: str = None):
         bare = item["bare_answer"]
         with_skill = item["with_skill_answer"]
 
-        ctrl_score = judge_answer(q, bare, gt) if bare else 0
-        test_score = judge_answer(q, with_skill, gt) if with_skill else 0
+        facts = _FACTS_MAP.get(item["question_id"], [])
+        ctrl_score = judge_answer(q, bare, gt, facts) if bare else 0
+        test_score = judge_answer(q, with_skill, gt, facts) if with_skill else 0
         verdict = score_to_verdict(test_score)
 
         qid = item["question_id"]
@@ -210,7 +262,7 @@ def cmd_append(pf_path: str, label: str = None):
 
         new_rows.append({
             "run_at": checkpoint["run_at"],
-            "judge_model": "gpt-4o-mini",
+            "judge_model": JUDGE_MODEL,
             "inject_strategy": label or "promptfoo",
             "category": item["category"] or cat_from_qid,
             "question_id": qid,
@@ -314,15 +366,16 @@ def cmd_recover():
             with_skill = item.get("with_skill_answer", "")
 
             print(f"  评分 {qid} ({provider})...")
-            ctrl_score = judge_answer(q, bare, gt) if bare else 0
-            test_score = judge_answer(q, with_skill, gt) if with_skill else 0
+            facts = _FACTS_MAP.get(qid, [])
+            ctrl_score = judge_answer(q, bare, gt, facts) if bare else 0
+            test_score = judge_answer(q, with_skill, gt, facts) if with_skill else 0
             verdict = score_to_verdict(test_score)
 
             cat_from_qid = qid.split("-Q")[0] if "-Q" in qid else "General"
 
             new_rows.append({
                 "run_at": checkpoint["run_at"] or datetime.now(timezone.utc).isoformat(),
-                "judge_model": "gpt-4o-mini",
+                "judge_model": JUDGE_MODEL,
                 "inject_strategy": "promptfoo",
                 "category": item.get("category") or cat_from_qid,
                 "question_id": qid,

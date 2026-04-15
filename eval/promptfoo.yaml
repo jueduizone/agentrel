@@ -6,13 +6,13 @@ description: "AgentRel Skill Eval — Dual Model A/B"
 
 providers:
   - id: "file://provider.py"
-    label: "claude-sonnet (zenmux)"
+    label: "claude-sonnet (commonstack)"
     config:
       env:
         PROVIDER_MODEL: "anthropic/claude-sonnet-4-6"
 
   - id: "file://provider.py"
-    label: "gpt-4o-mini (zenmux)"
+    label: "gpt-4o-mini (commonstack)"
     config:
       env:
         PROVIDER_MODEL: "openai/gpt-4o-mini"
@@ -21,7 +21,7 @@ providers:
 prompts:
   - "{{question}}"
 
-tests: file://questions.json
+tests: file://questions_flat.json
 
 # 评分由 push_results.py 负责，promptfoo 这里不做 assert
 
