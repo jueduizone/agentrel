@@ -164,7 +164,7 @@ export function Navbar() {
     { label: 'GitHub', href: 'https://github.com/jueduizone/agentrel', external: true },
   ]
 
-  const exploreActive = ['/skills', '/bundles', '/benchmark', '/ecosystem'].some(p => pathname.startsWith(p))
+  const exploreActive = ['/skills', '/bundles', '/benchmark'].some(p => pathname.startsWith(p))
   const buildActive = pathname.startsWith('/build')
 
   return (
