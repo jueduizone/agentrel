@@ -46,9 +46,7 @@ export default async function OptimismEcosystemPage() {
         {/* Header */}
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-100 text-lg font-bold text-red-700">
-              O
-            </div>
+            <img src="/logos/optimism.png" alt="Optimism logo" className="h-10 w-10 rounded-xl object-contain" />
             <h1 className="text-3xl font-bold text-foreground">Optimism</h1>
           </div>
           <p className="text-muted-foreground max-w-2xl">

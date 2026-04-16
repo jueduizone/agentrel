@@ -53,9 +53,7 @@ export default async function EthereumEcosystemPage() {
         {/* Header */}
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100 text-lg font-bold text-blue-700">
-              E
-            </div>
+            <img src="/logos/ethereum.png" alt="Ethereum logo" className="h-10 w-10 rounded-xl object-contain" />
             <h1 className="text-3xl font-bold text-foreground">Ethereum</h1>
           </div>
           <p className="text-muted-foreground max-w-2xl">

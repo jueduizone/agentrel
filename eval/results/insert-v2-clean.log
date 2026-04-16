@@ -1,0 +1,12 @@
+准备插入 992 条 (不含 provider)...
+  batch 1: OK (100 条)
+  batch 2: OK (100 条)
+  batch 3: OK (100 条)
+  batch 4: OK (100 条)
+  batch 5: OK (100 条)
+  batch 6: OK (100 条)
+  batch 7: OK (100 条)
+  batch 8: OK (100 条)
+  batch 9: OK (100 条)
+  batch 10: OK (92 条)
+完成！成功插入 992/992 条

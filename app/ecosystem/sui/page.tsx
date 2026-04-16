@@ -53,9 +53,7 @@ export default async function SuiEcosystemPage() {
         {/* Header */}
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-cyan-100 text-lg font-bold text-cyan-700">
-              S
-            </div>
+            <img src="/logos/sui.png" alt="Sui logo" className="h-10 w-10 rounded-xl object-contain" />
             <h1 className="text-3xl font-bold text-foreground">Sui</h1>
           </div>
           <p className="text-muted-foreground max-w-2xl">

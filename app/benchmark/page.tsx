@@ -105,6 +105,9 @@ async function getBenchmarkData() {
     }
   }
 
+  // Collect test models (provider field)
+  const testModels = [...new Set(results.map(r => (r as { provider?: string }).provider).filter((v): v is string => Boolean(v)))]
+
   // Group by source
   const grouped: Record<string, typeof results> = { official: [], community: [], 'ai-generated': [] }
   for (const r of results) {
@@ -140,7 +143,7 @@ async function getBenchmarkData() {
   }
 
   return {
-    run: { run_at, judge_model, inject_strategy },
+    run: { run_at, judge_model, inject_strategy, test_models: testModels },
     bySource: {
       official: computeStats(grouped.official),
       community: computeStats(grouped.community),

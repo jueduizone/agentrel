@@ -17,6 +17,18 @@ MODEL = os.environ.get("PROVIDER_MODEL", "openai/gpt-4o-mini")
 
 _skill_cache: dict[str, str] = {}
 
+# Mantle skill 对应的 reference 文件（从官方 repo 拉）
+MANTLE_REFERENCES: dict[str, list[str]] = {
+    "mantle/mantle-address-registry-navigator": [
+        "https://raw.githubusercontent.com/mantle-xyz/mantle-skills/main/skills/mantle-address-registry-navigator/references/address-registry-playbook.md",
+        "https://raw.githubusercontent.com/mantle-xyz/mantle-skills/main/skills/mantle-address-registry-navigator/assets/registry.json",
+    ],
+    "mantle/mantle-network-primer": [
+        "https://raw.githubusercontent.com/mantle-xyz/mantle-skills/main/skills/mantle-network-primer/references/mantle-network-basics.md",
+    ],
+}
+_ref_cache: dict[str, str] = {}
+
 # 实时 checkpoint — provider 每完成一题就追加写入，进程 kill 了也不丢
 RAW_CHECKPOINT = Path(__file__).parent / "results" / "raw_answers.jsonl"
 
@@ -48,6 +60,19 @@ def load_raw_done() -> set:
     return done
 
 
+def fetch_reference(url: str) -> str:
+    """拉单个 reference 文件内容，带缓存"""
+    if url in _ref_cache:
+        return _ref_cache[url]
+    try:
+        r = requests.get(url, timeout=15)
+        text = r.text[:3000] if r.status_code == 200 else ""
+    except Exception:
+        text = ""
+    _ref_cache[url] = text
+    return text
+
+
 def fetch_skill(skill_id: str) -> str:
     if skill_id in _skill_cache:
         return _skill_cache[skill_id]
@@ -62,6 +87,13 @@ def fetch_skill(skill_id: str) -> str:
             data = r.json()
             text = data[0]["content"][:4000] if data else ""
             if text:
+                # 如果有对应的 reference 文件，追加到 skill 内容后面（学官方 load-skill.sh）
+                refs = MANTLE_REFERENCES.get(skill_id, [])
+                for ref_url in refs:
+                    ref_name = ref_url.split("/")[-1]
+                    ref_content = fetch_reference(ref_url)
+                    if ref_content:
+                        text += f"\n\n--- REFERENCE: {ref_name} ---\n{ref_content}\n--- END REFERENCE ---"
                 _skill_cache[skill_id] = text
                 return text
     except Exception:

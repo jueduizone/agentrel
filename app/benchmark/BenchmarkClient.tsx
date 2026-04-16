@@ -2,13 +2,14 @@
 
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
-import { ArrowLeft, ExternalLink, Sun, Moon } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   Legend, ResponsiveContainer,
 } from 'recharts'
 import { useLang } from '@/context/LanguageContext'
-import { useTheme } from '@/context/ThemeContext'
+import { Navbar } from '@/components/navbar'
+import { Footer } from '@/components/footer'
 
 type SourceStats = {
   total_questions: number
@@ -36,7 +37,7 @@ type SourceStats = {
 
 type Props = {
   data: {
-    run: { run_at: string; judge_model: string; inject_strategy: string }
+    run: { run_at: string; judge_model: string; inject_strategy: string; test_models?: string[] }
     bySource: { official: SourceStats; community: SourceStats; 'ai-generated': SourceStats }
     overall: SourceStats
     byEcosystem?: Record<string, SourceStats>
@@ -98,9 +99,9 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
           { label: t('benchmark.withSkillAvg'), value: stats.avg_test.toFixed(2) },
           { label: t('benchmark.delta'), value: (stats.delta > 0 ? '+' : '') + stats.delta.toFixed(2), highlight: stats.delta > 0 },
         ].map(({ label, value, highlight }) => (
-          <div key={label} className="bg-muted/50 rounded-xl p-4 text-center">
-            <p className="text-xs text-muted-foreground/50 mb-1">{label}</p>
-            <p className={`text-2xl font-bold ${highlight ? 'text-green-600' : 'text-foreground'}`}>{value}</p>
+          <div key={label} className="bg-muted/40 border border-border rounded-xl p-4 text-center">
+            <p className="text-xs text-muted-foreground/60 mb-1 font-mono uppercase tracking-wide">{label}</p>
+            <p className={`text-2xl font-bold font-display ${highlight ? 'text-green-600 dark:text-green-400' : 'text-foreground'}`}>{value}</p>
           </div>
         ))}
       </div>
@@ -108,23 +109,23 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
       {/* Verdict breakdown */}
       {passRatePct !== null && (
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-xl p-3 text-center">
-            <p className="text-xs text-muted-foreground/50 mb-1">✅ Pass</p>
-            <p className="text-xl font-bold text-green-600">{passRatePct}%</p>
+          <div className="bg-muted/40 border border-border rounded-xl p-3 text-center">
+            <p className="text-xs text-muted-foreground/60 mb-1 font-mono">✅ Pass</p>
+            <p className="text-xl font-bold text-green-600 dark:text-green-400">{passRatePct}%</p>
             {passUplift !== null && passUplift > 0 && (
-              <p className="text-xs text-green-500 mt-0.5">+{Math.round(passUplift * 100)}pp vs ctrl</p>
+              <p className="text-xs text-muted-foreground/60 mt-0.5">+{Math.round(passUplift * 100)}pp vs ctrl</p>
             )}
           </div>
           {stats.test_partial_rate !== undefined && (
-            <div className="bg-yellow-50 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded-xl p-3 text-center">
-              <p className="text-xs text-muted-foreground/50 mb-1">🟡 Partial</p>
-              <p className="text-xl font-bold text-yellow-600">{Math.round(stats.test_partial_rate * 100)}%</p>
+            <div className="bg-muted/40 border border-border rounded-xl p-3 text-center">
+              <p className="text-xs text-muted-foreground/60 mb-1 font-mono">🟡 Partial</p>
+              <p className="text-xl font-bold text-foreground/80">{Math.round(stats.test_partial_rate * 100)}%</p>
             </div>
           )}
           {stats.test_fail_rate !== undefined && (
-            <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-xl p-3 text-center">
-              <p className="text-xs text-muted-foreground/50 mb-1">❌ Fail</p>
-              <p className="text-xl font-bold text-red-500">{Math.round(stats.test_fail_rate * 100)}%</p>
+            <div className="bg-muted/40 border border-border rounded-xl p-3 text-center">
+              <p className="text-xs text-muted-foreground/60 mb-1 font-mono">❌ Fail</p>
+              <p className="text-xl font-bold text-foreground/60">{Math.round(stats.test_fail_rate * 100)}%</p>
             </div>
           )}
         </div>
@@ -136,13 +137,13 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
           <h3 className="text-sm font-semibold text-foreground/80 mb-3">{t('benchmark.scoreByCategory')}</h3>
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={chartData} margin={{ top: 4, right: 16, left: 0, bottom: 4 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <CartesianGrid strokeDasharray="3 3" stroke="currentColor" strokeOpacity={0.08} />
               <XAxis dataKey="name" tick={{ fontSize: 11 }} />
               <YAxis domain={[0, 10]} tick={{ fontSize: 11 }} />
               <Tooltip />
               <Legend />
               <Bar dataKey="Control" fill="#d1d5db" radius={[3,3,0,0]} />
-              <Bar dataKey="With Skill" fill="#6366f1" radius={[3,3,0,0]} />
+              <Bar dataKey="With Skill" fill="#16a34a" radius={[3,3,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -156,13 +157,13 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border text-xs text-muted-foreground/50">
-                  <th className="text-left pb-2 font-medium">{t('benchmark.colSkill')}</th>
-                  <th className="text-right pb-2 font-medium">{t('benchmark.colControl')}</th>
-                  <th className="text-right pb-2 font-medium">{t('benchmark.colWithSkill')}</th>
-                  <th className="text-right pb-2 font-medium">{t('benchmark.colImpact')}</th>
-                  <th className="text-right pb-2 font-medium">Pass%</th>
-                  <th className="text-right pb-2 font-medium">Pass↑</th>
-                  <th className="text-right pb-2 font-medium">{t('benchmark.colQuestions')}</th>
+                  <th className="text-left pb-2 font-mono font-medium uppercase tracking-wide">{t('benchmark.colSkill')}</th>
+                  <th className="text-right pb-2 font-mono font-medium uppercase tracking-wide">{t('benchmark.colControl')}</th>
+                  <th className="text-right pb-2 font-mono font-medium uppercase tracking-wide">{t('benchmark.colWithSkill')}</th>
+                  <th className="text-right pb-2 font-mono font-medium uppercase tracking-wide">{t('benchmark.colImpact')}</th>
+                  <th className="text-right pb-2 font-mono font-medium uppercase tracking-wide">Pass%</th>
+                  <th className="text-right pb-2 font-mono font-medium uppercase tracking-wide">Pass↑</th>
+                  <th className="text-right pb-2 font-mono font-medium uppercase tracking-wide">{t('benchmark.colQuestions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -174,20 +175,20 @@ function StatsPanel({ stats, title }: { stats: SourceStats; title: string }) {
                     ? passRate >= 60 ? '✅' : failRate !== null && failRate >= 60 ? '❌' : '🟡'
                     : null
                   return (
-                    <tr key={s.skill_id} className="border-b border-border hover:bg-muted/50 transition-colors">
-                      <td className="py-2 font-mono text-xs text-indigo-700">
+                    <tr key={s.skill_id} className="border-b border-border hover:bg-muted/40 transition-colors">
+                      <td className="py-2 font-mono text-xs text-foreground/80">
                         <Link href={`/skills/${s.skill_id}`} className="hover:underline">{s.skill_id}</Link>
                         {badge && <span className="ml-1.5">{badge}</span>}
                       </td>
                       <td className="text-right py-2 text-muted-foreground/70">{s.avg_control.toFixed(2)}</td>
                       <td className="text-right py-2 text-foreground/80 font-medium">{s.avg_test.toFixed(2)}</td>
-                      <td className={`text-right py-2 font-semibold ${s.delta >= 0 ? 'text-green-600' : 'text-red-500'}`}>
+                      <td className={`text-right py-2 font-semibold ${s.delta >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-500'}`}>
                         {s.delta > 0 ? '+' : ''}{s.delta.toFixed(2)}
                       </td>
                       <td className="text-right py-2 text-foreground/70">
                         {passRate !== null ? `${passRate}%` : '—'}
                       </td>
-                      <td className={`text-right py-2 font-medium ${passUpliftVal !== null && passUpliftVal > 0 ? 'text-green-600' : passUpliftVal !== null && passUpliftVal < 0 ? 'text-red-500' : 'text-muted-foreground/50'}`}>
+                      <td className={`text-right py-2 font-medium ${passUpliftVal !== null && passUpliftVal > 0 ? 'text-green-600 dark:text-green-400' : passUpliftVal !== null && passUpliftVal < 0 ? 'text-red-500' : 'text-muted-foreground/50'}`}>
                         {passUpliftVal !== null ? (passUpliftVal > 0 ? '+' : '') + Math.round(passUpliftVal * 100) + 'pp' : '—'}
                       </td>
                       <td className="text-right py-2 text-muted-foreground/50">{s.question_count}</td>
@@ -239,20 +240,22 @@ function EcosystemSection({ byEcosystem }: { byEcosystem: Record<string, SourceS
   const activeStats = activeEco === 'all' ? allStats : byEcosystem[activeEco]
 
   return (
-    <main className="max-w-5xl mx-auto px-6 py-8 border-t border-border mt-4">
-      <h2 className="text-lg font-bold text-foreground mb-4">🌐 {t('benchmark.byEcosystem')}</h2>
-      <div className="flex gap-2 border-b border-border mb-8 overflow-x-auto pb-0 -mb-px">
+    <section className="max-w-5xl mx-auto px-6 py-8 border-t border-border mt-4">
+      <h2 className="text-base font-semibold text-foreground mb-4">🌐 {t('benchmark.byEcosystem')}</h2>
+      <div className="flex gap-1 border-b border-border mb-8 overflow-x-auto">
         {['all', ...ecoKeys].map(eco => (
           <button key={eco} onClick={() => setActiveEco(eco)}
-            className={`flex items-center gap-1 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
-              activeEco === eco ? 'border-indigo-600 text-indigo-700' : 'border-transparent text-muted-foreground/70 hover:text-foreground/80'
+            className={`flex items-center gap-1 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
+              activeEco === eco
+                ? 'border-foreground text-foreground'
+                : 'border-transparent text-muted-foreground/70 hover:text-foreground/80'
             }`}>
             {ECO_LABELS[eco] ?? eco}
           </button>
         ))}
       </div>
       <StatsPanel stats={activeStats} title={ECO_LABELS[activeEco] ?? activeEco} />
-    </main>
+    </section>
   )
 }
 
@@ -263,7 +266,6 @@ export default function BenchmarkClient({ data }: Props) {
   const [isAdmin, setIsAdmin] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { t } = useLang()
-  const { theme, toggleTheme } = useTheme()
   const SOURCE_TABS = useSourceTabs()
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -291,21 +293,25 @@ export default function BenchmarkClient({ data }: Props) {
 
   if (!data) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-2xl font-bold text-foreground mb-2">Benchmark data not yet available</p>
-          <p className="text-muted-foreground/70 text-sm mb-4">Eval runs will appear here after the first automated run.</p>
-          {isAdmin && (
-            <button
-              onClick={() => triggerEval()}
-              disabled={triggering}
-              className="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              {triggering ? '触发中...' : '🚀 触发全量 Eval'}
-            </button>
-          )}
-          {triggerMsg && <p className="text-sm text-muted-foreground/70 mt-2">{triggerMsg}</p>}
+      <div className="min-h-screen bg-background">
+        <Navbar />
+        <div className="flex items-center justify-center py-32">
+          <div className="text-center">
+            <p className="text-2xl font-bold text-foreground mb-2">Benchmark data not yet available</p>
+            <p className="text-muted-foreground/70 text-sm mb-4">Eval runs will appear here after the first automated run.</p>
+            {isAdmin && (
+              <button
+                onClick={() => triggerEval()}
+                disabled={triggering}
+                className="px-4 py-2 bg-foreground text-background text-sm rounded-lg hover:opacity-80 disabled:opacity-50 transition-opacity"
+              >
+                {triggering ? 'Running...' : '🚀 Trigger Full Eval'}
+              </button>
+            )}
+            {triggerMsg && <p className="text-sm text-muted-foreground/70 mt-2">{triggerMsg}</p>}
+          </div>
         </div>
+        <Footer />
       </div>
     )
   }
@@ -315,30 +321,45 @@ export default function BenchmarkClient({ data }: Props) {
   const activeTabInfo = SOURCE_TABS.find(t => t.key === activeTab)!
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b border-border px-6 py-4 sticky top-0 bg-background/95 backdrop-blur z-10">
-        <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="text-muted-foreground/50 hover:text-foreground/80 transition-colors">
-              <ArrowLeft size={18} />
-            </Link>
-            <span className="text-xl font-bold tracking-tight">{t('benchmark.title')}</span>
+    <div className="min-h-screen bg-background flex flex-col">
+      <Navbar />
+
+      <main className="flex-1 max-w-5xl mx-auto w-full px-6 py-10">
+        {/* Page title */}
+        <div className="mb-8 flex items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold font-display tracking-tight text-foreground mb-1">
+              {t('benchmark.title')}
+            </h1>
+            <div className="flex flex-wrap gap-3 text-xs text-muted-foreground/50 font-mono mt-2">
+              <span suppressHydrationWarning>Run: {mounted ? new Date(run.run_at).toLocaleString() : run.run_at}</span>
+              <span>·</span>
+              <span>Judge: {run.judge_model}</span>
+              <span>·</span>
+              <span>Strategy: {run.inject_strategy}</span>
+              {run.test_models && run.test_models.length > 0 && (
+                <>
+                  <span>·</span>
+                  <span title="Models used as test answerers">Models: {run.test_models.join(' vs ')}</span>
+                </>
+              )}
+            </div>
           </div>
-          <div className="flex items-center gap-3">
+
+          <div className="flex items-center gap-2 shrink-0">
             {isAdmin && (
               <>
                 <button
                   onClick={() => triggerEval()}
                   disabled={triggering}
-                  className="px-3 py-1.5 bg-blue-600 text-white text-xs rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
+                  className="px-3 py-1.5 bg-foreground text-background text-xs rounded-md hover:opacity-80 disabled:opacity-50 transition-opacity"
                 >
                   {triggering ? '...' : `🚀 ${t('benchmark.runEval')}`}
                 </button>
                 <button
                   onClick={() => triggerEval('zama/fhevm-solidity,zama/relayer-sdk,zama/overview,zama/tfhe-rs')}
                   disabled={triggering}
-                  className="px-3 py-1.5 bg-purple-600 text-white text-xs rounded-lg hover:bg-purple-700 disabled:opacity-50 transition-colors"
+                  className="px-3 py-1.5 border border-border text-foreground text-xs rounded-md hover:bg-muted disabled:opacity-50 transition-colors"
                 >
                   {triggering ? '...' : t('benchmark.zamaSpecific')}
                 </button>
@@ -349,42 +370,24 @@ export default function BenchmarkClient({ data }: Props) {
               <ExternalLink size={14} />
               <span className="hidden sm:inline">{t('benchmark.methodology')}</span>
             </a>
-            <button
-              onClick={toggleTheme}
-              className="flex items-center justify-center w-8 h-8 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-              title={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
-              aria-label="Toggle theme"
-            >
-              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-            </button>
           </div>
         </div>
+
         {triggerMsg && (
-          <div className="max-w-5xl mx-auto mt-2 text-xs text-blue-600 bg-blue-50 px-3 py-1.5 rounded">
+          <div className="mb-6 text-xs text-foreground/70 bg-muted border border-border px-3 py-2 rounded-md font-mono">
             {triggerMsg}
           </div>
         )}
-      </header>
-
-      <main className="max-w-5xl mx-auto px-6 py-8">
-        {/* Run meta */}
-        <div className="mb-6 flex flex-wrap gap-3 text-xs text-muted-foreground/50">
-          <span suppressHydrationWarning>Run: {mounted ? new Date(run.run_at).toLocaleString() : run.run_at}</span>
-          <span>·</span>
-          <span>Judge: {run.judge_model}</span>
-          <span>·</span>
-          <span>Strategy: {run.inject_strategy}</span>
-        </div>
 
         {/* Source Tabs */}
-        <div className="flex gap-2 border-b border-border mb-8 overflow-x-auto pb-0">
+        <div className="flex gap-1 border-b border-border mb-8 overflow-x-auto">
           {SOURCE_TABS.map(tab => (
             <button
               key={tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
                 activeTab === tab.key
-                  ? 'border-indigo-600 text-indigo-700'
+                  ? 'border-foreground text-foreground'
                   : 'border-transparent text-muted-foreground/70 hover:text-foreground/80'
               }`}
             >
@@ -403,8 +406,12 @@ export default function BenchmarkClient({ data }: Props) {
 
       {/* Section 2: By Ecosystem */}
       {data.byEcosystem && Object.keys(data.byEcosystem).length > 0 && (
-        <EcosystemSection byEcosystem={data.byEcosystem} />
+        <div className="w-full">
+          <EcosystemSection byEcosystem={data.byEcosystem} />
+        </div>
       )}
+
+      <Footer />
     </div>
   )
 }
