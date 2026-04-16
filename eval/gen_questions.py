@@ -5,9 +5,78 @@
 输出: new_questions.json（追加到 questions.json 前先人工审核）
 """
 
-import json, os, re, time
+import json, os, re, sys, time
 import requests
 from pathlib import Path
+
+# ── P2 defensive validation ──────────────────────────────────
+# Rejects polluted Q text (generator bleed-through), empty GT,
+# and Q≈GT overlap. Used at draft + merged-file stage.
+
+POLLUTION_PATTERNS = [
+    "标准答案",                    # generator template marker
+    "**标准答案**", "**标准答案：**",
+    "### Q", "### STARKNET-Q", "### ETH-Q",
+    "### MANTLE-Q", "### MONAD-Q", "### SUI-Q",
+    "**Skill：**", "**问题：**",
+]
+
+
+def _normalize(s: str) -> str:
+    return re.sub(r"\s+", "", s or "").lower()
+
+
+def validate_questions(questions: list, *, require_gt: bool) -> list:
+    """Return list of (qid, reason) for failing questions. Empty list = all pass."""
+    failures = []
+    for q in questions:
+        qid = q.get("question_id") or q.get("id") or "?"
+        qtext = q.get("question", "")
+        gt = q.get("ground_truth", "")
+
+        for pat in POLLUTION_PATTERNS:
+            if pat in qtext:
+                failures.append((qid, f"question contains pollution marker: {pat!r}"))
+                break
+
+        if require_gt:
+            if not gt.strip():
+                failures.append((qid, "ground_truth is empty"))
+                continue
+            qn, gn = _normalize(qtext), _normalize(gt)
+            if qn and gn:
+                if qn == gn:
+                    failures.append((qid, "question == ground_truth (verbatim)"))
+                else:
+                    # high overlap: shorter is >=80% contained in longer
+                    short, long = (qn, gn) if len(qn) <= len(gn) else (gn, qn)
+                    if len(short) >= 30 and short in long and len(short) / len(long) >= 0.8:
+                        failures.append((qid, f"Q≈GT overlap >=80% ({len(short)}/{len(long)} chars)"))
+    return failures
+
+
+def report_validation(failures: list, *, label: str) -> bool:
+    """Print failures. Return True if all clean."""
+    if not failures:
+        print(f"[validate:{label}] OK — no issues")
+        return True
+    print(f"[validate:{label}] FAILED — {len(failures)} issue(s):")
+    for qid, reason in failures:
+        print(f"  - {qid}: {reason}")
+    return False
+
+
+def _cli_validate(path: str) -> int:
+    p = Path(path)
+    data = json.loads(p.read_text())
+    # promptfoo-flat shape: each entry is {"vars": {...}}
+    if data and isinstance(data[0], dict) and "vars" in data[0]:
+        data = [d["vars"] for d in data]
+    require_gt = any(("ground_truth" in q) for q in data)
+    fails = validate_questions(data, require_gt=require_gt)
+    ok = report_validation(fails, label=p.name)
+    return 0 if ok else 1
+
 
 API_KEY = "ak-9e4757e086036058f5e95f13d89d188d41559e8a39488a232b8d66f8dcb69679"
 BASE_URL = "https://api.commonstack.ai/v1"
@@ -419,6 +488,13 @@ def main():
     print(f"已保存到 {output_path}")
     print("请人工审核后再合并到 questions.json")
 
+    # P2 validation on the freshly generated draft (no GT yet)
+    print()
+    fails = validate_questions(all_new, require_gt=False)
+    report_validation(fails, label=output_path.name)
+
 
 if __name__ == "__main__":
+    if len(sys.argv) >= 3 and sys.argv[1] == "--validate":
+        sys.exit(_cli_validate(sys.argv[2]))
     main()

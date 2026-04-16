@@ -5526,26 +5526,24 @@
   },
   {
     "question_id": "STARKNET-Q27",
-    "question": "starknet.js v6 中如何连接 Starknet mainnet？写出正确的 Provider 初始化代码。",
-    "ground_truth": "starknet.js v6 统一使用 `RpcProvider`，旧版的 `SequencerProvider` 已废弃。代码：\n```javascript\nimport { RpcProvider } from 'starknet';\nconst provider = new RpcProvider({\n  nodeUrl: 'https://starknet-mainnet.infura.io/v3/YOUR_KEY',\n  // 或免费公共节点:\n  // nodeUrl: 'https://free-rpc.nethermind.io/mainnet-juno'\n  // nodeUrl: 'https://starknet-mainnet.public.blastapi.io'\n});\n```",
+    "question": "starknet.js v6 中如何连接 Starknet mainnet？写出正确的 Provider 初始化代码。\n**标准答案：**\n```javascript\nimport { RpcProvider } from 'starknet';\nconst provider = new RpcProvider({\n  nodeUrl: 'https://starknet-mainnet.infura.io/v3/YOUR_KEY',\n  // 或免费公共节点:\n  // nodeUrl: 'https://free-rpc.nethermind.io/mainnet-juno'\n  // nodeUrl: 'https://starknet-mainnet.public.blastapi.io'\n});\n```\nstarknet.js v6 统一使用 `RpcProvider`，旧版的 `SequencerProvider` 已废弃。\n**Skill：** `starknet/starknet-js`\n**类别：** SDK 用法\n**难度：** Easy\n\n\n### STARKNET-Q28 - Account 对象创建\n**问题：** starknet.js 中如何用私钥创建一个 Account 对象发送交易？\n**标准答案：**\n```javascript\nimport { Account, RpcProvider, stark } from 'starknet';\nconst provider = new RpcProvider({ nodeUrl: '...' });\nconst account = new Account(\n  provider,\n  '0x账户地址',\n  '0x私钥',  // 或 Signer 对象\n  // 第四个参数 cairoVersion 在 v6 中含义为 hash 算法版本\n  // Cairo 1 合约（ArgentX/Braavos 新版）用 '1'，旧版 Cairo 0 用 '0'\n  // v6 已有自动检测机制，不确定时可省略或查阅最新官方文档\n);\n```\n注意：starknet.js v6 的 Account API 持续迭代，cairoVersion 参数语义有变化，建议以最新官方文档为准：https://starknetjs.com/docs/\n**Skill：** `starknet/starknet-js`\n**类别：** SDK 用法\n**难度：** Easy\n\n\n### STARKNET-Q29 - 读取合约数据\n**问题：** starknet.js 中如何调用合约的 view 函数？`provider.callContract` 和 `contract.call` 有什么区别？\n**标准答案：**\n```javascript\n// 方式一：用 Contract 对象（推荐）\nimport { Contract } from 'starknet';\nconst contract = new Contract(abi, contractAddress, provider);\nconst result = await contract.balanceOf(address);\n\n// 方式二：provider.callContract（底层）\nconst result = await provider.callContract({\n  contractAddress,\n  entrypoint: 'balanceOf',\n  calldata: [address]\n});\n```\n`contract.call` 自动处理 ABI 编码/解码，更方便。\n**Skill：** `starknet/starknet-js`\n**类别：** SDK 用法\n**难度：** Easy\n\n\n### STARKNET-Q30 - 发送交易\n**问题：** starknet.js 中如何用 account 执行一个合约调用？如何等待交易确认？\n**标准答案：**\n```javascript\nconst { transaction_hash } = await account.execute({\n  contractAddress: '0x...',\n  entrypoint: 'transfer',\n  calldata: [recipient, amount_low, amount_high]  // u256 需要拆成两个 felt\n});\n// 等待确认（默认等到 ACCEPTED_ON_L2）\nawait provider.waitForTransaction(transaction_hash);\n// 或指定参数\nimport { TransactionFinalityStatus } from 'starknet';\nawait provider.waitForTransaction(transaction_hash, {\n  retryInterval: 2000,  // 轮询间隔 ms\n  successStates: [TransactionFinalityStatus.ACCEPTED_ON_L2]\n});\n```\n**Skill：** `starknet/starknet-js`\n**类别：** SDK 用法\n**难度：** Medium\n\n\n### STARKNET-Q31 - calldata 编码\n**问题：** starknet.js 中向合约传递 `u256` 类型参数时需要注意什么？如何编码 `1000000000000000000n`（1 ETH）？",
+    "ground_truth": "u256 在 Starknet calldata 中用两个 felt252 表示：low（低 128 位）和 high（高 128 位）。starknet.js 提供 `cairo.uint256(value)` 帮助函数：\n```javascript\nimport { cairo } from 'starknet';\nconst amount = cairo.uint256(1000000000000000000n);\n// amount = { low: '1000000000000000000', high: '0' }\n// calldata 传入: [amount.low, amount.high]\n```",
     "skill_id": "starknet/starknet-js",
     "category": "STARKNET",
     "expected_facts": [
-      "starknet.js v6 uses RpcProvider for connecting to Starknet mainnet",
-      "RpcProvider is constructed with a nodeUrl pointing to a JSON-RPC endpoint (e.g. Infura, Nethermind Juno, or Blast public RPC)",
-      "The old SequencerProvider has been deprecated/removed in v6"
+      "u256 在 Starknet calldata 中用两个 felt252 表示：low（低 128 位）和 high（高 128 位）。starknet.js 提供 `cairo.uint256(value)` 帮助函数：\n```javascript\nimport { cairo } from 'starknet';\nconst amount = cairo.uint256(1000000000000000000n);\n// amount = { low: '1000000000000000000', high: '0' }\n// calldata 传入: [amount.low, amount.high]\n```"
     ]
   },
   {
     "question_id": "STARKNET-Q32",
-    "question": "starknet.js 中如何监听合约事件？如何过滤特定的 Transfer 事件？",
-    "ground_truth": "通过 `provider.getEvents` 拉取事件，用 `keys` 字段按事件 selector 过滤；或用 `Contract` 对象的 `parseEvents` 从交易回执解码：\n```javascript\nconst events = await provider.getEvents({\n  address: contractAddress,\n  keys: [['0x事件选择器哈希']],  // Transfer 事件的 selector\n  from_block: { block_number: startBlock },\n  to_block: 'latest',\n  chunk_size: 100\n});\n// 或用 Contract 对象的事件解码\nconst contract = new Contract(abi, contractAddress, provider);\nconst parsedEvents = contract.parseEvents(transactionReceipt);\n```",
+    "question": "starknet.js 中如何监听合约事件？如何过滤特定的 Transfer 事件？\n**标准答案：**\n```javascript\nconst events = await provider.getEvents({\n  address: contractAddress,\n  keys: [['0x事件选择器哈希']],  // Transfer 事件的 selector\n  from_block: { block_number: startBlock },\n  to_block: 'latest',\n  chunk_size: 100\n});\n// 或用 Contract 对象的事件解码\nconst contract = new Contract(abi, contractAddress, provider);\nconst parsedEvents = contract.parseEvents(transactionReceipt);\n```\n**Skill：** `starknet/starknet-js`\n**类别：** SDK 用法\n**难度：** Medium\n\n\n### STARKNET-Q33 - 签名验证\n**问题：** starknet.js 中如何对消息签名，以及如何验证签名？\n**标准答案：**\n```javascript\n// 签名（链下）\nconst msgHash = typedData.getMessageHash(message, accountAddress);\nconst signature = await account.signMessage(typedData);\n\n// 验证（链上账户合约）\nconst result = await account.verifyMessage(typedData, signature);\n// 或直接调用账户合约的 is_valid_signature\n```\nStarknet 使用 SNIP-12 类型化数据标准（类似 EIP-712），要注意 domain separator 和消息结构的正确定义。\n**Skill：** `starknet/starknet-js`\n**类别：** SDK 用法\n**难度：** Hard\n\n\n### STARKNET-Q34 - ABI 和类型解析\n**问题：** starknet.js v6 中 ABI 格式有什么变化？旧版 ABI 还能用吗？",
+    "ground_truth": "starknet.js v5+ 使用新版 ABI 格式（来自 Cairo 1 编译器），与旧版 Cairo 0 的 ABI 格式不同。新版 ABI 有 `type: \"interface\"`、`type: \"impl\"` 等字段。v6 提供 `isSierraContractAbi` 检测，并同时支持旧版 ABI（向后兼容），但推荐用 Cairo 1 合约的新 ABI，类型信息更丰富，解码更准确。",
     "skill_id": "starknet/starknet-js",
     "category": "STARKNET",
     "expected_facts": [
-      "Use provider.getEvents to query historical events on Starknet via starknet.js",
-      "Filter specific events (e.g. Transfer) by passing the event selector hash in the keys parameter",
-      "Use Contract.parseEvents on a transaction receipt to decode events using the contract ABI"
+      "starknet.js v5+ uses a new ABI format generated by the Cairo 1 compiler, distinct from the old Cairo 0 ABI format",
+      "starknet.js v6 provides the isSierraContractAbi function to detect which ABI format is being used",
+      "starknet.js v6 maintains backward compatibility by supporting the old Cairo 0 ABI format"
     ]
   },
   {
@@ -5560,28 +5558,25 @@
   },
   {
     "question_id": "STARKNET-Q36",
-    "question": "用 OpenZeppelin Cairo 实现一个最简单的 ERC-20 合约，需要哪些关键元素？",
-    "ground_truth": "关键元素：1）`use openzeppelin::token::erc20::{ERC20Component, ERC20HooksEmptyImpl};` 引入 ERC-20 组件；2）`component!` 宏挂载组件到合约；3）`#[abi(embed_v0)]` 暴露 `ERC20Impl` 和 `ERC20MetadataImpl`；4）`#[storage]` 中用 `#[substorage(v0)]` 嵌入 `ERC20Component::Storage`；5）constructor 调用 `self.erc20.initializer(name, symbol)`。\n```cairo\n#[starknet::contract]\nmod MyToken {\n    use openzeppelin::token::erc20::{ERC20Component, ERC20HooksEmptyImpl};\n    component!(path: ERC20Component, storage: erc20, event: ERC20Event);\n    #[abi(embed_v0)]\n    impl ERC20Impl = ERC20Component::ERC20Impl<ContractState>;\n    #[abi(embed_v0)]\n    impl ERC20MetadataImpl = ERC20Component::ERC20MetadataImpl<ContractState>;\n    impl ERC20InternalImpl = ERC20Component::InternalImpl<ContractState>;\n    #[storage]\n    struct Storage {\n        #[substorage(v0)]\n        erc20: ERC20Component::Storage,\n    }\n    // constructor 中调用 self.erc20.initializer(name, symbol)\n}\n```",
+    "question": "用 OpenZeppelin Cairo 实现一个最简单的 ERC-20 合约，需要哪些关键元素？\n**标准答案：**\n```cairo\n#[starknet::contract]\nmod MyToken {\n    use openzeppelin::token::erc20::{ERC20Component, ERC20HooksEmptyImpl};\n    component!(path: ERC20Component, storage: erc20, event: ERC20Event);\n    #[abi(embed_v0)]\n    impl ERC20Impl = ERC20Component::ERC20Impl<ContractState>;\n    #[abi(embed_v0)]\n    impl ERC20MetadataImpl = ERC20Component::ERC20MetadataImpl<ContractState>;\n    impl ERC20InternalImpl = ERC20Component::InternalImpl<ContractState>;\n    #[storage]\n    struct Storage {\n        #[substorage(v0)]\n        erc20: ERC20Component::Storage,\n    }\n    // constructor 中调用 self.erc20.initializer(name, symbol)\n}\n```\n**Skill：** `starknet/cairo-contract-authoring`\n**类别：** 合约开发\n**难度：** Medium\n\n\n### STARKNET-Q37 - Ownable 模式\n**问题：** Cairo 合约中如何实现只有 owner 才能调用某函数？用 OpenZeppelin 怎么做？\n**标准答案：**\n```cairo\nuse openzeppelin::access::ownable::OwnableComponent;\ncomponent!(path: OwnableComponent, storage: ownable, event: OwnableEvent);\n#[abi(embed_v0)]\nimpl OwnableImpl = OwnableComponent::OwnableImpl<ContractState>;\nimpl OwnableInternalImpl = OwnableComponent::InternalImpl<ContractState>;\n\nfn privileged_action(ref self: ContractState) {\n    self.ownable.assert_only_owner();  // 不是 owner 就 panic\n    // ...\n}\n```\n**Skill：** `starknet/cairo-contract-authoring`\n**类别：** 合约开发\n**难度：** Easy\n\n\n### STARKNET-Q38 - 合约升级\n**问题：** Starknet 合约升级是如何工作的？`replace_class_syscall` 是什么？",
+    "ground_truth": "Starknet 合约升级通过 `replace_class_syscall(new_class_hash)` 实现，将合约的 class_hash 替换为新版本，存储数据保留不变。这比 EVM 的 proxy 模式更优雅，没有 delegatecall 的存储冲突风险。注意：升级应有 timelock 保护，新 class_hash 不能为零，升级后需验证新实现正确性。",
     "skill_id": "starknet/cairo-dev-guide",
     "category": "STARKNET",
     "expected_facts": [
-      "Imports the ERC20Component from openzeppelin::token::erc20",
-      "Uses the component! macro to embed the ERC20Component into the contract",
-      "Exposes ERC20Impl (and typically ERC20MetadataImpl) with #[abi(embed_v0)]",
-      "Calls self.erc20.initializer(name, symbol) inside the constructor"
+      "Starknet contract upgrades are performed using the replace_class_syscall(new_class_hash) function",
+      "replace_class_syscall replaces the contract's class_hash with a new version",
+      "Storage data is preserved (retained) after a contract upgrade"
     ]
   },
   {
     "question_id": "STARKNET-Q39",
-    "question": "Cairo 合约中如何用 `deploy_syscall` 部署子合约？需要哪些参数？",
-    "ground_truth": "调用 `starknet::syscalls::deploy_syscall`，传入：1）`class_hash`（要部署的合约类）；2）`contract_address_salt`（影响部署地址的 salt）；3）`calldata.span()`（constructor 参数）；4）`deploy_from_zero: bool`（是否以零地址作 deployer）。返回 `(contract_address, return_data)`。地址 = hash(class_hash, salt, calldata, deployer)，deploy_from_zero=true 时 deployer=0。\n```cairo\nuse starknet::syscalls::deploy_syscall;\nlet (contract_address, _) = deploy_syscall(\n    class_hash,\n    contract_address_salt,\n    calldata.span(),\n    false\n).unwrap_syscall();\n```",
+    "question": "Cairo 合约中如何用 `deploy_syscall` 部署子合约？需要哪些参数？\n**标准答案：**\n```cairo\nuse starknet::syscalls::deploy_syscall;\nlet (contract_address, _) = deploy_syscall(\n    class_hash,           // 要部署的合约的 class hash\n    contract_address_salt, // salt，影响部署地址\n    calldata.span(),      // constructor 参数\n    false                 // deploy_from_zero: 是否用零地址作 deployer\n).unwrap_syscall();\n```\n地址 = hash(class_hash, salt, calldata, deployer)，deploy_from_zero=true 时 deployer=0。\n**Skill：** `starknet/cairo-contract-authoring`\n**类别：** 合约开发\n**难度：** Medium\n\n\n### STARKNET-Q40 - 存储映射（Map）\n**问题：** Cairo 中如何使用 `Map`（存储映射）？嵌套映射怎么写？\n**标准答案：**\n```cairo\nuse starknet::storage::{Map, StorageMapReadAccess, StorageMapWriteAccess};\n#[storage]\nstruct Storage {\n    balances: Map<ContractAddress, u256>,\n    allowances: Map<(ContractAddress, ContractAddress), u256>,\n}\n// 读取\nlet bal = self.balances.read(address);\n// 写入\nself.balances.write(address, new_balance);\n// 嵌套映射用元组 key\nself.allowances.write((owner, spender), amount);\n```\n**Skill：** `starknet/cairo-contract-authoring`\n**类别：** 合约开发\n**难度：** Easy\n\n\n### STARKNET-Q41 - 接口和 dispatcher\n**问题：** Cairo 中如何跨合约调用？`IERC20Dispatcher` 是什么？\n**标准答案：**\n```cairo\nuse openzeppelin::token::erc20::interface::{IERC20Dispatcher, IERC20DispatcherTrait};\nlet token = IERC20Dispatcher { contract_address: token_addr };\nlet balance = token.balance_of(user);\ntoken.transfer(recipient, amount);\n```\nDispatcher 是编译器自动生成的调用封装，对应 interface 定义。跨合约调用会消耗 gas 并可能失败，关键路径要处理返回值或用 syscall 做底层调用。\n**Skill：** `starknet/cairo-contract-authoring`\n**类别：** 合约开发\n**难度：** Medium\n\n\n### STARKNET-Q42 - 重入攻击防护\n**问题：** Starknet 合约中存在重入攻击风险吗？如何防护？",
+    "ground_truth": "存在。Starknet 合约调用其他合约时，如果对方合约回调发起方，就会发生重入。防护方式：1）遵循 CEI 模式（Check-Effects-Interactions）：先检查条件，更新状态，最后做外部调用；2）用重入锁（reentrancy guard）：在 storage 里记录 `locked` 状态；OpenZeppelin 提供 `ReentrancyGuardComponent`。",
     "skill_id": "starknet/cairo-dev-guide",
     "category": "STARKNET",
     "expected_facts": [
-      "deploy_syscall is imported from starknet::syscalls",
-      "deploy_syscall takes four parameters: class_hash, contract_address_salt, calldata (as a span), and deploy_from_zero (bool)",
-      "deploy_syscall returns a tuple of (contract_address, return_data) and is typically called with .unwrap_syscall()",
-      "The deployed contract's address is determined by hash(class_hash, salt, calldata, deployer); deploy_from_zero=true sets deployer to 0"
+      "Starknet contracts are vulnerable to reentrancy attacks when an external contract calls back into the calling contract during execution",
+      "The CEI (Check-Effects-Interactions) pattern is a recommended defense: check conditions first, then update state, then make external calls"
     ]
   },
   {
@@ -5598,15 +5593,14 @@
   },
   {
     "question_id": "STARKNET-Q44",
-    "question": "Pragma 是 Starknet 上的预言机，如何在合约中获取 ETH/USD 价格？",
-    "ground_truth": "通过 `IPragmaABIDispatcher.get_data` 调用 Pragma 合约，传入 `DataType::SpotEntry('ETH/USD')` 和聚合方式（如 `AggregationMode::Median`）。返回 `PragmaPricesResponse`，`price` 字段为 8 位精度（即真实价 × 10^8）。\n```cairo\nuse pragma_lib::abi::{IPragmaABIDispatcher, IPragmaABIDispatcherTrait};\nuse pragma_lib::types::{AggregationMode, DataType, PragmaPricesResponse};\n// Pragma Mainnet: 0x2a85bd616f912537c50a49a4076db02c00b29b2cdc8a197ce92ed1837fa875b\nlet oracle = IPragmaABIDispatcher { contract_address: pragma_address };\nlet eth_usd_key: felt252 = 'ETH/USD';\nlet response: PragmaPricesResponse = oracle.get_data(\n    DataType::SpotEntry(eth_usd_key),\n    AggregationMode::Median(())\n);\nlet price = response.price;  // 8 位精度\n```\n注意：1）应校验 `price > 0`；2）检查 `last_updated_timestamp` 防止用过期价格；3）Cairo shortstring 'ETH/USD' 自动编码为 felt252。",
+    "question": "Pragma 是 Starknet 上的预言机，如何在合约中获取 ETH/USD 价格？\n**标准答案：**\n```cairo\nuse pragma_lib::abi::{IPragmaABIDispatcher, IPragmaABIDispatcherTrait};\nuse pragma_lib::types::{AggregationMode, DataType, PragmaPricesResponse};\n// Pragma Mainnet 合约地址:\n// 0x2a85bd616f912537c50a49a4076db02c00b29b2cdc8a197ce92ed1837fa875b\nlet oracle = IPragmaABIDispatcher { contract_address: pragma_address };\n// 'ETH/USD' 是 Cairo shortstring，会被编码为 felt252 key\nlet eth_usd_key: felt252 = 'ETH/USD';\nlet response: PragmaPricesResponse = oracle.get_data(\n    DataType::SpotEntry(eth_usd_key),\n    AggregationMode::Median(())\n);\nlet price = response.price;  // 8 位精度，即价格 * 10^8\n```\n注意：1）price > 0 验证；2）检查 `last_updated_timestamp` 防止用过期价格；3）Cairo shortstring 最长 31 字节，`'ETH/USD'` 会被自动编码为 felt252。\n**Skill：** `starknet/starknet-defi`\n**类别：** DeFi 生态\n**难度：** Hard\n\n\n### STARKNET-Q45 - Ekubo 流动性协议\n**问题：** Ekubo 是什么类型的 AMM？它和 Uniswap v3 有什么关系？",
+    "ground_truth": "Ekubo 是 Starknet 上的集中流动性 AMM，设计参考 Uniswap v3 的集中流动性（Concentrated Liquidity）概念，但做了 Starknet 特化优化：使用 Cairo 原生实现、tick 间隔更灵活、支持 extensions（插件机制）扩展流动性行为。是 Starknet 上 TVL 最大的 DEX。",
     "skill_id": "starknet/starknet-defi",
     "category": "STARKNET",
     "expected_facts": [
-      "Use IPragmaABIDispatcher with the Pragma contract address to query prices",
-      "Call get_data with DataType::SpotEntry('ETH/USD') and an AggregationMode (e.g. Median) to fetch the price",
-      "The returned price is in 8 decimals (price × 10^8)",
-      "Validate price > 0 and check last_updated_timestamp to avoid stale prices"
+      "Ekubo is a concentrated liquidity AMM on Starknet",
+      "Ekubo's design is based on/references Uniswap v3's concentrated liquidity concept",
+      "Ekubo is the largest DEX on Starknet by TVL"
     ]
   },
   {
@@ -5800,6 +5794,30 @@
   {
     "skill_id": "sui/docs-move-programmability",
     "category": "SUI",
+    "question": "在 Sui 中，如何使用 `upgrade_package` 函数进行包的升级？请列出该函数的参数及其类型。",
+    "expected_facts": [
+      "The function name is `upgrade_package`.",
+      "It takes parameters such as `package_id` of type `ObjectID` and `new_module` of type `Module`."
+    ],
+    "_source": "auto-generated-from-official-docs",
+    "question_id": "Q1005",
+    "ground_truth": "The function name is `upgrade_package`. | It takes parameters such as `package_id` of type `ObjectID` and `new_module` of type `Module`."
+  },
+  {
+    "skill_id": "sui/docs-move-programmability",
+    "category": "SUI",
+    "question": "Sui 的 Move 语言中，如何定义一个结构体并确保其可升级？请说明结构体的关键字段及其类型。",
+    "expected_facts": [
+      "The struct must contain a field named `version` of type `u64`.",
+      "The struct should also include a field for `data` of type `Vector<u8>`."
+    ],
+    "_source": "auto-generated-from-official-docs",
+    "question_id": "Q1006",
+    "ground_truth": "The struct must contain a field named `version` of type `u64`. | The struct should also include a field for `data` of type `Vector<u8>`."
+  },
+  {
+    "skill_id": "sui/docs-move-programmability",
+    "category": "SUI",
     "question": "在 Sui 的 Move 语言中，版本 v4 和 v5 在包升级时有什么关键区别？",
     "expected_facts": [
       "In v4, the upgrade process requires the `upgrade` function to be called explicitly.",
@@ -5808,6 +5826,18 @@
     "_source": "auto-generated-from-official-docs",
     "question_id": "Q1007",
     "ground_truth": "In v4, the upgrade process requires the `upgrade` function to be called explicitly. | In v5, the upgrade process is automated and does not require explicit function calls."
+  },
+  {
+    "skill_id": "sui/docs-move-programmability",
+    "category": "SUI",
+    "question": "在 Sui 中，如何使用 `publish` 函数发布一个新的模块？请列出该函数的返回值。",
+    "expected_facts": [
+      "The function name is `publish`.",
+      "It returns a `Transaction` object representing the published module."
+    ],
+    "_source": "auto-generated-from-official-docs",
+    "question_id": "Q1008",
+    "ground_truth": "The function name is `publish`. | It returns a `Transaction` object representing the published module."
   },
   {
     "skill_id": "sui/docs-move-programmability",
@@ -5856,6 +5886,18 @@
     "_source": "auto-generated-from-official-docs",
     "question_id": "Q1012",
     "ground_truth": "Version 9.2.1 includes updates to the API for better compatibility. | There are breaking changes in the way contracts are deployed compared to version 8.6.0."
+  },
+  {
+    "skill_id": "starknet/starknet-js",
+    "category": "STARKNET",
+    "question": "Starknet.js 中，设置主题的函数名是什么？",
+    "expected_facts": [
+      "The function name to set the theme is 'setTheme'.",
+      "'setTheme' accepts a string parameter that specifies the theme."
+    ],
+    "_source": "auto-generated-from-official-docs",
+    "question_id": "Q1014",
+    "ground_truth": "The function name to set the theme is 'setTheme'. | 'setTheme' accepts a string parameter that specifies the theme."
   },
   {
     "skill_id": "starknet/starknet-js",
@@ -6252,6 +6294,30 @@
     "_source": "auto-generated-from-official-docs",
     "question_id": "Q1052",
     "ground_truth": "The loan must be repaid within the same transaction. | The transaction must include a callback function to handle the loan logic."
+  },
+  {
+    "skill_id": "protocols/uniswap-v3-integration",
+    "category": "ETH",
+    "question": "Uniswap V3 中，流动性池的费用等级有哪些？请列出所有可用的费用等级。",
+    "expected_facts": [
+      "The available fee tiers in Uniswap V3 are 0.05%, 0.30%, and 1.00%.",
+      "Each fee tier corresponds to different types of trading pairs."
+    ],
+    "_source": "auto-generated-from-official-docs",
+    "question_id": "Q1053",
+    "ground_truth": "The available fee tiers in Uniswap V3 are 0.05%, 0.30%, and 1.00%. | Each fee tier corresponds to different types of trading pairs."
+  },
+  {
+    "skill_id": "protocols/uniswap-v3-integration",
+    "category": "ETH",
+    "question": "在 Uniswap V3 中，如何通过 `createPool` 函数创建一个新的流动性池？请列出该函数的参数及其类型。",
+    "expected_facts": [
+      "The `createPool` function requires parameters: token0 (address), token1 (address), fee (uint24), and sqrtPriceX96 (uint160).",
+      "The fee parameter must be one of the predefined fee tiers."
+    ],
+    "_source": "auto-generated-from-official-docs",
+    "question_id": "Q1054",
+    "ground_truth": "The `createPool` function requires parameters: token0 (address), token1 (address), fee (uint24), and sqrtPriceX96 (uint160). | The fee parameter must be one of the predefined fee tiers."
   },
   {
     "skill_id": "protocols/uniswap-v3-integration",
