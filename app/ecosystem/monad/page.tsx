@@ -33,7 +33,7 @@ export default async function MonadEcosystemPage() {
   const { data: skills } = await serviceClient
     .from('skills')
     .select('*')
-    .eq('ecosystem', 'Monad')
+    .eq('ecosystem', 'monad')
     .order('created_at', { ascending: true })
 
   const monadSkills: Skill[] = skills ?? []
@@ -54,9 +54,7 @@ export default async function MonadEcosystemPage() {
         {/* Header */}
         <div className="mb-10">
           <div className="flex items-center gap-3 mb-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-100 text-lg font-bold text-purple-700">
-              M
-            </div>
+            <img src="/logos/monad.png" alt="Monad logo" className="h-10 w-10 rounded-xl object-contain" />
             <h1 className="text-3xl font-bold text-foreground">Monad</h1>
           </div>
           <p className="text-muted-foreground max-w-2xl">
