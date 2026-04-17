@@ -23,6 +23,7 @@ async function getBenchmarkData() {
   const { run_at, judge_model, inject_strategy } = latestRow[0]
 
   // 分批拉取（Supabase 默认最多返回1000条）
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let results: any[] = []
   let page = 0
   const PAGE_SIZE = 1000
