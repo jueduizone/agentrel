@@ -93,5 +93,10 @@
   "skills.sourceOfficial": "🏛️ 官方",
   "skills.sourceVerified": "✅ 已验证",
   "skills.sourceCommunity": "👥 社区",
-  "skills.sourceAI": "🤖 AI 草稿"
+  "skills.sourceAI": "🤖 自动生成",
+  "grants.tabOpen": "开放中",
+  "grants.tabClosed": "已截止",
+  "grants.tabAll": "全部",
+  "auth.or": "或",
+  "submit.invalidUrl": "请输入有效的 http(s) 链接。"
 }

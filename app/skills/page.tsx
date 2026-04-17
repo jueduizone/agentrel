@@ -1,8 +1,14 @@
+import type { Metadata } from 'next'
 import { serviceClient } from '@/lib/supabase'
 import type { Skill } from '@/lib/types'
 import { Navbar } from '@/components/navbar'
 import { SkillsClient } from './SkillsClient'
 import { SkillsPageHeader } from './SkillsPageHeader'
+
+export const metadata: Metadata = {
+  title: 'Skills — AgentRel',
+  description: 'Browse Web3 AI Skills. Curated context packs for AI agents across major chains and protocols.',
+}
 
 export default async function SkillsPage({
   searchParams,

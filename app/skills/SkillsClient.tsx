@@ -5,6 +5,7 @@ import Link from 'next/link'
 import type { Skill } from '@/lib/types'
 import { useLang } from '@/context/LanguageContext'
 import { sendGAEvent } from '@next/third-parties/google'
+import { cleanSkillName, cleanSkillDescription, normalizeSkillSource } from '@/lib/utils'
 
 function healthClass(score: number) {
   if (score >= 85) return 'text-green-600 bg-green-50'
@@ -108,7 +109,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
       if (s.id?.startsWith('grant-') && selectedSource !== 'ai-generated' && selectedSource !== 'all') return false
       if (selectedEcosystem !== 'all' && s.ecosystem !== selectedEcosystem) return false
       if (selectedType !== 'all' && s.type !== selectedType) return false
-      if (selectedSource !== 'all' && s.source !== selectedSource) return false
+      if (selectedSource !== 'all' && normalizeSkillSource(s.source) !== selectedSource) return false
       if (search) {
         const q = search.toLowerCase()
         if (
@@ -170,7 +171,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                   onClick={() => { setSearch(s.name); setShowSuggestions(false) }}
                   className="flex items-center justify-between px-3 py-2 text-sm hover:bg-muted/50 transition-colors"
                 >
-                  <span className="truncate text-foreground">{s.name}</span>
+                  <span className="truncate text-foreground">{cleanSkillName(s.name)}</span>
                   <span className="ml-2 flex-shrink-0 text-xs text-muted-foreground capitalize">{s.ecosystem.charAt(0).toUpperCase() + s.ecosystem.slice(1)}</span>
                 </Link>
               ))}
@@ -293,14 +294,16 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
 
                 {/* Name */}
                 <h3 className="mb-1.5 font-medium text-foreground">
-                  {lang === 'zh' && skill.name_zh ? skill.name_zh : skill.name}
+                  {cleanSkillName(lang === 'zh' && skill.name_zh ? skill.name_zh : skill.name)}
                 </h3>
 
                 {/* Description */}
                 <p className="mb-3 flex-1 text-xs text-muted-foreground line-clamp-2">
-                  {lang === 'zh' && skill.description_zh
-                    ? skill.description_zh
-                    : skill.content?.replace(/^---[\s\S]*?---\s*/m, '').replace(/#{1,6}\s/g, '').replace(/\n/g, ' ').slice(0, 120)}
+                  {cleanSkillDescription(
+                    lang === 'zh' && skill.description_zh
+                      ? skill.description_zh
+                      : skill.content
+                  ).slice(0, 160)}
                 </p>
 
                 {/* Bottom row: ecosystem + signals */}

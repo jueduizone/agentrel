@@ -22,16 +22,30 @@ export default function SubmitSkillPage() {
   const [result, setResult] = useState<SubmitResult | null>(null)
   const { t } = useLang()
 
+  function isValidHttpUrl(value: string): boolean {
+    try {
+      const u = new URL(value)
+      return u.protocol === 'http:' || u.protocol === 'https:'
+    } catch {
+      return false
+    }
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    if (!url.trim()) return
+    const trimmed = url.trim()
+    if (!trimmed) return
+    if (!isValidHttpUrl(trimmed)) {
+      setResult({ error: t('submit.invalidUrl') })
+      return
+    }
     setLoading(true)
     setResult(null)
     try {
       const res = await fetch('/api/discover', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: url.trim() }),
+        body: JSON.stringify({ url: trimmed }),
       })
       const data = await res.json()
       setResult(data)
@@ -79,6 +93,8 @@ version: 1.0
               value={url}
               onChange={e => setUrl(e.target.value)}
               placeholder="https://example.com/my-skill.md"
+              pattern="https?://.+"
+              title="URL must start with http:// or https://"
               className="w-full border border-border/80 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-black focus:border-transparent"
               required
             />

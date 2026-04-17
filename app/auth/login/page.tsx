@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { createClient } from '@/lib/supabase'
+import { useLang } from '@/context/LanguageContext'
 
 function GitHubIcon() {
   return (
@@ -32,6 +33,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [oauthLoading, setOauthLoading] = useState<'github' | 'google' | null>(null)
   const router = useRouter()
+  const { t } = useLang()
 
   async function handleOAuth(provider: 'github' | 'google') {
     setOauthLoading(provider)
@@ -104,7 +106,7 @@ export default function LoginPage() {
             {/* Divider */}
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-muted" />
-              <span className="text-xs text-muted-foreground/50">或</span>
+              <span className="text-xs text-muted-foreground/50">{t('auth.or')}</span>
               <div className="flex-1 h-px bg-muted" />
             </div>
 

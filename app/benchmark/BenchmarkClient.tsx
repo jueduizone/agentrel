@@ -41,6 +41,12 @@ type Props = {
     bySource: { official: SourceStats; community: SourceStats; 'ai-generated': SourceStats }
     overall: SourceStats
     byEcosystem?: Record<string, SourceStats>
+    byEcosystemBySource?: {
+      overall: Record<string, SourceStats>
+      official: Record<string, SourceStats>
+      community: Record<string, SourceStats>
+      'ai-generated': Record<string, SourceStats>
+    }
   } | null
 }
 
@@ -214,9 +220,18 @@ function useEcoLabels(): Record<string, string> {
   }
 }
 
-function EcosystemSection({ byEcosystem }: { byEcosystem: Record<string, SourceStats> }) {
+function EcosystemSection({
+  byEcosystem,
+  activeEco,
+  onActiveEcoChange,
+  sourceLabel,
+}: {
+  byEcosystem: Record<string, SourceStats>
+  activeEco: string
+  onActiveEcoChange: (eco: string) => void
+  sourceLabel: string
+}) {
   const ecoKeys = Object.keys(byEcosystem).filter(k => byEcosystem[k] !== null)
-  const [activeEco, setActiveEco] = useState<string>('all')
   const { t } = useLang()
   const ECO_LABELS = useEcoLabels()
 
@@ -237,14 +252,16 @@ function EcosystemSection({ byEcosystem }: { byEcosystem: Record<string, SourceS
     }
   })()
 
-  const activeStats = activeEco === 'all' ? allStats : byEcosystem[activeEco]
+  const activeStats = activeEco === 'all' ? allStats : byEcosystem[activeEco] ?? null
 
   return (
     <section className="max-w-5xl mx-auto px-6 py-8 border-t border-border mt-4">
-      <h2 className="text-base font-semibold text-foreground mb-4">🌐 {t('benchmark.byEcosystem')}</h2>
+      <h2 className="text-base font-semibold text-foreground mb-4">
+        🌐 {t('benchmark.byEcosystem')} <span className="text-muted-foreground/70 font-normal">({sourceLabel})</span>
+      </h2>
       <div className="flex gap-1 border-b border-border mb-8 overflow-x-auto">
         {['all', ...ecoKeys].map(eco => (
-          <button key={eco} onClick={() => setActiveEco(eco)}
+          <button key={eco} onClick={() => onActiveEcoChange(eco)}
             className={`flex items-center gap-1 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
               activeEco === eco
                 ? 'border-foreground text-foreground'
@@ -261,12 +278,18 @@ function EcosystemSection({ byEcosystem }: { byEcosystem: Record<string, SourceS
 
 export default function BenchmarkClient({ data }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>('overall')
+  const [activeEco, setActiveEco] = useState<string>('all')
   const [triggering, setTriggering] = useState(false)
   const [triggerMsg, setTriggerMsg] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
   const [mounted, setMounted] = useState(false)
   const { t } = useLang()
   const SOURCE_TABS = useSourceTabs()
+
+  function selectTab(key: TabKey) {
+    setActiveTab(key)
+    setActiveEco('all')   // reset ecosystem filter when source changes
+  }
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
@@ -384,7 +407,7 @@ export default function BenchmarkClient({ data }: Props) {
           {SOURCE_TABS.map(tab => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => selectTab(tab.key)}
               className={`flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
                 activeTab === tab.key
                   ? 'border-foreground text-foreground'
@@ -404,12 +427,21 @@ export default function BenchmarkClient({ data }: Props) {
         <StatsPanel stats={activeStats} title={activeTabInfo.label} />
       </main>
 
-      {/* Section 2: By Ecosystem */}
-      {data.byEcosystem && Object.keys(data.byEcosystem).length > 0 && (
-        <div className="w-full">
-          <EcosystemSection byEcosystem={data.byEcosystem} />
-        </div>
-      )}
+      {/* Section 2: By Ecosystem (filtered by active source tab) */}
+      {(() => {
+        const ecoMap = data.byEcosystemBySource?.[activeTab] ?? data.byEcosystem
+        if (!ecoMap || Object.keys(ecoMap).length === 0) return null
+        return (
+          <div className="w-full">
+            <EcosystemSection
+              byEcosystem={ecoMap}
+              activeEco={activeEco}
+              onActiveEcoChange={setActiveEco}
+              sourceLabel={activeTabInfo.label}
+            />
+          </div>
+        )
+      })()}
 
       <Footer />
     </div>

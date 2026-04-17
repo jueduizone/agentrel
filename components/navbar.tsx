@@ -36,12 +36,17 @@ function Dropdown({
   const ref = useRef<HTMLDivElement>(null)
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
-  const handleMouseEnter = () => {
+  // Only respond to real mouse hover — touch devices synthesize mouseenter
+  // before click, which would race with the click toggle and reopen/close
+  // the dropdown unexpectedly on tap.
+  const handlePointerEnter = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return
     if (closeTimer.current) clearTimeout(closeTimer.current)
     setOpen(true)
   }
 
-  const handleMouseLeave = () => {
+  const handlePointerLeave = (e: React.PointerEvent) => {
+    if (e.pointerType !== 'mouse') return
     closeTimer.current = setTimeout(() => setOpen(false), 150)
   }
 
@@ -57,10 +62,13 @@ function Dropdown({
     <div
       ref={ref}
       className="relative"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={handlePointerLeave}
     >
       <button
+        type="button"
+        aria-expanded={open}
+        aria-haspopup="menu"
         onClick={() => setOpen(v => !v)}
         className={`flex items-center gap-1 text-sm transition-colors ${
           isActive
@@ -73,8 +81,8 @@ function Dropdown({
       </button>
 
       {open && (
-        <div className="absolute top-full left-0 pt-1.5 min-w-[180px] z-50">
-          <div className="bg-popover border border-border rounded-lg shadow-lg py-1">
+        <div className="absolute top-full left-0 pt-1.5 min-w-[180px] z-[60]">
+          <div className="bg-popover text-popover-foreground border border-border rounded-lg shadow-lg py-1">
             {items.map(item => (
               <div key={item.href}>
                 {item.external ? (

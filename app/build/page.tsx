@@ -1,8 +1,14 @@
+import type { Metadata } from 'next'
 import { serviceClient } from '@/lib/supabase'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
 import { Suspense } from 'react'
 import { BuildTabs } from './BuildClient'
+
+export const metadata: Metadata = {
+  title: 'Build — AgentRel',
+  description: 'Web3 grants & bounties. Apply with your AI agent across Solana, Ethereum, and more.',
+}
 
 const MONTHS_SHORT = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 function formatDateShort(iso: string): string {

@@ -1,5 +1,6 @@
 'use client'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useLang } from '@/context/LanguageContext'
 
 type Tab = 'open' | 'closed' | 'all'
 
@@ -13,6 +14,7 @@ interface Props {
 export function BuildTabs({ total, openCount, closedCount, current }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { t } = useLang()
 
   const navigate = (status: Tab) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -21,9 +23,9 @@ export function BuildTabs({ total, openCount, closedCount, current }: Props) {
   }
 
   const tabs: { key: Tab; label: string; count: number }[] = [
-    { key: 'open', label: '开放中', count: openCount },
-    { key: 'closed', label: '已截止', count: closedCount },
-    { key: 'all', label: '全部', count: total },
+    { key: 'open', label: t('grants.tabOpen'), count: openCount },
+    { key: 'closed', label: t('grants.tabClosed'), count: closedCount },
+    { key: 'all', label: t('grants.tabAll'), count: total },
   ]
 
   return (

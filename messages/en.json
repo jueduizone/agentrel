@@ -93,5 +93,10 @@
   "skills.sourceOfficial": "🏛️ Official",
   "skills.sourceVerified": "✅ Verified",
   "skills.sourceCommunity": "👥 Community",
-  "skills.sourceAI": "🤖 AI Draft"
+  "skills.sourceAI": "🤖 Auto-generated",
+  "grants.tabOpen": "Open",
+  "grants.tabClosed": "Closed",
+  "grants.tabAll": "All",
+  "auth.or": "or",
+  "submit.invalidUrl": "Please enter a valid http(s) URL."
 }

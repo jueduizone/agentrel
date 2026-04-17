@@ -1,7 +1,13 @@
+import type { Metadata } from 'next'
 import { serviceClient } from '@/lib/supabase'
 import BenchmarkClient from './BenchmarkClient'
 
 export const revalidate = 0
+
+export const metadata: Metadata = {
+  title: 'Benchmark — AgentRel',
+  description: 'Measured impact of AgentRel skills on AI answer quality across Web3 categories and ecosystems.',
+}
 
 function normalizeSource(src: string | null): 'official' | 'community' | 'ai-generated' {
   if (!src) return 'community'
@@ -138,21 +144,28 @@ async function getBenchmarkData() {
     ...Object.fromEntries(TECH_PREFIXES.map(p => [`${p}/`, 'cross-chain'])),
   }
   const ALL_ECOSYSTEMS = [...ECOSYSTEMS, 'cross-chain']
-  const byEco: Record<string, typeof results> = {}
-  for (const eco of ALL_ECOSYSTEMS) byEco[eco] = []
-  byEco['other'] = []
 
-  for (const r of results) {
-    if (!r.skill_id) { byEco['other'].push(r); continue }
+  function ecosystemOf(r: typeof results[number]): string {
+    if (!r.skill_id) return 'other'
     let eco = skillMetaMap[r.skill_id]?.ecosystem?.toLowerCase() ?? ''
-    // fallback: 从 skill_id 前缀推断
     if (!ALL_ECOSYSTEMS.includes(eco)) {
       for (const [prefix, mapped] of Object.entries(ID_PREFIX_ECO)) {
         if (r.skill_id.startsWith(prefix)) { eco = mapped; break }
       }
     }
-    if (ALL_ECOSYSTEMS.includes(eco)) byEco[eco].push(r)
-    else byEco['other'].push(r)
+    return ALL_ECOSYSTEMS.includes(eco) ? eco : 'other'
+  }
+
+  function ecosystemBuckets(subset: typeof results) {
+    const byEco: Record<string, typeof results> = {}
+    for (const eco of ALL_ECOSYSTEMS) byEco[eco] = []
+    byEco['other'] = []
+    for (const r of subset) byEco[ecosystemOf(r)].push(r)
+    return Object.fromEntries(
+      Object.entries(byEco)
+        .filter(([, v]) => v.length > 0)
+        .map(([k, v]) => [k, computeStats(v)])
+    ) as Record<string, ReturnType<typeof computeStats>>
   }
 
   return {
@@ -163,11 +176,13 @@ async function getBenchmarkData() {
       'ai-generated': computeStats(grouped['ai-generated']),
     },
     overall: computeStats(results),
-    byEcosystem: Object.fromEntries(
-      Object.entries(byEco)
-        .filter(([, v]) => v.length > 0)
-        .map(([k, v]) => [k, computeStats(v)])
-    ) as Record<string, ReturnType<typeof computeStats>>,
+    byEcosystem: ecosystemBuckets(results),
+    byEcosystemBySource: {
+      overall: ecosystemBuckets(results),
+      official: ecosystemBuckets(grouped.official),
+      community: ecosystemBuckets(grouped.community),
+      'ai-generated': ecosystemBuckets(grouped['ai-generated']),
+    },
   }
 }
 

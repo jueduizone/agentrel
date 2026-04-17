@@ -7,6 +7,7 @@ import rehypeSlug from 'rehype-slug'
 import { serviceClient } from '@/lib/supabase'
 import type { Skill } from '@/lib/types'
 import { Navbar } from '@/components/navbar'
+import { cleanSkillName, normalizeSkillSource } from '@/lib/utils'
 import { FeedbackForm } from './FeedbackForm'
 import { CopyButton } from './CopyButton'
 
@@ -30,10 +31,10 @@ function ecosystemClass(eco: string) {
 }
 
 const SOURCE_BADGE: Record<string, { label: string; className: string }> = {
-  official:       { label: '🏛️ Official',  className: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900' },
-  verified:       { label: '✅ Verified',   className: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-950/40 dark:text-green-300 dark:border-green-900' },
-  community:      { label: '👥 Community',  className: 'bg-muted text-muted-foreground border-border' },
-  'ai-generated': { label: '🤖 AI Draft',  className: 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-950/40 dark:text-yellow-300 dark:border-yellow-900' },
+  official:       { label: '🏛️ Official',     className: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-900' },
+  verified:       { label: '✅ Verified',      className: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-950/40 dark:text-green-300 dark:border-green-900' },
+  community:      { label: '👥 Community',     className: 'bg-muted text-muted-foreground border-border' },
+  'ai-generated': { label: '🤖 Auto-generated', className: 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-950/40 dark:text-yellow-300 dark:border-yellow-900' },
 }
 
 const badgeBase = 'inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium capitalize'
@@ -86,7 +87,7 @@ export default async function SkillDetailPage({
                 </div>
 
                 <h1 className="font-display text-3xl font-bold tracking-tight text-foreground sm:text-[2.25rem] sm:leading-[1.15]">
-                  {skill.name}
+                  {cleanSkillName(skill.name)}
                 </h1>
 
                 {/* Primary badges */}
@@ -97,15 +98,15 @@ export default async function SkillDetailPage({
                   <span className={`${badgeBase} border-border bg-muted/60 text-muted-foreground`}>
                     {skill.type}
                   </span>
-                  {SOURCE_BADGE[skill.source] ? (
-                    <span className={`${badgeBase} ${SOURCE_BADGE[skill.source].className}`}>
-                      {SOURCE_BADGE[skill.source].label}
-                    </span>
-                  ) : (
-                    <span className={`${badgeBase} border-border bg-muted text-muted-foreground`}>
-                      {skill.source}
-                    </span>
-                  )}
+                  {(() => {
+                    const normSrc = normalizeSkillSource(skill.source)
+                    const cfg = SOURCE_BADGE[normSrc] ?? SOURCE_BADGE.community
+                    return (
+                      <span className={`${badgeBase} ${cfg.className}`}>
+                        {cfg.label}
+                      </span>
+                    )
+                  })()}
                   {skill.confidence && (
                     <span className={`${badgeBase} border-border bg-muted/60 text-muted-foreground normal-case`}>
                       confidence {skill.confidence}
