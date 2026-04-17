@@ -12,29 +12,22 @@ function normalizeSource(src: string | null): 'official' | 'community' | 'ai-gen
 }
 
 async function getBenchmarkData() {
-  // 取条数最多的 run_at（最完整的一批数据）
-  const { data: allRunAts } = await serviceClient
+  // 取最新的 run_at（按时间最晚）
+  const { data: latestRow } = await serviceClient
     .from('eval_results')
     .select('run_at, judge_model, inject_strategy')
     .order('run_at', { ascending: false })
-    .limit(5000)
+    .limit(1)
 
-  if (!allRunAts || allRunAts.length === 0) return null
-
-  // 统计每个 run_at 的条数，取最多的
-  const countMap = new Map<string, number>()
-  for (const row of allRunAts) {
-    countMap.set(row.run_at, (countMap.get(row.run_at) || 0) + 1)
-  }
-  const best_run_at = [...countMap.entries()].sort((a, b) => b[1] - a[1])[0][0]
-  const { judge_model, inject_strategy } = allRunAts.find(r => r.run_at === best_run_at)!
-  const run_at = best_run_at
+  if (!latestRow || latestRow.length === 0) return null
+  const { run_at, judge_model, inject_strategy } = latestRow[0]
 
   const { data: results } = await serviceClient
     .from('eval_results')
     .select('*')
     .eq('run_at', run_at)
     .order('question_id')
+    .limit(2000)
 
   if (!results || results.length === 0) return null
 
