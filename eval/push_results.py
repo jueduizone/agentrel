@@ -152,14 +152,15 @@ Think briefly, then output ONLY the final integer on the last line."""
 
 # ── DB 写入 ──────────────────────────────────────────────────
 
-def push_to_db(rows: list[dict]):
+def push_to_db(rows: list[dict], batch_run_at: str | None = None):
     """批量写入 eval_results"""
     batch_size = 50
     inserted = 0
     for i in range(0, len(rows), batch_size):
         batch = rows[i:i + batch_size]
-        # 去掉 provider 字段（不是 DB 列，只是 checkpoint 内部用）
-        clean_batch = [{k: v for k, v in row.items() if k != "provider"} for row in batch]
+        # 用统一 run_at 覆盖，同时去掉 provider（不是 DB 列）
+        unified_run_at = batch_run_at or (rows[0].get("run_at") if rows else None)
+        clean_batch = [{**{k: v for k, v in row.items() if k != "provider"}, "run_at": unified_run_at} for row in batch]
         resp = requests.post(
             f"{SUPABASE_URL}/rest/v1/eval_results",
             json=clean_batch,
@@ -316,7 +317,7 @@ def cmd_commit():
         sys.exit(1)
 
     print(f"\n🚀 准备入库 {len(rows)} 条 (run_at: {checkpoint.get('run_at')})")
-    inserted = push_to_db(rows)
+    inserted = push_to_db(rows, batch_run_at=checkpoint.get('run_at'))
     print(f"\n🎉 完成！写入 {inserted}/{len(rows)} 条到 eval_results")
     print(f"benchmark 页面应该可以看到最新数据了：https://agentrel.vercel.app/benchmark")
 
