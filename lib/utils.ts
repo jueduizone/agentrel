@@ -41,10 +41,14 @@ export function cleanSkillName(name: string | null | undefined): string {
 }
 
 // Remove YAML frontmatter block (--- ... ---) from the very start of a markdown
-// document. Handles \n and \r\n line endings and optional leading whitespace.
+// document. Also strips the ---BEGIN--- / ---END--- envelope used by grant
+// skills, which wraps a YAML frontmatter block in a sentinel pair.
 export function stripFrontmatter(text: string | null | undefined): string {
   if (!text) return ''
-  return text.replace(/^\s*---\r?\n[\s\S]*?\r?\n---\r?\n?/, '')
+  let out = text.replace(/^\s*---BEGIN---\r?\n/, '')
+  out = out.replace(/^\s*---\r?\n[\s\S]*?\r?\n---\r?\n?/, '')
+  out = out.replace(/\r?\n---END---\s*$/, '')
+  return out
 }
 
 // Remove the first leading top-level markdown H1 (a line starting with a single

@@ -31,7 +31,7 @@ export async function GET() {
     '## What is AgentRel?',
     '',
     'AgentRel is the Web3 AI context infrastructure. Add this URL to your agent\'s system prompt',
-    'and it will have access to 200+ accurate, up-to-date Web3 Skills.',
+    `and it will have access to ${total}+ accurate, up-to-date Web3 Skills.`,
     '',
     '## For AI Agents — How to Use This Index',
     '',

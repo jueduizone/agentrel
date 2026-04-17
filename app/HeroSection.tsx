@@ -136,7 +136,7 @@ export function HeroSection({ skillsCount, scenarioCounts }: Props) {
               >
                 <p className="text-[11px] leading-relaxed" style={{ color: 'oklch(42% 0.008 265)' }}>
                   <span style={{ color: 'oklch(30% 0.006 265)' }}>#&nbsp;</span>
-                  {t('hero.unlockSkills')}
+                  {t('hero.unlockSkills').replace('{count}', String(skillsCount))}
                 </p>
                 <p className="text-[11px]" style={{ color: 'oklch(42% 0.008 265)' }}>
                   <span style={{ color: 'oklch(30% 0.006 265)' }}>#&nbsp;</span>

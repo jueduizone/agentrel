@@ -235,24 +235,10 @@ function EcosystemSection({
   const { t } = useLang()
   const ECO_LABELS = useEcoLabels()
 
-  // Combine all for "All" tab
-  const allStats: SourceStats = (() => {
-    const allResults = Object.values(byEcosystem).filter(Boolean)
-    if (!allResults.length) return null
-    const totalQ = allResults.reduce((s, v) => s + (v?.total_questions ?? 0), 0)
-    const avgC = allResults.reduce((s, v) => s + (v?.avg_control ?? 0) * (v?.total_questions ?? 0), 0) / (totalQ || 1)
-    const avgT = allResults.reduce((s, v) => s + (v?.avg_test ?? 0) * (v?.total_questions ?? 0), 0) / (totalQ || 1)
-    return {
-      total_questions: totalQ,
-      avg_control: Math.round(avgC * 100) / 100,
-      avg_test: Math.round(avgT * 100) / 100,
-      delta: Math.round((avgT - avgC) * 100) / 100,
-      catStats: [],
-      topSkills: allResults.flatMap(v => v?.topSkills ?? []).sort((a, b) => b.delta - a.delta).slice(0, 10),
-    }
-  })()
-
-  const activeStats = activeEco === 'all' ? allStats : byEcosystem[activeEco] ?? null
+  // Default to first eco if activeEco is not a valid key (covers "all" legacy
+  // state and source-tab switches where the previously-active eco is empty).
+  const resolvedEco = ecoKeys.includes(activeEco) ? activeEco : (ecoKeys[0] ?? '')
+  const activeStats = byEcosystem[resolvedEco] ?? null
 
   return (
     <section className="max-w-5xl mx-auto px-6 py-8 border-t border-border mt-4">
@@ -260,10 +246,10 @@ function EcosystemSection({
         🌐 {t('benchmark.byEcosystem')} <span className="text-muted-foreground/70 font-normal">({sourceLabel})</span>
       </h2>
       <div className="flex gap-1 border-b border-border mb-8 overflow-x-auto">
-        {['all', ...ecoKeys].map(eco => (
+        {ecoKeys.map(eco => (
           <button key={eco} onClick={() => onActiveEcoChange(eco)}
             className={`flex items-center gap-1 px-3 py-2.5 text-sm font-medium border-b-2 transition-colors whitespace-nowrap -mb-px ${
-              activeEco === eco
+              resolvedEco === eco
                 ? 'border-foreground text-foreground'
                 : 'border-transparent text-muted-foreground/70 hover:text-foreground/80'
             }`}>
@@ -271,14 +257,14 @@ function EcosystemSection({
           </button>
         ))}
       </div>
-      <StatsPanel stats={activeStats} title={ECO_LABELS[activeEco] ?? activeEco} />
+      <StatsPanel stats={activeStats} title={ECO_LABELS[resolvedEco] ?? resolvedEco} />
     </section>
   )
 }
 
 export default function BenchmarkClient({ data }: Props) {
   const [activeTab, setActiveTab] = useState<TabKey>('overall')
-  const [activeEco, setActiveEco] = useState<string>('all')
+  const [activeEco, setActiveEco] = useState<string>('')
   const [triggering, setTriggering] = useState(false)
   const [triggerMsg, setTriggerMsg] = useState('')
   const [isAdmin, setIsAdmin] = useState(false)
@@ -288,7 +274,7 @@ export default function BenchmarkClient({ data }: Props) {
 
   function selectTab(key: TabKey) {
     setActiveTab(key)
-    setActiveEco('all')   // reset ecosystem filter when source changes
+    setActiveEco('')   // reset; EcosystemSection re-resolves to first eco
   }
 
   // eslint-disable-next-line react-hooks/set-state-in-effect

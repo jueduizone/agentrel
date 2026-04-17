@@ -10,7 +10,7 @@
   "hero.title": "Web3 AI Skills",
   "hero.subtitle": "Give your AI agent real Web3 context",
   "hero.oneUrl": "One URL for everything",
-  "hero.unlockSkills": "Add to your agent's system prompt to unlock 230+ Web3 Skills",
+  "hero.unlockSkills": "Add to your agent's system prompt to unlock {count}+ Web3 Skills",
   "hero.whatBuilding": "What are you building?",
   "skills.heading": "Skills",
   "skills.subheading": "Browse AI context skills for Web3 development",
