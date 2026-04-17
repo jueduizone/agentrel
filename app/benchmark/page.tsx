@@ -22,14 +22,24 @@ async function getBenchmarkData() {
   if (!latestRow || latestRow.length === 0) return null
   const { run_at, judge_model, inject_strategy } = latestRow[0]
 
-  const { data: results } = await serviceClient
-    .from('eval_results')
-    .select('*')
-    .eq('run_at', run_at)
-    .order('question_id')
-    .limit(2000)
+  // 分批拉取（Supabase 默认最多返回1000条）
+  let results: any[] = []
+  let page = 0
+  const PAGE_SIZE = 1000
+  while (true) {
+    const { data: batch } = await serviceClient
+      .from('eval_results')
+      .select('*')
+      .eq('run_at', run_at)
+      .order('question_id')
+      .range(page * PAGE_SIZE, (page + 1) * PAGE_SIZE - 1)
+    if (!batch || batch.length === 0) break
+    results = results.concat(batch)
+    if (batch.length < PAGE_SIZE) break
+    page++
+  }
 
-  if (!results || results.length === 0) return null
+  if (results.length === 0) return null
 
   // Fetch skill metadata (source + ecosystem)
   const skillIds = [...new Set(results.map(r => r.skill_id).filter(Boolean))]
