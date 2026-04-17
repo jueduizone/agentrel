@@ -1,7 +1,7 @@
 import { serviceClient } from '@/lib/supabase'
 import BenchmarkClient from './BenchmarkClient'
 
-export const revalidate = 3600
+export const revalidate = 0
 
 function normalizeSource(src: string | null): 'official' | 'community' | 'ai-generated' {
   if (!src) return 'community'
