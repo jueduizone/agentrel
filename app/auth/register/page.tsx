@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { createClient } from '@/lib/supabase'
+import { useLang } from '@/context/LanguageContext'
 
 function GitHubIcon() {
   return (
@@ -26,6 +27,7 @@ function GoogleIcon() {
 }
 
 export default function RegisterPage() {
+  const { t } = useLang()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -45,7 +47,7 @@ export default function RegisterPage() {
       })
       if (error) setError(error.message)
     } catch {
-      setError('OAuth 登录失败，请重试')
+      setError(t('auth.oauthFailed'))
     } finally {
       setOauthLoading(null)
     }
@@ -62,7 +64,7 @@ export default function RegisterPage() {
         body: JSON.stringify({ email, password }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || '注册失败'); return }
+      if (!res.ok) { setError(data.error || t('auth.registerFailed')); return }
       if (data.email_confirmation_required) {
         router.push(`/auth/verify-email?email=${encodeURIComponent(email.trim())}`)
         return
@@ -70,7 +72,7 @@ export default function RegisterPage() {
       localStorage.setItem('agentrel_api_key', data.api_key)
       router.push('/')
       router.refresh()
-    } catch { setError('网络错误，请重试') } finally { setLoading(false) }
+    } catch { setError(t('auth.networkError')) } finally { setLoading(false) }
   }
 
   return (
@@ -80,7 +82,7 @@ export default function RegisterPage() {
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <Link href="/" className="text-2xl font-bold text-foreground">AgentRel</Link>
-            <p className="text-muted-foreground/70 mt-2 text-sm">Create your account</p>
+            <p className="text-muted-foreground/70 mt-2 text-sm">{t('auth.registerTitle')}</p>
           </div>
           <div className="bg-background rounded-2xl border border-border p-6 shadow-sm space-y-4">
 
@@ -92,7 +94,7 @@ export default function RegisterPage() {
                 className="w-full flex items-center justify-center gap-2.5 border border-border/80 rounded-lg py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted/50 transition-colors disabled:opacity-50"
               >
                 <GitHubIcon />
-                {oauthLoading === 'github' ? 'Redirecting...' : 'Continue with GitHub'}
+                {oauthLoading === 'github' ? t('auth.redirecting') : t('auth.continueGithub')}
               </button>
               <button
                 onClick={() => handleOAuth('google')}
@@ -100,39 +102,39 @@ export default function RegisterPage() {
                 className="w-full flex items-center justify-center gap-2.5 border border-border/80 rounded-lg py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted/50 transition-colors disabled:opacity-50"
               >
                 <GoogleIcon />
-                {oauthLoading === 'google' ? 'Redirecting...' : 'Continue with Google'}
+                {oauthLoading === 'google' ? t('auth.redirecting') : t('auth.continueGoogle')}
               </button>
             </div>
 
             {/* Divider */}
             <div className="flex items-center gap-3">
               <div className="flex-1 h-px bg-muted" />
-              <span className="text-xs text-muted-foreground/50">或</span>
+              <span className="text-xs text-muted-foreground/50">{t('auth.or')}</span>
               <div className="flex-1 h-px bg-muted" />
             </div>
 
             {/* Email/password form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground/80 mb-1">Email</label>
+                <label className="block text-sm font-medium text-foreground/80 mb-1">{t('auth.email')}</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
                   className="w-full border border-border/80 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground/80 mb-1">Password <span className="text-muted-foreground/50">(min 8 chars)</span></label>
+                <label className="block text-sm font-medium text-foreground/80 mb-1">{t('auth.password')} <span className="text-muted-foreground/50">{t('auth.passwordHint')}</span></label>
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} required minLength={8}
                   className="w-full border border-border/80 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <button type="submit" disabled={loading || oauthLoading !== null}
                 className="w-full bg-foreground text-background rounded-lg py-2.5 text-sm font-semibold hover:bg-foreground/80 transition-colors disabled:opacity-50">
-                {loading ? 'Creating account...' : 'Create Account'}
+                {loading ? t('auth.creatingAccount') : t('auth.createAccount')}
               </button>
             </form>
 
             <p className="text-center text-sm text-muted-foreground/70">
-              Already have an account?{' '}
-              <Link href="/auth/login" className="text-indigo-600 hover:underline">Sign In</Link>
+              {t('auth.alreadyHaveAccount')}{' '}
+              <Link href="/auth/login" className="text-indigo-600 hover:underline">{t('auth.signIn')}</Link>
             </p>
           </div>
         </div>

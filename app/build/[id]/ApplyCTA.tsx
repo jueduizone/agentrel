@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
+import { copyToClipboard } from '@/lib/utils'
 
 interface Props {
   grantId: string
@@ -14,25 +15,8 @@ export function ApplyCTA({ grantId, isOpen }: Props) {
   const contextUrl = `https://agentrel.vercel.app/api/v1/grants/${grantId}/context.md`
 
   const handleAgentCopy = async () => {
-    let success = false
-    try {
-      await navigator.clipboard.writeText(contextUrl)
-      success = true
-    } catch {
-      try {
-        const el = document.createElement('textarea')
-        el.value = contextUrl
-        el.style.position = 'fixed'
-        el.style.opacity = '0'
-        document.body.appendChild(el)
-        el.select()
-        success = document.execCommand('copy')
-        document.body.removeChild(el)
-      } catch {
-        success = false
-      }
-    }
-    if (success) {
+    const ok = await copyToClipboard(contextUrl)
+    if (ok) {
       setCopied(true)
       setCopyError(false)
       setTimeout(() => setCopied(false), 2000)

@@ -58,12 +58,12 @@ export async function GET() {
     '',
   ]
 
-  // Top ecosystems quick links
-  const TOP_ECOS = ['ethereum', 'solana', 'monad', 'zama', 'security', 'standards', 'bittensor', 'hyperliquid', '0g']
-  for (const eco of TOP_ECOS) {
-    if (grouped[eco]) {
-      lines.push(`- **${eco.charAt(0).toUpperCase() + eco.slice(1)}** (${grouped[eco].length} skills) → \`${BASE}/api/skills?ecosystem=${eco}\``)
-    }
+  // Full ecosystem quick links — sort by skill count desc so biggest ecosystems surface first
+  const quickLinkEcos = Object.entries(grouped)
+    .map(([eco, list]) => ({ eco, count: list?.length ?? 0 }))
+    .sort((a, b) => b.count - a.count)
+  for (const { eco, count } of quickLinkEcos) {
+    lines.push(`- **${eco.charAt(0).toUpperCase() + eco.slice(1)}** (${count} skills) → \`${BASE}/api/skills?ecosystem=${eco}\``)
   }
   lines.push('')
   lines.push('---')

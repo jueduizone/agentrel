@@ -7,7 +7,7 @@ import rehypeSlug from 'rehype-slug'
 import { serviceClient } from '@/lib/supabase'
 import type { Skill } from '@/lib/types'
 import { Navbar } from '@/components/navbar'
-import { cleanSkillName, normalizeSkillSource } from '@/lib/utils'
+import { cleanSkillName, normalizeSkillSource, stripFrontmatter, stripLeadingH1 } from '@/lib/utils'
 import { FeedbackForm } from './FeedbackForm'
 import { CopyButton } from './CopyButton'
 
@@ -146,7 +146,7 @@ export default async function SkillDetailPage({
                     ),
                   }}
                 >
-                  {skill.content}
+                  {stripLeadingH1(stripFrontmatter(skill.content))}
                 </ReactMarkdown>
               </div>
             </article>

@@ -90,7 +90,7 @@ export default async function MonadEcosystemPage() {
             </span>
           </h2>
           <Link
-            href="/skills?ecosystem=Monad"
+            href="/skills?ecosystem=monad"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             View all skills →

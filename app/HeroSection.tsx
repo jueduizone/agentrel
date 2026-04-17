@@ -5,25 +5,38 @@ import { HomeCopyButton } from './HomeCopyButton'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
 
-const SCENARIOS_EN = [
-  { num: '01', title: 'Build a dApp', desc: 'Dev skills by chain', href: '/skills?type=technical-doc', count: 63 },
-  { num: '02', title: 'Join a Hackathon', desc: 'Tracks + chain bundles', href: '/skills?type=hackathon-guide', count: 7 },
-  { num: '03', title: 'Apply for a Grant', desc: 'Guides + success stories', href: '/build', count: 19 },
-  { num: '04', title: 'Security Audit', desc: 'Vulnerabilities + checklists', href: '/skills?type=security', count: 4 },
-]
-
-const SCENARIOS_ZH = [
-  { num: '01', title: '构建 dApp', desc: '按链选择开发 Skill', href: '/skills?type=technical-doc', count: 63 },
-  { num: '02', title: '参加黑客松', desc: '赛道 + 链 Bundle', href: '/skills?type=hackathon-guide', count: 7 },
-  { num: '03', title: '申请 Grant', desc: '资助指南 + 成功案例', href: '/build', count: 19 },
-  { num: '04', title: '安全审计', desc: '漏洞 + 审计清单', href: '/skills?type=security', count: 4 },
-]
+type ScenarioCounts = {
+  technicalDoc: number
+  hackathonGuide: number
+  security: number
+  grants: number
+}
 
 const INDEX_CMD = 'https://agentrel.vercel.app/api/v1/skill.md'
 
-export function HeroSection() {
+type Props = {
+  skillsCount: number
+  scenarioCounts: ScenarioCounts
+}
+
+export function HeroSection({ skillsCount, scenarioCounts }: Props) {
   const { lang, t } = useLang()
-  const scenarios = lang === 'zh' ? SCENARIOS_ZH : SCENARIOS_EN
+
+  const scenariosEn = [
+    { num: '01', title: 'Build a dApp', desc: 'Dev skills by chain', href: '/skills?type=technical-doc', count: scenarioCounts.technicalDoc },
+    { num: '02', title: 'Join a Hackathon', desc: 'Tracks + chain bundles', href: '/skills?type=hackathon-guide', count: scenarioCounts.hackathonGuide },
+    { num: '03', title: 'Apply for a Grant', desc: 'Guides + success stories', href: '/build', count: scenarioCounts.grants },
+    { num: '04', title: 'Security Audit', desc: 'Vulnerabilities + checklists', href: '/skills?type=security', count: scenarioCounts.security },
+  ]
+
+  const scenariosZh = [
+    { num: '01', title: '构建 dApp', desc: '按链选择开发 Skill', href: '/skills?type=technical-doc', count: scenarioCounts.technicalDoc },
+    { num: '02', title: '参加黑客松', desc: '赛道 + 链 Bundle', href: '/skills?type=hackathon-guide', count: scenarioCounts.hackathonGuide },
+    { num: '03', title: '申请 Grant', desc: '资助指南 + 成功案例', href: '/build', count: scenarioCounts.grants },
+    { num: '04', title: '安全审计', desc: '漏洞 + 审计清单', href: '/skills?type=security', count: scenarioCounts.security },
+  ]
+
+  const scenarios = lang === 'zh' ? scenariosZh : scenariosEn
 
   return (
     <>
@@ -39,7 +52,7 @@ export function HeroSection() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              LIVE&nbsp;·&nbsp;230+ skills&nbsp;·&nbsp;open source
+              LIVE&nbsp;·&nbsp;{skillsCount}+ skills&nbsp;·&nbsp;open source
             </div>
 
             {/* Headline */}

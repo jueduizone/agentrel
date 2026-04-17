@@ -65,19 +65,14 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="https://discord.gg/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-                  Discord
+                <a href="https://t.me/OpenBuildxyz/17430" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
+                  Telegram
                 </a>
               </li>
               <li>
                 <Link href="/submit" className="hover:text-foreground transition-colors">
                   {t('footer.submitSkill')}
                 </Link>
-              </li>
-              <li>
-                <a href="https://t.me/agentrel" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">
-                  Telegram
-                </a>
               </li>
             </ul>
           </div>

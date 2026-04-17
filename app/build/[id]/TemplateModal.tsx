@@ -1,14 +1,15 @@
 'use client'
 import { useState } from 'react'
+import { copyToClipboard } from '@/lib/utils'
 
 export function TemplateModal({ templateMd, grantTitle }: { templateMd: string; grantTitle: string }) {
   const [open, setOpen] = useState(false)
-  const [copied, setCopied] = useState(false)
+  const [state, setState] = useState<'idle' | 'ok' | 'err'>('idle')
 
   const copy = async () => {
-    await navigator.clipboard.writeText(templateMd)
-    setCopied(true)
-    setTimeout(() => setCopied(false), 2000)
+    const ok = await copyToClipboard(templateMd)
+    setState(ok ? 'ok' : 'err')
+    setTimeout(() => setState('idle'), 2000)
   }
 
   return (
@@ -32,8 +33,8 @@ export function TemplateModal({ templateMd, grantTitle }: { templateMd: string; 
               <h3 className="font-semibold text-foreground">申请模板 — {grantTitle}</h3>
               <div className="flex items-center gap-2">
                 <button onClick={copy}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${copied ? 'bg-green-600 text-white' : 'bg-muted text-foreground/80 hover:bg-muted'}`}>
-                  {copied ? '✓ 已复制' : '复制 Markdown'}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${state === 'ok' ? 'bg-green-600 text-white' : state === 'err' ? 'bg-red-600 text-white' : 'bg-muted text-foreground/80 hover:bg-muted'}`}>
+                  {state === 'ok' ? '✓ 已复制' : state === 'err' ? '复制失败，请手动复制' : '复制 Markdown'}
                 </button>
                 <button onClick={() => setOpen(false)} className="text-muted-foreground/50 hover:text-muted-foreground text-xl leading-none">×</button>
               </div>

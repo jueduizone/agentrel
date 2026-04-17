@@ -121,7 +121,7 @@ export default function ZamaEcosystemPage() {
             </span>
           </h2>
           <Link
-            href="/skills?ecosystem=Zama"
+            href="/skills?ecosystem=zama"
             className="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             View all skills →

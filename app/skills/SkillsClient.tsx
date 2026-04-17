@@ -5,7 +5,7 @@ import Link from 'next/link'
 import type { Skill } from '@/lib/types'
 import { useLang } from '@/context/LanguageContext'
 import { sendGAEvent } from '@next/third-parties/google'
-import { cleanSkillName, cleanSkillDescription, normalizeSkillSource } from '@/lib/utils'
+import { cleanSkillName, cleanSkillDescription, normalizeSkillSource, copyToClipboard } from '@/lib/utils'
 
 function healthClass(score: number) {
   if (score >= 85) return 'text-green-600 bg-green-50'
@@ -142,7 +142,8 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
   async function handleCopy(e: React.MouseEvent, skill: Skill) {
     e.preventDefault()
     const url = getSkillUrl(skill)
-    await navigator.clipboard.writeText(url)
+    const ok = await copyToClipboard(url)
+    if (!ok) return
     setCopiedId(skill.id)
     setTimeout(() => setCopiedId(null), 2000)
     sendGAEvent('event', 'skill_copy', { skill_id: skill.id, ecosystem: skill.ecosystem })
@@ -263,7 +264,13 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
 
       {filtered.length === 0 ? (
         <div className="rounded-xl border border-border p-12 text-center text-muted-foreground">
-          {t('skills.noSkillsFound')}
+          <p>{t('skills.noSkillsFound')}</p>
+          <Link
+            href="/"
+            className="mt-3 inline-block text-sm text-foreground/70 hover:text-foreground transition-colors"
+          >
+            {t('skills.emptyHint')}
+          </Link>
         </div>
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

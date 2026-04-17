@@ -1,42 +1,24 @@
 'use client'
 import { useState } from 'react'
-import { Copy, Check } from 'lucide-react'
+import { Copy, Check, X } from 'lucide-react'
+import { copyToClipboard } from '@/lib/utils'
 
 export function CopyButton({ text }: { text: string }) {
-  const [copied, setCopied] = useState(false)
+  const [state, setState] = useState<'idle' | 'ok' | 'err'>('idle')
 
   const handleCopy = async () => {
-    let success = false
-    try {
-      await navigator.clipboard.writeText(text)
-      success = true
-    } catch {
-      try {
-        const el = document.createElement('textarea')
-        el.value = text
-        el.style.position = 'fixed'
-        el.style.opacity = '0'
-        document.body.appendChild(el)
-        el.select()
-        success = document.execCommand('copy')
-        document.body.removeChild(el)
-      } catch {
-        success = false
-      }
-    }
-    if (success) {
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    }
+    const ok = await copyToClipboard(text)
+    setState(ok ? 'ok' : 'err')
+    setTimeout(() => setState('idle'), 2000)
   }
 
   return (
     <button
       onClick={handleCopy}
-      title="复制命令"
+      title={state === 'err' ? 'Copy failed, please copy manually' : state === 'ok' ? 'Copied!' : 'Copy'}
       className="ml-2 shrink-0 rounded p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
     >
-      {copied ? <Check size={14} className="text-green-600" /> : <Copy size={14} />}
+      {state === 'ok' ? <Check size={14} className="text-green-600" /> : state === 'err' ? <X size={14} className="text-red-600" /> : <Copy size={14} />}
     </button>
   )
 }
