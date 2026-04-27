@@ -157,5 +157,17 @@
   "bundles.scenario.multi-chain": "多链",
   "bundles.scenario.web3-starter": "Web3 入门",
   "bundles.scenario.grant-writing": "Grant 写作",
-  "bundles.scenario.web3-dev": "Web3 开发"
+  "bundles.scenario.web3-dev": "Web3 开发",
+  "common.loading": "加载中...",
+  "common.selectPlaceholder": "请选择...",
+  "grantApply.backToDetail": "返回详情",
+  "grantApply.pitchLabel": "申请理由",
+  "grantApply.pitchPlaceholder": "描述你的项目背景、技术方案、为何适合本 Grant...",
+  "grantApply.submit": "提交申请",
+  "grantApply.submitting": "提交中...",
+  "grantApply.successTitle": "申请已提交！",
+  "grantApply.successDesc": "我们会尽快审核你的申请，结果通过邮件通知。",
+  "grantApply.backToBuild": "返回 Build",
+  "grantApply.notFound": "Grant 不存在",
+  "grantApply.submitFailed": "提交失败，请重试"
 }

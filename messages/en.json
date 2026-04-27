@@ -155,5 +155,19 @@
   "bundles.scenario.hackathon": "Hackathon",
   "bundles.scenario.grant": "Grant",
   "bundles.scenario.multi-chain": "Multi-chain",
-  "bundles.scenario.web3-starter": "Web3 starter"
+  "bundles.scenario.web3-starter": "Web3 starter",
+  "bundles.scenario.grant-writing": "Grant Writing",
+  "bundles.scenario.web3-dev": "Web3 Development",
+  "common.loading": "Loading...",
+  "common.selectPlaceholder": "Select...",
+  "grantApply.backToDetail": "Back to details",
+  "grantApply.pitchLabel": "Application pitch",
+  "grantApply.pitchPlaceholder": "Describe your project background, technical approach, and why it fits this grant...",
+  "grantApply.submit": "Submit application",
+  "grantApply.submitting": "Submitting...",
+  "grantApply.successTitle": "Application submitted!",
+  "grantApply.successDesc": "We will review your application soon and notify you by email.",
+  "grantApply.backToBuild": "Back to Build",
+  "grantApply.notFound": "Grant not found",
+  "grantApply.submitFailed": "Submission failed, please try again"
 }
