@@ -51,14 +51,14 @@ type Props = {
 }
 
 const CAT_SHORT: Record<string, string> = {
-  'SDK 版本变更题（AI 幻觉重灾区）': 'SDK变更',
-  '链配置参数题（有固定正确答案）': '链配置',
-  '安全漏洞题（高风险幻觉区）': '安全漏洞',
-  'DeFi 核心机制题': 'DeFi',
-  'Solana 生态题': 'Solana',
-  'Zama fhEVM 题': 'Zama',
-  'Grant / Hackathon 策略题': 'Grant',
-  '跨链 / 工具选型题': '跨链工具',
+  'SDK version-change questions': 'SDK changes',
+  'Chain config questions': 'Chain config',
+  'Security vulnerability questions': 'Security',
+  'DeFi mechanism questions': 'DeFi',
+  'Solana ecosystem questions': 'Solana',
+  'Zama fhEVM questions': 'Zama',
+  'Grant / Hackathon strategy questions': 'Grant',
+  'Cross-chain / tooling questions': 'Cross-chain tooling',
 }
 
 const SOURCE_TAB_KEYS = ['overall', 'official', 'community', 'ai-generated'] as const
@@ -293,9 +293,9 @@ export default function BenchmarkClient({ data }: Props) {
         body: JSON.stringify({ token: 'agentrel-eval-2026', skill_ids: skillIds, judge_model: 'gpt-4o-mini' }),
       })
       const d = await res.json()
-      setTriggerMsg(d.message || (d.ok ? '已触发' : d.error))
+      setTriggerMsg(d.message || (d.ok ? 'Triggered' : d.error))
     } catch (e: unknown) {
-      setTriggerMsg('触发失败: ' + (e instanceof Error ? e.message : String(e)))
+      setTriggerMsg('Trigger failed: ' + (e instanceof Error ? e.message : String(e)))
     }
     setTriggering(false)
   }

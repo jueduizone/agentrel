@@ -47,7 +47,7 @@ export default function ApplyPage() {
       if (!res.ok) throw new Error(data.error || `HTTP ${res.status}`)
       setSubmitted(true)
     } catch (err) {
-      setError(err instanceof Error ? err.message : '提交失败，请重试')
+      setError(err instanceof Error ? err.message : 'Submission failed, please try again')
     } finally {
       setSubmitting(false)
     }
@@ -55,13 +55,13 @@ export default function ApplyPage() {
 
   if (loading) return (
     <div className="min-h-screen bg-muted/50 flex items-center justify-center">
-      <p className="text-muted-foreground/50 text-sm">加载中...</p>
+      <p className="text-muted-foreground/50 text-sm">Loading...</p>
     </div>
   )
 
   if (!grant) return (
     <div className="min-h-screen bg-muted/50 flex items-center justify-center">
-      <p className="text-muted-foreground/50 text-sm">Grant 不存在</p>
+      <p className="text-muted-foreground/50 text-sm">Grant not found</p>
     </div>
   )
 
@@ -69,9 +69,9 @@ export default function ApplyPage() {
     <div className="min-h-screen bg-muted/50 flex items-center justify-center px-4">
       <div className="bg-background rounded-2xl border border-border p-10 text-center max-w-md w-full">
         <div className="text-4xl mb-4">✅</div>
-        <h2 className="text-xl font-bold text-foreground mb-2">申请已提交！</h2>
-        <p className="text-sm text-muted-foreground/70 mb-6">我们会尽快审核你的申请，结果通过邮件通知。</p>
-        <Link href="/build" className="text-indigo-600 text-sm font-medium hover:underline">← 返回 Build</Link>
+        <h2 className="text-xl font-bold text-foreground mb-2">Application submitted</h2>
+        <p className="text-sm text-muted-foreground/70 mb-6">We will review your application and notify you by email.</p>
+        <Link href="/build" className="text-indigo-600 text-sm font-medium hover:underline">← Back to Build</Link>
       </div>
     </div>
   )
@@ -81,7 +81,7 @@ export default function ApplyPage() {
   return (
     <div className="min-h-screen bg-muted/50">
       <main className="max-w-xl mx-auto px-6 py-10">
-        <Link href={`/build/${id}`} className="text-sm text-muted-foreground/50 hover:text-muted-foreground mb-6 inline-block">← 返回详情</Link>
+        <Link href={`/build/${id}`} className="text-sm text-muted-foreground/50 hover:text-muted-foreground mb-6 inline-block">← Back to details</Link>
 
         <div className="bg-background rounded-2xl border border-border p-8">
           <h1 className="text-xl font-bold text-foreground mb-1">{grant.title}</h1>
@@ -90,14 +90,14 @@ export default function ApplyPage() {
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
               <label className="block text-sm font-medium text-foreground/80 mb-1.5">
-                申请理由 <span className="text-red-500">*</span>
+                Application pitch <span className="text-red-500">*</span>
               </label>
               <textarea
                 value={pitch}
                 onChange={e => setPitch(e.target.value)}
                 required
                 rows={5}
-                placeholder="描述你的项目背景、技术方案、为何适合本 Grant..."
+                placeholder="Describe your project background, technical approach, and why it fits this grant..."
                 className="w-full border border-border/80 rounded-lg px-3 py-2.5 text-sm text-foreground placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none"
               />
             </div>
@@ -114,7 +114,7 @@ export default function ApplyPage() {
                     required={field.required}
                     className="w-full border border-border/80 rounded-lg px-3 py-2.5 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-indigo-500"
                   >
-                    <option value="">请选择...</option>
+                    <option value="">Select...</option>
                     {field.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
                   </select>
                 ) : (
@@ -137,7 +137,7 @@ export default function ApplyPage() {
               disabled={submitting || !pitch.trim()}
               className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {submitting ? '提交中...' : '提交申请'}
+              {submitting ? 'Submitting...' : 'Submit application'}
             </button>
           </form>
         </div>

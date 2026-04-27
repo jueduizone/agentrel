@@ -48,7 +48,7 @@ export default function LoginPage() {
       })
       if (error) setError(error.message)
     } catch {
-      setError('OAuth 登录失败，请重试')
+      setError('OAuth login failed, please try again')
     } finally {
       setOauthLoading(null)
     }
@@ -65,11 +65,11 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || '登录失败'); return }
+      if (!res.ok) { setError(data.error || 'Sign in failed'); return }
       localStorage.setItem('agentrel_api_key', data.api_key)
       router.push('/')
       router.refresh()
-    } catch { setError('网络错误，请重试') } finally { setLoading(false) }
+    } catch { setError('Network error, please try again') } finally { setLoading(false) }
   }
 
   return (

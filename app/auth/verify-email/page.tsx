@@ -18,15 +18,15 @@ function VerifyEmailContent() {
             </svg>
           </div>
 
-          <h1 className="text-xl font-bold text-foreground mb-2">请验证您的邮箱</h1>
+          <h1 className="text-xl font-bold text-foreground mb-2">Verify your email</h1>
           <p className="text-muted-foreground/70 text-sm mb-4">
-            验证邮件已发送至
+            A verification email was sent to
           </p>
           {email && (
             <p className="font-medium text-foreground mb-4 break-all">{email}</p>
           )}
           <p className="text-muted-foreground/70 text-sm mb-6">
-            请点击邮件中的链接完成注册。如未收到，请检查垃圾邮件文件夹。
+            Click the link in the email to finish registration. If you do not see it, check your spam folder.
           </p>
 
           <div className="space-y-3">
@@ -34,13 +34,13 @@ function VerifyEmailContent() {
               href="/auth/login"
               className="block w-full bg-foreground text-background rounded-lg py-2.5 text-sm font-semibold hover:bg-foreground/80 transition-colors text-center"
             >
-              前往登录
+              Go to sign in
             </Link>
             <Link
               href="/auth/register"
               className="block w-full border border-border/80 rounded-lg py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted/50 transition-colors text-center"
             >
-              重新注册
+              Register again
             </Link>
           </div>
         </div>

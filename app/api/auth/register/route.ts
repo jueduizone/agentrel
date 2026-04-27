@@ -8,13 +8,13 @@ export async function POST(request: NextRequest) {
   const { email, password } = await request.json().catch(() => ({}))
 
   if (!email || !password) {
-    return NextResponse.json({ error: '缺少 email 或 password' }, { status: 400 })
+    return NextResponse.json({ error: 'Missing email or password' }, { status: 400 })
   }
   if (!EMAIL_RE.test(email.trim().toLowerCase())) {
-    return NextResponse.json({ error: '邮箱格式不正确' }, { status: 400 })
+    return NextResponse.json({ error: 'Invalid email format' }, { status: 400 })
   }
   if (password.length < 8) {
-    return NextResponse.json({ error: '密码至少 8 位' }, { status: 400 })
+    return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 })
   }
 
   const supabase = createClient(
@@ -33,13 +33,13 @@ export async function POST(request: NextRequest) {
 
   if (error) {
     if (error.message.includes('already registered') || error.message.includes('already exists')) {
-      return NextResponse.json({ error: '该邮箱已注册' }, { status: 409 })
+      return NextResponse.json({ error: 'This email is already registered' }, { status: 409 })
     }
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
 
   if (!data.user) {
-    return NextResponse.json({ error: '注册失败' }, { status: 500 })
+    return NextResponse.json({ error: 'Registration failed' }, { status: 500 })
   }
 
   // If email confirmation is required, user.identities will be empty or user.email_confirmed_at null
@@ -49,7 +49,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       user_id: data.user.id,
       email: data.user.email,
-      message: '注册成功，请查收确认邮件',
+      message: 'Registration successful. Please check your email for confirmation.',
       email_confirmation_required: true,
     }, { status: 201 })
   }
@@ -67,6 +67,6 @@ export async function POST(request: NextRequest) {
     user_id: data.user.id,
     email: data.user.email,
     api_key: profile?.api_key,
-    message: '注册成功',
+    message: 'Registration successful',
   }, { status: 201 })
 }

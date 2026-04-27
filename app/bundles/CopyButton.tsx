@@ -2,16 +2,14 @@
 
 import { useState } from 'react'
 import { Copy, Check, X } from 'lucide-react'
-import { useLang } from '@/context/LanguageContext'
 import { copyToClipboard } from '@/lib/utils'
 
 export function CopyButton({ text }: { text: string }) {
   const [state, setState] = useState<'idle' | 'ok' | 'err'>('idle')
-  const { lang } = useLang()
 
-  const copyFailed = lang === 'zh' ? '复制失败，请手动复制' : 'Copy failed, please copy manually'
-  const copied = lang === 'zh' ? '已复制' : 'Copied!'
-  const copy = lang === 'zh' ? '复制' : 'Copy'
+  const copyFailed = 'Copy failed, please copy manually'
+  const copied = 'Copied!'
+  const copy = 'Copy'
 
   const handleCopy = async () => {
     const ok = await copyToClipboard(text)

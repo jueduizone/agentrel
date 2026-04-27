@@ -114,13 +114,13 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
             )}
             {grant.track && (
               <div className="bg-muted/50 rounded-lg p-3">
-                <p className="text-xs text-muted-foreground/50 mb-0.5">赛道 / 方向</p>
+                <p className="text-xs text-muted-foreground/50 mb-0.5">Track</p>
                 <p className="font-medium text-foreground">{grant.track}</p>
               </div>
             )}
             {grant.max_applications && (
               <div className="bg-muted/50 rounded-lg p-3">
-                <p className="text-xs text-muted-foreground/50 mb-0.5">名额上限</p>
+                <p className="text-xs text-muted-foreground/50 mb-0.5">Application cap</p>
                 <p className="font-medium text-foreground">{grant.max_applications}</p>
               </div>
             )}
@@ -136,7 +136,7 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
             )}
             {grant.tech_requirements && (
               <div className="bg-muted/50 rounded-lg p-3 col-span-2">
-                <p className="text-xs text-muted-foreground/50 mb-0.5">技术要求</p>
+                <p className="text-xs text-muted-foreground/50 mb-0.5">Technical requirements</p>
                 <p className="text-sm text-foreground/80 whitespace-pre-wrap">{grant.tech_requirements}</p>
               </div>
             )}
@@ -147,7 +147,7 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
             {grant.source_type === 'external' && grant.external_url && (
               <a href={grant.external_url} target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg border border-border/80 text-sm font-medium text-foreground/80 hover:bg-muted/50 transition-colors">
-                🔗 查看原网站
+                🔗 View original site
               </a>
             )}
           </div>
