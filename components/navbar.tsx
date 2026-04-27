@@ -134,7 +134,7 @@ export function Navbar() {
   const [user, setUser] = useState<{ email: string; role: string; api_key: string } | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const { lang, setLang, t } = useLang()
+  const { t } = useLang()
   const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
@@ -218,15 +218,6 @@ export function Navbar() {
               ? <Sun className="h-4 w-4" />
               : <Moon className="h-4 w-4" />
             }
-          </button>
-
-          {/* Language toggle */}
-          <button
-            onClick={() => setLang(lang === 'en' ? 'zh' : 'en')}
-            className="flex items-center px-2 py-1.5 text-xs font-mono text-muted-foreground hover:text-foreground rounded-md hover:bg-muted transition-colors"
-            title={lang === 'en' ? '切换到中文' : 'Switch to English'}
-          >
-            {lang === 'en' ? 'EN' : 'ZH'}
           </button>
 
           <Link

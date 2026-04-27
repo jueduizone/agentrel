@@ -12,21 +12,27 @@ type Application = {
   _user: { email: string | null; wallet_address: string | null; human_did: string | null } | null
 }
 
-export function ApplicationRow({ app, grantId, apiKey }: { app: Application; grantId: string; apiKey?: string }) {
+export function ApplicationRow({ app, grantId }: { app: Application; grantId: string }) {
   const [status, setStatus] = useState(app.status)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
 
   async function updateStatus(newStatus: 'approved' | 'rejected') {
     setLoading(true)
+    const apiKey = localStorage.getItem('agentrel_api_key')
+    const headers: Record<string, string> = { 'Content-Type': 'application/json' }
+    if (apiKey) headers['Authorization'] = `Bearer ${apiKey}`
     const res = await fetch(`/api/admin/grants/${grantId}/applications/${app.id}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
+      headers,
       body: JSON.stringify({ status: newStatus }),
     })
     if (res.ok) {
       setStatus(newStatus)
       router.refresh()
+    } else {
+      const data = await res.json().catch(() => ({}))
+      alert(data.error || `操作失败 (${res.status})`)
     }
     setLoading(false)
   }

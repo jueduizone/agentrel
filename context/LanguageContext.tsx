@@ -1,12 +1,9 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useCallback } from 'react'
 import en from '@/messages/en.json'
-import zh from '@/messages/zh.json'
 
 export type Lang = 'en' | 'zh'
-
-const messages: Record<Lang, Record<string, string>> = { en, zh }
 
 type LanguageContextValue = {
   lang: Lang
@@ -21,25 +18,15 @@ const LanguageContext = createContext<LanguageContextValue>({
 })
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [lang, setLangState] = useState<Lang>('en')
-
-  useEffect(() => {
-    const saved = localStorage.getItem('agentrel_lang') as Lang
-    if (saved === 'zh' || saved === 'en') setLangState(saved)
-  }, [])
-
-  const setLang = (l: Lang) => {
-    setLangState(l)
-    localStorage.setItem('agentrel_lang', l)
-  }
+  const setLang = () => {}
 
   const t = useCallback(
-    (key: string): string => messages[lang][key] ?? key,
-    [lang]
+    (key: string): string => en[key as keyof typeof en] ?? key,
+    []
   )
 
   return (
-    <LanguageContext.Provider value={{ lang, setLang, t }}>
+    <LanguageContext.Provider value={{ lang: 'en', setLang, t }}>
       {children}
     </LanguageContext.Provider>
   )
