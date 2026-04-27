@@ -52,7 +52,7 @@ export function HeroSection({ skillsCount, scenarioCounts }: Props) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
-              {lang === 'zh' ? `在线 · ${skillsCount}+ Skills · 开源` : `LIVE · ${skillsCount}+ skills · open source`}
+              {lang === 'zh' ? `在线 · ${skillsCount}+ 个 Skill · 开源` : `LIVE · ${skillsCount}+ skills · open source`}
             </div>
 
             {/* Headline */}
@@ -101,7 +101,7 @@ export function HeroSection({ skillsCount, scenarioCounts }: Props) {
               <span className="w-3 h-3 rounded-full" style={{ background: 'oklch(70% 0.16 85)' }} />
               <span className="w-3 h-3 rounded-full" style={{ background: 'oklch(65% 0.18 145)' }} />
               <span className="ml-auto font-mono text-[10px] tracking-widest" style={{ color: 'oklch(40% 0.008 265)' }}>
-                {lang === 'zh' ? 'SKILL 索引' : 'SKILL INDEX'}
+                {lang === 'zh' ? 'Skill 索引' : 'SKILL INDEX'}
               </span>
             </div>
 

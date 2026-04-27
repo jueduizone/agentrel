@@ -80,7 +80,7 @@ export function HomeContent({ stats }: {
               {t('home.ecosystemsTitle')}
             </h2>
             <span className="font-mono text-xs text-muted-foreground">
-              {stats.ecosystemList.length} {lang === 'zh' ? '条链' : 'chains'}
+              {stats.ecosystemList.length} {lang === 'zh' ? '个生态' : 'chains'}
             </span>
           </div>
 

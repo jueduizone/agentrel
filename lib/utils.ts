@@ -21,6 +21,24 @@ export function stripChineseCharacters(text: string | null | undefined): string 
     .trim()
 }
 
+// DB bundle names/descriptions can lose spaces when Chinese words are stripped
+// from strings like "SuiTONStarkNetBase Skills". Restore readable spacing for
+// known ecosystem names without changing normal prose.
+export function formatBundleText(text: string | null | undefined): string {
+  const stripped = stripChineseCharacters(text)
+  if (!stripped) return ''
+  const tokens = [
+    'Ethereum', 'Solana', 'Aptos', 'Sui', 'TON', 'StarkNet', 'Starknet', 'Base',
+    'Arbitrum', 'Optimism', 'Polygon', 'Monad', 'Mantle', 'Zama',
+  ]
+  let out = stripped
+  for (const token of tokens) {
+    out = out.replace(new RegExp(`(?<!^)(?=${token})`, 'g'), ' ')
+    out = out.replace(new RegExp(`(?<=${token})(?=[A-Z0-9])`, 'g'), ' ')
+  }
+  return out.replace(/\s{2,}/g, ' ').trim()
+}
+
 // Map raw `source` values from the DB to the canonical four-tier badge keys.
 // Legacy import scripts have used "grant" / "auto" / "auto-generated" — all of
 // which represent AI-generated content but rendered as the raw string before.

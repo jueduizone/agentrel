@@ -5,7 +5,7 @@ import { serviceClient } from '@/lib/supabase'
 import type { Bundle } from '@/lib/types'
 import { Navbar } from '@/components/navbar'
 import { PageHeader } from '@/components/PageHeader'
-import { stripChineseCharacters } from '@/lib/utils'
+import { formatBundleText } from '@/lib/utils'
 import { CopyButton } from './CopyButton'
 
 export const metadata: Metadata = {
@@ -52,8 +52,8 @@ export default async function BundlesPage() {
                     )}
                   </div>
 
-                  <h2 className="mb-2 text-lg font-semibold text-foreground">{stripChineseCharacters(bundle.name) || bundle.name}</h2>
-                  <p className="mb-4 text-sm text-muted-foreground">{stripChineseCharacters(bundle.description) || bundle.description}</p>
+                  <h2 className="mb-2 text-lg font-semibold text-foreground">{formatBundleText(bundle.name) || bundle.name}</h2>
+                  <p className="mb-4 text-sm text-muted-foreground">{formatBundleText(bundle.description) || bundle.description}</p>
 
                   {/* Skills list */}
                   <div className="mb-4">
