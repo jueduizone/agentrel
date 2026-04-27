@@ -134,7 +134,7 @@ export function Navbar() {
   const [user, setUser] = useState<{ email: string; role: string; api_key: string } | null>(null)
   const [showDropdown, setShowDropdown] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
-  const { t } = useLang()
+  const { lang, setLang, t } = useLang()
   const { theme, toggleTheme } = useTheme()
 
   useEffect(() => {
@@ -207,6 +207,37 @@ export function Navbar() {
 
         {/* Right: controls */}
         <div className="flex items-center gap-1.5">
+          {/* Language toggle */}
+          <div
+            className="flex items-center rounded-md border border-border bg-muted/30 p-0.5"
+            aria-label="Language switcher"
+          >
+            <button
+              type="button"
+              onClick={() => setLang('en')}
+              aria-pressed={lang === 'en'}
+              className={`rounded px-1.5 py-1 text-[10px] font-mono font-medium transition-colors ${
+                lang === 'en'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              EN
+            </button>
+            <button
+              type="button"
+              onClick={() => setLang('zh')}
+              aria-pressed={lang === 'zh'}
+              className={`rounded px-1.5 py-1 text-[10px] font-mono font-medium transition-colors ${
+                lang === 'zh'
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              ZH
+            </button>
+          </div>
+
           {/* Theme toggle */}
           <button
             onClick={toggleTheme}
