@@ -1,5 +1,6 @@
 import { NextRequest } from 'next/server'
 import { serviceClient } from '@/lib/supabase'
+import { normalizeEcosystems, renderApplyBodyExample, selectSkillsForGrantContext } from '@/lib/grantContextHelpers'
 
 export async function GET(
   _request: NextRequest,
@@ -22,21 +23,22 @@ export async function GET(
   }
 
   const requiredSkills: string[] = (grant.required_skills as string[]) ?? []
-  const ecosystems = requiredSkills
-    .map((s) => s.toLowerCase())
-    .filter((s) => s !== 'agent' && s !== 'web3')
+  const ecosystems = normalizeEcosystems(requiredSkills)
 
   let ecosystemSkills: Array<{ id: string; name: string; ecosystem: string; content: string }> = []
   if (ecosystems.length > 0) {
     const { data: skills } = await db
       .from('skills')
-      .select('id, name, ecosystem, content, source')
+      .select('id, name, ecosystem, content, source, type, health_score, install_count, updated_at')
       .in('ecosystem', ecosystems)
-      .in('source', ['official', 'verified', 'official-docs'])
+      .gte('health_score', 0)
       .not('type', 'in', '("hackathon-case","security-vuln")')
-      .order('source', { ascending: true })
-      .limit(10)
-    ecosystemSkills = (skills ?? []).map((s) => ({
+      .order('health_score', { ascending: false, nullsFirst: false })
+      .order('install_count', { ascending: false, nullsFirst: false })
+      .order('updated_at', { ascending: false, nullsFirst: false })
+      .limit(50)
+
+    ecosystemSkills = selectSkillsForGrantContext(skills ?? [], ecosystems, 10).map((s) => ({
       id: s.id as string,
       name: s.name as string,
       ecosystem: s.ecosystem as string,
@@ -61,7 +63,7 @@ export async function GET(
         const snippet = s.content.replace(/^---[\s\S]*?---\s*/m, '').trim().slice(0, 500)
         return `## ${s.name}\n\n_Ecosystem: ${s.ecosystem} · Skill ID: \`${s.id}\`_\n\n${snippet}\n`
       }).join('\n')
-    : '_No official skills matched the required ecosystems._'
+    : '_No skills matched the required ecosystems._'
 
   const md = `# Grant: ${grant.title}
 
@@ -89,10 +91,7 @@ Send a POST request to:
 
 With Bearer token (user's AgentRel API key) and JSON body:
 \`\`\`json
-{
-  "proposal": "your proposal text",
-  "github_url": "https://github.com/..."
-}
+${renderApplyBodyExample()}
 \`\`\`
 
 ## Relevant Skills Context
