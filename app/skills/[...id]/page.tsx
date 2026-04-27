@@ -114,7 +114,7 @@ export default async function SkillDetailPage({
                   )}
                   {skill.health_score != null && (
                     <span className={`${badgeBase} normal-case ${healthClass(skill.health_score)}`}>
-                      health {skill.health_score}%
+                      health {Math.max(0, skill.health_score)}%
                     </span>
                   )}
                 </div>
@@ -170,7 +170,7 @@ export default async function SkillDetailPage({
                   </div>
                   <CopyButton text={installCmd} skillId={skill.id} />
                   <a
-                    href={`https://agentrel.vercel.app/api/skills/${skill.id}.md`}
+                    href={installCmd}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="block w-full rounded-lg border border-border px-3 py-2 text-center font-mono text-xs text-muted-foreground transition-colors hover:border-foreground hover:bg-muted/40 hover:text-foreground"

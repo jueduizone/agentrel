@@ -30,7 +30,7 @@ export default async function BundlesPage() {
 
         {!bundles || bundles.length === 0 ? (
           <div className="rounded-xl border border-border p-12 text-center text-muted-foreground">
-            No bundles available yet.
+            暂无 Bundle / No bundles available yet.
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
@@ -58,7 +58,7 @@ export default async function BundlesPage() {
                   {/* Skills list */}
                   <div className="mb-4">
                     <p className="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      Includes {bundle.skills.length} skill{bundle.skills.length !== 1 ? 's' : ''}
+                      {bundle.skills.length} Skills
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                       {bundle.skills.map((skillId) => (

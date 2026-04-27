@@ -113,5 +113,14 @@
   "auth.networkError": "Network error, please try again",
   "auth.registerFailed": "Registration failed",
   "skills.emptyHint": "Try a different keyword, or browse by ecosystem ↗",
-  "submit.invalidUrl": "Please enter a valid http(s) URL."
+  "submit.invalidUrl": "Please enter a valid http(s) URL.",
+  "hero.browseSkills": "Browse Skills",
+  "hero.apiDocs": "API Docs",
+  "notFound.title": "Page not found",
+  "notFound.desc": "This page does not exist or has moved.",
+  "notFound.backHome": "Back home",
+  "notFound.browseSkills": "Browse skills",
+  "submit.fetchFailed": "Unable to read the Skill file. Please make sure the URL is publicly accessible and returns markdown.",
+  "submit.requiredFormat": "Required format",
+  "submit.skillUrl": "Skill URL"
 }

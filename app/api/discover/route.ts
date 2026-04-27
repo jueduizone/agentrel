@@ -63,7 +63,7 @@ export async function POST(request: NextRequest) {
       signal: AbortSignal.timeout(10000),
     })
     if (!res.ok) {
-      return NextResponse.json({ error: `Fetch failed: ${res.status}` }, { status: 400 })
+      return NextResponse.json({ error: 'Unable to read the Skill file. Please make sure the URL is publicly accessible and returns markdown.' }, { status: 400 })
     }
     content = await res.text()
   } catch (err) {

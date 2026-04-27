@@ -7,7 +7,7 @@
   "nav.signIn": "登录",
   "nav.register": "注册",
   "nav.signOut": "退出",
-  "hero.title": "Web3 AI Skills",
+  "hero.title": "Web3 AI 技能库",
   "hero.subtitle": "给你的 AI Agent 真实的 Web3 上下文",
   "hero.oneUrl": "一个 URL，全部搞定",
   "hero.unlockSkills": "将此 URL 加入 Agent 系统提示词，解锁 {count}+ Web3 Skills",
@@ -113,5 +113,14 @@
   "auth.networkError": "网络错误，请重试",
   "auth.registerFailed": "注册失败",
   "skills.emptyHint": "换个关键词试试，或按生态浏览 ↗",
-  "submit.invalidUrl": "请输入有效的 http(s) 链接。"
+  "submit.invalidUrl": "请输入有效的 http(s) 链接。",
+  "hero.browseSkills": "浏览 Skills",
+  "hero.apiDocs": "API 文档",
+  "notFound.title": "页面不存在",
+  "notFound.desc": "这个页面不存在，或已被移动。",
+  "notFound.backHome": "返回首页",
+  "notFound.browseSkills": "浏览 Skills",
+  "submit.fetchFailed": "无法读取 Skill 文件，请确认 URL 可公开访问且返回 markdown。",
+  "submit.requiredFormat": "必需格式",
+  "submit.skillUrl": "Skill URL"
 }

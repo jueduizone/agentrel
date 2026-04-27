@@ -48,9 +48,13 @@ export default function SubmitSkillPage() {
         body: JSON.stringify({ url: trimmed }),
       })
       const data = await res.json()
-      setResult(data)
+      if (data?.error && String(data.error).startsWith('Fetch failed:')) {
+        setResult({ error: t('submit.fetchFailed') })
+      } else {
+        setResult(data)
+      }
     } catch {
-      setResult({ error: 'Network error. Please try again.' })
+      setResult({ error: t('auth.networkError') })
     } finally {
       setLoading(false)
     }
@@ -63,7 +67,7 @@ export default function SubmitSkillPage() {
         <div className="mb-8">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground/50 hover:text-foreground/80 mb-6">
             <ArrowLeft size={16} />
-            Back to AgentRel
+            {t('notFound.backHome')}
           </Link>
           <h1 className="text-3xl font-bold text-foreground mb-2">{t('submit.title')}</h1>
           <p className="text-muted-foreground/70 text-base">{t('submit.desc')}</p>
@@ -71,7 +75,7 @@ export default function SubmitSkillPage() {
 
         {/* Format guide */}
         <div className="bg-muted border border-border rounded-xl p-5 mb-8">
-          <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider mb-3">Required format</p>
+          <p className="text-xs font-semibold text-muted-foreground/70 uppercase tracking-wider mb-3">{t('submit.requiredFormat')}</p>
           <pre className="text-xs text-foreground/80 font-mono leading-relaxed">{`---
 name: My Web3 Skill
 ecosystem: ethereum
@@ -86,7 +90,7 @@ version: 1.0
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-foreground/80 mb-2">
-              Skill URL
+              {t('submit.skillUrl')}
             </label>
             <input
               type="url"
