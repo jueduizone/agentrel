@@ -8,6 +8,25 @@ import { PageHeader } from '@/components/PageHeader'
 import { formatBundleText } from '@/lib/utils'
 import { CopyButton } from './CopyButton'
 
+const BUNDLE_COPY: Record<string, { name: string; description: string }> = {
+  'multi-chain-dev': {
+    name: 'Multi-Chain Developer Bundle',
+    description: 'Development skills for Sui, TON, Starknet, and Base. Built for developers shipping cross-chain apps.',
+  },
+  'web3-starter': {
+    name: 'Web3 Starter Bundle',
+    description: 'Core Ethereum, Solana, and Aptos development context for getting started with Web3 apps.',
+  },
+}
+
+function bundleName(bundle: Bundle) {
+  return BUNDLE_COPY[bundle.id]?.name ?? (formatBundleText(bundle.name) || bundle.name)
+}
+
+function bundleDescription(bundle: Bundle) {
+  return BUNDLE_COPY[bundle.id]?.description ?? (formatBundleText(bundle.description) || bundle.description)
+}
+
 export const metadata: Metadata = {
   title: 'Bundles — AgentRel',
   description: 'Pre-packaged Skill collections for common Web3 development scenarios.',
@@ -30,7 +49,7 @@ export default async function BundlesPage() {
 
         {!bundles || bundles.length === 0 ? (
           <div className="rounded-xl border border-border p-12 text-center text-muted-foreground">
-            暂无 Bundle / No bundles available yet.
+            No bundles available yet.
           </div>
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
@@ -52,8 +71,8 @@ export default async function BundlesPage() {
                     )}
                   </div>
 
-                  <h2 className="mb-2 text-lg font-semibold text-foreground">{formatBundleText(bundle.name) || bundle.name}</h2>
-                  <p className="mb-4 text-sm text-muted-foreground">{formatBundleText(bundle.description) || bundle.description}</p>
+                  <h2 className="mb-2 text-lg font-semibold text-foreground">{bundleName(bundle)}</h2>
+                  <p className="mb-4 text-sm text-muted-foreground">{bundleDescription(bundle)}</p>
 
                   {/* Skills list */}
                   <div className="mb-4">

@@ -48,8 +48,12 @@ export default function SubmitSkillPage() {
         body: JSON.stringify({ url: trimmed }),
       })
       const data = await res.json()
-      if (data?.error && String(data.error).startsWith('Fetch failed:')) {
-        setResult({ error: t('submit.fetchFailed') })
+      if (!res.ok || data?.error) {
+        const errorText = String(data?.error ?? '')
+        const friendly = errorText.includes('Unable to read') || errorText.includes('Failed to fetch') || res.status === 404
+          ? t('submit.fetchFailed')
+          : errorText || t('submit.fetchFailed')
+        setResult({ error: friendly })
       } else {
         setResult(data)
       }

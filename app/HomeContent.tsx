@@ -8,7 +8,7 @@ type EcoItem = { name: string; count: number }
 export function HomeContent({ stats }: {
   stats: { skills: number; ecosystems: number; contributors: number; ecosystemList: EcoItem[] }
 }) {
-  const { lang, t } = useLang()
+  const { t } = useLang()
 
   return (
     <>
@@ -80,7 +80,7 @@ export function HomeContent({ stats }: {
               {t('home.ecosystemsTitle')}
             </h2>
             <span className="font-mono text-xs text-muted-foreground">
-              {stats.ecosystemList.length} {lang === 'zh' ? '个生态' : 'chains'}
+              {stats.ecosystemList.length} chains
             </span>
           </div>
 

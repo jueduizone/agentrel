@@ -6,7 +6,6 @@ import Link from 'next/link'
 import { createClient } from '@supabase/supabase-js'
 import { Navbar } from '@/components/navbar'
 import { CopySkillUrlButton } from './CopySkillUrlButton'
-import { useLang } from '@/context/LanguageContext'
 const browserClient = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -46,7 +45,6 @@ const SOURCE_BADGE: Record<string, { label: string; className: string }> = {
 }
 export default function ZamaEcosystemPage() {
   const [skills, setSkills] = useState<Skill[]>([])
-  const { lang } = useLang()
   useEffect(() => {
     browserClient
       .from('skills')
@@ -135,10 +133,8 @@ export default function ZamaEcosystemPage() {
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {skills.map((skill) => {
               const skillUrl = extractSkillUrl(skill.content)
-              const description = lang === 'zh' && skill.description_zh
-                ? skill.description_zh
-                : getDescription(skill.content)
-              const displayName = lang === 'zh' && skill.name_zh ? skill.name_zh : skill.name
+              const description = getDescription(skill.content)
+              const displayName = skill.name
               const sourceBadge = SOURCE_BADGE[skill.source]
               return (
                 <div
