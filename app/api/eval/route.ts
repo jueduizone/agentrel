@@ -21,7 +21,7 @@ export async function POST(req: NextRequest) {
   if (recent?.[0]) {
     const lastRun = new Date(recent[0].run_at).getTime()
     if (Date.now() - lastRun < 5 * 60 * 1000) {
-      return NextResponse.json({ ok: false, message: 'An eval is already running. Please try again later.' })
+      return NextResponse.json({ ok: false, message: '5分钟内已有eval运行，请稍后再试' })
     }
   }
 
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
     if (error) console.error('Eval trigger error:', error.message)
   })
 
-  return NextResponse.json({ ok: true, message: 'Eval triggered. Results should be written to the database in 5-10 minutes.' })
+  return NextResponse.json({ ok: true, message: 'Eval 已触发，约 5-10 分钟后结果写入数据库' })
 }
 
 export async function GET() {

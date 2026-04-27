@@ -27,7 +27,7 @@ export function ApplyCTA({ grantId, isOpen }: Props) {
   }
 
   if (!isOpen) {
-    return <p className="text-center text-sm text-muted-foreground/50 py-2">This grant is closed.</p>
+    return <p className="text-center text-sm text-muted-foreground/50 py-2">此 Grant 已截止，无法申请</p>
   }
 
   const secondaryClass = copyError
@@ -43,7 +43,7 @@ export function ApplyCTA({ grantId, isOpen }: Props) {
         href={`/build/${grantId}/apply`}
         className="group inline-flex items-center justify-center gap-2 w-full px-7 py-3 bg-primary text-primary-foreground text-sm font-semibold rounded-xl hover:bg-primary/90 transition-all shadow-sm hover:shadow-md active:scale-[0.98] whitespace-nowrap"
       >
-        Apply now
+        立即申请
         <span className="transition-transform group-hover:translate-x-0.5">→</span>
       </Link>
 
@@ -52,15 +52,15 @@ export function ApplyCTA({ grantId, isOpen }: Props) {
         onClick={handleAgentCopy}
         className={`inline-flex items-center justify-center gap-2 w-full px-7 py-3 text-sm font-semibold rounded-xl transition-all active:scale-[0.98] whitespace-nowrap ${secondaryClass}`}
       >
-        {copyError ? <><span>❌</span> Copy failed, please copy manually</> : copied ? <><span>✅</span> Copied</> : <><span>🤖</span> Apply with agent</>}
+        {copyError ? <><span>❌</span> 复制失败，请手动复制</> : copied ? <><span>✅</span> 已复制</> : <><span>🤖</span> Agent 帮我申请</>}
       </button>
 
       <p className="text-xs text-muted-foreground/50 text-center -mt-1">
         {copyError
           ? contextUrl
           : copied
-          ? 'Grant Context URL copied. Paste it into your AI agent to apply.'
-          : 'Direct application requires sign-in · Agent mode copies Grant Context (.md)'}
+          ? '已复制 Grant Context URL，粘贴给你的 AI Agent 即可申请'
+          : '立即申请需登录 · Agent 申请复制 Grant Context (.md) 给 AI'}
       </p>
     </div>
   )

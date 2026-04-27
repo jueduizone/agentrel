@@ -16,18 +16,18 @@ export async function POST(request: NextRequest) {
   const { wallet_address, human_did, signature } = body
 
   if (!wallet_address && !human_did) {
-    return NextResponse.json({ error: 'Provide at least one of wallet_address or human_did' }, { status: 400 })
+    return NextResponse.json({ error: '至少提供 wallet_address 或 human_did 之一' }, { status: 400 })
   }
 
   // Validate wallet format if provided
   if (wallet_address && !/^0x[0-9a-fA-F]{40}$/.test(wallet_address)) {
-    return NextResponse.json({ error: 'Invalid wallet_address format (expected 0x... with 42 chars)' }, { status: 400 })
+    return NextResponse.json({ error: 'wallet_address 格式不正确 (需要 0x... 42位)' }, { status: 400 })
   }
 
   // Validate signature format (EIP-191: 0x + 130 hex chars = 65 bytes)
   if (wallet_address && signature !== undefined) {
     if (!/^0x[0-9a-fA-F]{130}$/.test(signature)) {
-      return NextResponse.json({ error: 'Invalid signature format (expected 0x + 130 hex chars)' }, { status: 400 })
+      return NextResponse.json({ error: 'signature 格式不正确 (需要 0x + 130 hex)' }, { status: 400 })
     }
     // TODO: Full EIP-191 signature verification with ethers.js if needed
   }
@@ -50,6 +50,6 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({
     ...data,
-    message: 'Identity bound successfully',
+    message: '身份绑定成功',
   })
 }

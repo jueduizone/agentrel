@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -47,10 +47,6 @@ export default async function SkillDetailPage({
   const { id } = await params
   const skillId = id.join('/')
 
-  if (skillId === 'ethereum/ethskills-defi') {
-    redirect('/skills/ethereum/ethskills-building-blocks')
-  }
-
   const { data, error } = await serviceClient
     .from('skills')
     .select('*')
@@ -62,10 +58,6 @@ export default async function SkillDetailPage({
   }
 
   const skill = data as Skill
-  if ((skill.health_score ?? 0) < 0) {
-    notFound()
-  }
-
   const installCmd = (skill.source === 'official' && skill.source_repo &&
     (skill.source_repo.endsWith('.md') || skill.source_repo.includes('raw.githubusercontent')))
     ? skill.source_repo

@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
   const { email, password } = await request.json().catch(() => ({}))
 
   if (!email || !password) {
-    return NextResponse.json({ error: 'Missing email or password' }, { status: 400 })
+    return NextResponse.json({ error: '缺少 email 或 password' }, { status: 400 })
   }
 
   const supabase = createClient(
@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
   })
 
   if (error || !data.session) {
-    return NextResponse.json({ error: 'Invalid email or password' }, { status: 401 })
+    return NextResponse.json({ error: '邮箱或密码错误' }, { status: 401 })
   }
 
   // Fetch api_key from public.users

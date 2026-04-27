@@ -16,11 +16,11 @@ function healthClass(score: number) {
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  if (days === 0) return 'today'
-  if (days === 1) return 'yesterday'
-  if (days < 30) return `${days}d ago`
+  if (days === 0) return '今天'
+  if (days === 1) return '昨天'
+  if (days < 30) return `${days}天前`
   const months = Math.floor(days / 30)
-  return `${months}mo ago`
+  return `${months}个月前`
 }
 
 function formatInstallCount(n: number): string {
@@ -61,7 +61,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
   const [suggestions, setSuggestions] = useState<Skill[]>([])
   const [showSuggestions, setShowSuggestions] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
-  const { t } = useLang()
+  const { lang, t } = useLang()
 
   // 搜索建议（防抖 300ms，调 /api/skills/search）
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -301,12 +301,16 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
 
                 {/* Name */}
                 <h3 className="mb-1.5 font-medium text-foreground">
-                  {cleanSkillName(skill.name)}
+                  {cleanSkillName(lang === 'zh' && skill.name_zh ? skill.name_zh : skill.name)}
                 </h3>
 
                 {/* Description */}
                 <p className="mb-3 flex-1 text-xs text-muted-foreground line-clamp-2">
-                  {cleanSkillDescription(skill.content).slice(0, 160)}
+                  {cleanSkillDescription(
+                    lang === 'zh' && skill.description_zh
+                      ? skill.description_zh
+                      : skill.content
+                  ).slice(0, 160)}
                 </p>
 
                 {/* Bottom row: ecosystem + signals */}
@@ -316,7 +320,7 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
                   </span>
                   {(skill.install_count ?? 0) > 0 && (
                     <span className="text-xs text-muted-foreground">
-                      ⚡ {formatInstallCount(skill.install_count!)}
+                      ⚡ {formatInstallCount(skill.install_count!)}{lang === 'zh' ? ' 次' : ''}
                     </span>
                   )}
                   {skill.last_verified_at && (
