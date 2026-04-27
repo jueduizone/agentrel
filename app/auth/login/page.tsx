@@ -48,7 +48,7 @@ export default function LoginPage() {
       })
       if (error) setError(error.message)
     } catch {
-      setError('OAuth 登录失败，请重试')
+      setError(t('auth.oauthFailed'))
     } finally {
       setOauthLoading(null)
     }
@@ -65,11 +65,11 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || '登录失败'); return }
+      if (!res.ok) { setError(data.error || t('auth.loginFailed')); return }
       localStorage.setItem('agentrel_api_key', data.api_key)
       router.push('/')
       router.refresh()
-    } catch { setError('网络错误，请重试') } finally { setLoading(false) }
+    } catch { setError(t('auth.networkError')) } finally { setLoading(false) }
   }
 
   return (
@@ -79,7 +79,7 @@ export default function LoginPage() {
         <div className="w-full max-w-sm">
           <div className="text-center mb-8">
             <Link href="/" className="text-2xl font-bold text-foreground">AgentRel</Link>
-            <p className="text-muted-foreground/70 mt-2 text-sm">Sign in to your account</p>
+            <p className="text-muted-foreground/70 mt-2 text-sm">{t('auth.loginTitle')}</p>
           </div>
           <div className="bg-background rounded-2xl border border-border p-6 shadow-sm space-y-4">
 
@@ -91,7 +91,7 @@ export default function LoginPage() {
                 className="w-full flex items-center justify-center gap-2.5 border border-border/80 rounded-lg py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted/50 transition-colors disabled:opacity-50"
               >
                 <GitHubIcon />
-                {oauthLoading === 'github' ? 'Redirecting...' : 'Continue with GitHub'}
+                {oauthLoading === 'github' ? t('auth.redirecting') : t('auth.continueGithub')}
               </button>
               <button
                 onClick={() => handleOAuth('google')}
@@ -99,7 +99,7 @@ export default function LoginPage() {
                 className="w-full flex items-center justify-center gap-2.5 border border-border/80 rounded-lg py-2.5 text-sm font-medium text-foreground/80 hover:bg-muted/50 transition-colors disabled:opacity-50"
               >
                 <GoogleIcon />
-                {oauthLoading === 'google' ? 'Redirecting...' : 'Continue with Google'}
+                {oauthLoading === 'google' ? t('auth.redirecting') : t('auth.continueGoogle')}
               </button>
             </div>
 
@@ -113,25 +113,25 @@ export default function LoginPage() {
             {/* Email/password form */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-foreground/80 mb-1">Email</label>
+                <label className="block text-sm font-medium text-foreground/80 mb-1">{t('auth.email')}</label>
                 <input type="email" value={email} onChange={e => setEmail(e.target.value)} required
                   className="w-full border border-border/80 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-foreground/80 mb-1">Password</label>
+                <label className="block text-sm font-medium text-foreground/80 mb-1">{t('auth.password')}</label>
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} required
                   className="w-full border border-border/80 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-black" />
               </div>
               {error && <p className="text-sm text-red-500">{error}</p>}
               <button type="submit" disabled={loading || oauthLoading !== null}
                 className="w-full bg-foreground text-background rounded-lg py-2.5 text-sm font-semibold hover:bg-foreground/80 transition-colors disabled:opacity-50">
-                {loading ? 'Signing in...' : 'Sign In'}
+                {loading ? t('auth.signingIn') : t('auth.signIn')}
               </button>
             </form>
 
             <p className="text-center text-sm text-muted-foreground/70">
-              No account?{' '}
-              <Link href="/auth/register" className="text-indigo-600 hover:underline">Register</Link>
+              {t('auth.noAccount')}{' '}
+              <Link href="/auth/register" className="text-indigo-600 hover:underline">{t('auth.register')}</Link>
             </p>
           </div>
         </div>

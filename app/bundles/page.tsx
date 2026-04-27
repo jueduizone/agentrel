@@ -1,31 +1,7 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
-import { Package } from 'lucide-react'
 import { serviceClient } from '@/lib/supabase'
 import type { Bundle } from '@/lib/types'
-import { Navbar } from '@/components/navbar'
-import { PageHeader } from '@/components/PageHeader'
-import { formatBundleText } from '@/lib/utils'
-import { CopyButton } from './CopyButton'
-
-const BUNDLE_COPY: Record<string, { name: string; description: string }> = {
-  'multi-chain-dev': {
-    name: 'Multi-Chain Developer Bundle',
-    description: 'Development skills for Sui, TON, Starknet, and Base. Built for developers shipping cross-chain apps.',
-  },
-  'web3-starter': {
-    name: 'Web3 Starter Bundle',
-    description: 'Core Ethereum, Solana, and Aptos development context for getting started with Web3 apps.',
-  },
-}
-
-function bundleName(bundle: Bundle) {
-  return BUNDLE_COPY[bundle.id]?.name ?? (formatBundleText(bundle.name) || bundle.name)
-}
-
-function bundleDescription(bundle: Bundle) {
-  return BUNDLE_COPY[bundle.id]?.description ?? (formatBundleText(bundle.description) || bundle.description)
-}
+import { BundlesClient } from './BundlesClient'
 
 export const metadata: Metadata = {
   title: 'Bundles — AgentRel',
@@ -38,73 +14,5 @@ export default async function BundlesPage() {
     .select('*')
     .order('created_at', { ascending: false })
 
-  return (
-    <div className="min-h-screen bg-background">
-      <Navbar />
-      <div className="mx-auto max-w-6xl px-4 py-8">
-        <PageHeader titleKey="bundles.title" descKey="bundles.desc" />
-          {error && (
-            <p className="mt-2 text-sm text-red-500">Failed to load bundles: {error.message}</p>
-          )}
-
-        {!bundles || bundles.length === 0 ? (
-          <div className="rounded-xl border border-border p-12 text-center text-muted-foreground">
-            No bundles available yet.
-          </div>
-        ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            {(bundles as Bundle[]).map((bundle) => {
-              const installCmd = `curl https://agentrel.vercel.app/api/bundles/${bundle.id}/markdown`
-              return (
-                <div
-                  key={bundle.id}
-                  className="rounded-xl border border-border p-6 transition-colors hover:border-foreground"
-                >
-                  <div className="mb-4 flex items-start justify-between">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-muted">
-                      <Package className="h-5 w-5 text-muted-foreground" />
-                    </div>
-                    {bundle.scenario && (
-                      <span className="rounded-full border border-border px-2.5 py-0.5 text-xs text-muted-foreground">
-                        {bundle.scenario}
-                      </span>
-                    )}
-                  </div>
-
-                  <h2 className="mb-2 text-lg font-semibold text-foreground">{bundleName(bundle)}</h2>
-                  <p className="mb-4 text-sm text-muted-foreground">{bundleDescription(bundle)}</p>
-
-                  {/* Skills list */}
-                  <div className="mb-4">
-                    <p className="mb-2 text-xs font-medium text-muted-foreground uppercase tracking-wider">
-                      {bundle.skills.length} Skills
-                    </p>
-                    <div className="flex flex-wrap gap-1.5">
-                      {bundle.skills.map((skillId) => (
-                        <Link
-                          key={skillId}
-                          href={`/skills/${skillId}`}
-                          className="rounded-full border border-border bg-muted/30 px-2 py-0.5 font-mono text-xs text-foreground hover:bg-muted transition-colors"
-                        >
-                          {skillId}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Install command */}
-                  <div className="flex items-center rounded-lg border border-border bg-muted/30 p-3">
-                    <code className="block flex-1 font-mono text-xs text-foreground break-all">
-                      {installCmd}
-                    </code>
-                    <CopyButton text={installCmd} />
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
-      </div>
-    </div>
-  )
+  return <BundlesClient bundles={(bundles as Bundle[] | null) ?? null} errorMessage={error?.message} />
 }
