@@ -60,12 +60,14 @@ export async function GET(
 
   const skillsContext = ecosystemSkills.length > 0
     ? ecosystemSkills.map((s) => {
+        const skillMarkdownUrl = `https://agentrel.vercel.app/api/skills/${s.id}.md`
+        const skillPageUrl = `https://agentrel.vercel.app/skills/${s.id}`
         const content = s.content.replace(/^---[\s\S]*?---\s*/m, '').trim()
         const maxChars = 2400
         const snippet = content.length > maxChars
-          ? `${content.slice(0, maxChars).trim()}\n\n_…skill content truncated for context size; open the Skill ID on AgentRel for the full version._`
+          ? `${content.slice(0, maxChars).trim()}\n\n_…skill content truncated for context size; fetch the Skill URL above for the full version._`
           : content
-        return `## ${s.name}\n\n_Ecosystem: ${s.ecosystem} · Skill ID: \`${s.id}\`_\n\n${snippet}\n`
+        return `## ${s.name}\n\n_Ecosystem: ${s.ecosystem} · Skill ID: \`${s.id}\`_\n\n- Skill URL: ${skillMarkdownUrl}\n- Web page: ${skillPageUrl}\n\n${snippet}\n`
       }).join('\n')
     : '_No skills matched the required ecosystems._'
 
