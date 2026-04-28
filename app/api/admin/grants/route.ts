@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
   // Auto-sync grant skill card
-  upsertGrantSkill({ id: data.id, title, description, reward, deadline, status, sponsor, track, application_schema }).catch(() => {})
+  upsertGrantSkill({ id: data.id, title, description, reward, deadline, status, sponsor, track, application_schema, tech_requirements, required_skills }).catch(() => {})
   syncGrantsIndex().catch(() => {})
 
   return NextResponse.json({ id: data.id }, { status: 201 })
