@@ -10,6 +10,13 @@ export type GrantContextSkill = {
   content?: string | null
 }
 
+export type GrantRequirementSections = {
+  submissionRequirements: string[]
+  judgingCriteria: string[]
+  exampleIdeas: string[]
+  other: string[]
+}
+
 const QUALITY_SOURCES = new Set(['official', 'verified', 'official-docs'])
 
 const SOURCE_RANK: Record<string, number> = {
@@ -88,4 +95,33 @@ export function splitGrantRequirementText(text: string | null | undefined) {
     .flatMap((line) => line.split(/\s+[-•]\s+/).filter(Boolean))
     .map((line) => line.replace(/^[-•]\s*/, '').replace(/^\d+[.)]\s*/, '').trim())
     .filter(Boolean)
+}
+
+export function extractGrantRequirementSections(text: string | null | undefined): GrantRequirementSections {
+  const sections: GrantRequirementSections = {
+    submissionRequirements: [],
+    judgingCriteria: [],
+    exampleIdeas: [],
+    other: [],
+  }
+  let current: keyof GrantRequirementSections = 'other'
+
+  for (const item of splitGrantRequirementText(text)) {
+    const normalized = item.toLowerCase().replace(/:$/, '')
+    if (/submission|requirement/.test(normalized)) {
+      current = 'submissionRequirements'
+      continue
+    }
+    if (/judging|criteria|evaluation/.test(normalized)) {
+      current = 'judgingCriteria'
+      continue
+    }
+    if (/example|idea|direction/.test(normalized)) {
+      current = 'exampleIdeas'
+      continue
+    }
+    sections[current].push(item)
+  }
+
+  return sections
 }

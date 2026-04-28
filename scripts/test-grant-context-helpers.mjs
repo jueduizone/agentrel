@@ -4,6 +4,7 @@ import {
   selectSkillsForGrantContext,
   renderApplyBodyExample,
   splitGrantRequirementText,
+  extractGrantRequirementSections,
 } from '../lib/grantContextHelpers.js'
 
 test('falls back to healthy community skills when an ecosystem has no official skills', () => {
@@ -46,4 +47,14 @@ test('splits dense grant requirement text into readable list items', () => {
     'Technical depth',
     'UX quality',
   ])
+})
+
+test('extracts submission requirements, judging criteria, and example ideas into separate sections', () => {
+  const sections = extractGrantRequirementSections('Submission requirements:\n- Build with fhEVM\n\nJudging criteria:\n- Technical depth\n\nExample directions:\n- Private payroll')
+  assert.deepEqual(sections, {
+    submissionRequirements: ['Build with fhEVM'],
+    judgingCriteria: ['Technical depth'],
+    exampleIdeas: ['Private payroll'],
+    other: [],
+  })
 })
