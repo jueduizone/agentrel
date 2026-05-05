@@ -87,7 +87,7 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
     sponsorUrl ? { label: `${sponsorName ?? 'Sponsor'} website`, href: sponsorUrl } : null,
     isZama ? { label: 'Zama Docs', href: 'https://docs.zama.ai/' } : null,
     isZama ? { label: 'Zama Bounty', href: 'https://bounty.zama.ai/' } : null,
-    isZama ? { label: 'fhEVM Litepaper', href: 'https://www.zama.ai/post/introducing-fhevm' } : null,
+    isZama ? { label: 'Zama Protocol Litepaper', href: 'https://docs.zama.org/protocol/zama-protocol-litepaper' } : null,
   ].filter(Boolean) as Array<{ label: string; href: string }>
 
   const isLive = isOpen && !isPast
