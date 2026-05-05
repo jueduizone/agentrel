@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { serviceClient } from '@/lib/supabase'
 import type { Bundle, Skill } from '@/lib/types'
+import { SITE_URL } from '@/lib/site-url'
 
 // GET /api/bundles/:id/markdown — bundle as merged markdown for agents
 export async function GET(
@@ -14,7 +15,7 @@ export async function GET(
   }
   const b = bundle as Bundle
   const { data: skills } = await serviceClient.from('skills').select('id, name, ecosystem, content').in('id', b.skills)
-  const BASE = 'https://agentrel.vercel.app'
+  const BASE = SITE_URL
   const lines = [
     `# ${b.name}`,
     b.description ? `\n> ${b.description}` : '',

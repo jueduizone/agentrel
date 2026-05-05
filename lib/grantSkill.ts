@@ -1,4 +1,5 @@
 import { serviceClient } from './supabase'
+import { SITE_URL, siteUrl } from './site-url'
 
 interface Grant {
   id: string
@@ -57,7 +58,7 @@ function renderRelevantSkillsContext(skills: RelatedSkill[]) {
     '- If links are unavailable, use summaries below as fallback context.',
     '',
     '### Recommended Reading Order',
-    ...inline.map((skill, index) => `${index + 1}. [${skill.name}](https://agentrel.vercel.app/api/skills/${skill.id}.md) — ${skillRelevance(skill)}`),
+    ...inline.map((skill, index) => `${index + 1}. [${skill.name}](${siteUrl(`/api/skills/${skill.id}.md`)}) — ${skillRelevance(skill)}`),
     '',
     ...inline.map((skill) => {
       const content = skill.content.replace(/^---[\s\S]*?---\s*/m, '').trim()
@@ -65,10 +66,10 @@ function renderRelevantSkillsContext(skills: RelatedSkill[]) {
       const snippet = content.length > maxChars
         ? `${content.slice(0, maxChars).trim()}\n\n_…summary truncated; fetch the Skill URL above for the full version._`
         : content
-      return `### ${skill.name}\n\n_Ecosystem: ${skill.ecosystem} · Skill ID: \`${skill.id}\` · Source: ${skill.source || 'unknown'}_\n\n- Skill URL: https://agentrel.vercel.app/api/skills/${skill.id}.md\n- Web page: https://agentrel.vercel.app/skills/${skill.id}\n- Relevance: ${skillRelevance(skill)}\n- Fetch full source when: exact APIs, constraints, examples, or edge cases affect the implementation.\n\n${snippet}`
+      return `### ${skill.name}\n\n_Ecosystem: ${skill.ecosystem} · Skill ID: \`${skill.id}\` · Source: ${skill.source || 'unknown'}_\n\n- Skill URL: ${siteUrl(`/api/skills/${skill.id}.md`)}\n- Web page: ${siteUrl(`/skills/${skill.id}`)}\n- Relevance: ${skillRelevance(skill)}\n- Fetch full source when: exact APIs, constraints, examples, or edge cases affect the implementation.\n\n${snippet}`
     }),
     additional.length > 0
-      ? `### Additional Relevant Skills\n\n${additional.map((skill) => `- [${skill.name}](https://agentrel.vercel.app/api/skills/${skill.id}.md) · \`${skill.id}\` — ${skillRelevance(skill)}`).join('\n')}`
+      ? `### Additional Relevant Skills\n\n${additional.map((skill) => `- [${skill.name}](${siteUrl(`/api/skills/${skill.id}.md`)}) · \`${skill.id}\` — ${skillRelevance(skill)}`).join('\n')}`
       : '',
   ].filter(Boolean).join('\n')
 }
@@ -113,7 +114,7 @@ ${Array.isArray(grant.required_skills) && grant.required_skills.length > 0 ? gra
 ## Context URL
 
 Fetch the generated grant context for this bounty:
-\`https://agentrel.vercel.app/api/v1/grants/${grant.id}/context.md\`
+\`${siteUrl(`/api/v1/grants/${grant.id}/context.md`)}\`
 
 ## Relevant Skills Context
 
@@ -124,7 +125,7 @@ ${renderRelevantSkillsContext(relatedSkills)}
 Use the AgentRel grant-apply skill to submit an application:
 
 \`\`\`
-POST https://agentrel.vercel.app/api/build/${grant.id}/apply
+POST ${siteUrl(`/api/build/${grant.id}/apply`)}
 Authorization: Bearer ***
 Content-Type: application/json
 
@@ -137,10 +138,10 @@ Content-Type: application/json
 \`\`\`
 
 Get full Skill details and the apply endpoint spec at:
-\`https://agentrel.vercel.app/skills/grant-apply\`
+\`${siteUrl('/skills/grant-apply')}\`
 
 ## Feedback
-\`POST https://agentrel.vercel.app/api/feedback\` with \`{ "skill": "grant-${grant.id}", "issue": "..." }\`
+\`POST ${siteUrl('/api/feedback')}\` with \`{ "skill": "grant-${grant.id}", "issue": "..." }\`
 `
 }
 
@@ -212,7 +213,7 @@ export async function syncGrantsIndex(): Promise<void> {
     reward: g.reward ?? null,
     deadline: g.deadline ?? null,
     sponsor: g.sponsor ?? null,
-    skill_url: `https://agentrel.vercel.app/skills/grant-${g.id}`,
+    skill_url: siteUrl(`/skills/grant-${g.id}`),
   }))
 
   const content = `---
@@ -238,7 +239,7 @@ ${JSON.stringify({ name: 'agentrel-grants-index', description: 'Index of all ope
 
 1. Pick a grant from the list above
 2. Fetch its Skill: \`GET <skill_url>\`
-3. Apply: \`POST https://agentrel.vercel.app/api/build/{id}/apply\`
+3. Apply: \`POST ${SITE_URL}/api/build/{id}/apply\`
 
 Last updated: ${new Date().toISOString()}
 `

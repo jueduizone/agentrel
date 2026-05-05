@@ -12,7 +12,7 @@ source: community
 confidence: high
 maintainer: AgentRel Community
 last_updated: 2026-03-19
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview
@@ -107,7 +107,7 @@ source: official
 confidence: high
 maintainer: AgentRel Community
 last_updated: 2026-03-19
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview
@@ -198,7 +198,7 @@ source: community
 confidence: medium
 maintainer: AgentRel Community
 last_updated: 2026-03-19
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview
@@ -315,7 +315,7 @@ source: community
 confidence: medium
 maintainer: AgentRel Community
 last_updated: 2026-03-19
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview
@@ -443,7 +443,7 @@ source: community
 confidence: medium
 maintainer: AgentRel Community
 last_updated: 2026-03-19
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview
@@ -591,7 +591,7 @@ source: community
 confidence: medium
 maintainer: AgentRel Community
 last_updated: 2026-03-19
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview
@@ -748,7 +748,7 @@ source: official
 confidence: high
 maintainer: AgentRel Community
 last_updated: 2026-03-19
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview
@@ -899,7 +899,7 @@ source: community
 confidence: medium
 maintainer: AgentRel Community
 last_updated: 2026-03-19
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview
@@ -1017,7 +1017,7 @@ source: community
 confidence: medium
 maintainer: AgentRel Community
 last_updated: 2026-03-19
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview
@@ -1142,7 +1142,7 @@ source: community
 confidence: medium
 maintainer: AgentRel Community
 last_updated: 2026-03-19
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview

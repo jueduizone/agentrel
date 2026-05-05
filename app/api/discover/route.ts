@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { serviceClient as db } from '@/lib/supabase'
+import { siteUrl } from '@/lib/site-url'
 
 // Known official domains per ecosystem
 const OFFICIAL_DOMAINS: Record<string, string[]> = {
@@ -113,7 +114,7 @@ export async function POST(request: NextRequest) {
     name: data.name,
     ecosystem: data.ecosystem,
     tier,
-    url: `https://agentrel.vercel.app/api/skills/${data.id}.md`,
+    url: siteUrl(`/api/skills/${data.id}.md`),
     message: tier === 'official'
       ? '✅ Skill submitted as Official (verified domain)'
       : '✅ Skill submitted as Community (pending review)',

@@ -1,4 +1,5 @@
 import { serviceClient } from '@/lib/supabase'
+import { siteUrl } from '@/lib/site-url'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { Navbar } from '@/components/navbar'
@@ -107,7 +108,7 @@ export default async function GrantDetailPage({ params }: { params: Promise<{ id
                     🔗 查看原网站
                   </a>
                 )}
-                <a href={`https://agentrel.vercel.app/api/v1/grants/${id}/context.md`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted/60">
+                <a href={siteUrl(`/api/v1/grants/${id}/context.md`)} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted/60">
                   🤖 Agent Context
                 </a>
               </div>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { serviceClient } from '@/lib/supabase'
+import { SITE_URL } from '@/lib/site-url'
 import { createHmac } from 'crypto'
 
 async function trackUsage(skillId: string, ecosystem: string, request: NextRequest) {
@@ -51,7 +52,7 @@ function verifyKey(key: string, skillAccess: string, skillPartnerId: string | nu
 function makePreview(content: string, previewLines: number): string {
   const lines = content.split('\n')
   const preview = lines.slice(0, previewLines).join('\n')
-  return preview + '\n\n---\n> 🔒 This skill requires a Pro or Partner Key to access the full content.\n> Get access at https://agentrel.vercel.app\n'
+  return preview + `\n\n---\n> 🔒 This skill requires a Pro or Partner Key to access the full content.\n> Get access at ${SITE_URL}\n`
 }
 
 export async function GET(

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
 import { serviceClient } from '@/lib/supabase'
+import { siteUrl } from '@/lib/site-url'
 
 const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/
 
@@ -27,7 +28,7 @@ export async function POST(request: NextRequest) {
     email: email.trim().toLowerCase(),
     password,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://agentrel.vercel.app'}/auth/callback`,
+      emailRedirectTo: siteUrl('/auth/callback'),
     },
   })
 

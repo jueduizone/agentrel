@@ -4,6 +4,7 @@ import { useLang } from '@/context/LanguageContext'
 import { HomeCopyButton } from './HomeCopyButton'
 import Link from 'next/link'
 import { ArrowRight } from 'lucide-react'
+import { clientSiteUrl } from '@/lib/client-site-url'
 
 type ScenarioCounts = {
   technicalDoc: number
@@ -12,7 +13,7 @@ type ScenarioCounts = {
   grants: number
 }
 
-const INDEX_CMD = 'https://agentrel.vercel.app/api/v1/skill.md'
+const INDEX_PATH = '/api/v1/skill.md'
 
 type Props = {
   skillsCount: number
@@ -21,6 +22,7 @@ type Props = {
 
 export function HeroSection({ skillsCount, scenarioCounts }: Props) {
   const { lang, t } = useLang()
+  const indexCmd = clientSiteUrl(INDEX_PATH)
 
   const scenariosEn = [
     { num: '01', title: 'Build a dApp', desc: 'Dev skills by chain', href: '/skills?type=technical-doc', count: scenarioCounts.technicalDoc },
@@ -125,9 +127,9 @@ export function HeroSection({ skillsCount, scenarioCounts }: Props) {
                   className="text-xs break-all flex-1 leading-relaxed"
                   style={{ color: 'oklch(84% 0.08 265)' }}
                 >
-                  {INDEX_CMD}
+                  {indexCmd}
                 </code>
-                <HomeCopyButton text={INDEX_CMD} />
+                <HomeCopyButton text={indexCmd} />
               </div>
 
               <div

@@ -1,6 +1,7 @@
 import { NextRequest } from 'next/server'
 import { serviceClient } from '@/lib/supabase'
 import { normalizeEcosystems, renderApplyBodyExample, selectSkillsForGrantContext } from '@/lib/grantContextHelpers'
+import { siteUrl } from '@/lib/site-url'
 
 export async function GET(
   _request: NextRequest,
@@ -92,11 +93,11 @@ export async function GET(
         '- If links are unavailable, use the summaries below as fallback context.',
         '',
         '### Recommended Reading Order',
-        ...inlineSkills.map((skill, index) => `${index + 1}. [${skill.name}](https://agentrel.vercel.app/api/skills/${skill.id}.md) — ${skillRelevance(skill)}`),
+        ...inlineSkills.map((skill, index) => `${index + 1}. [${skill.name}](${siteUrl(`/api/skills/${skill.id}.md`)}) — ${skillRelevance(skill)}`),
         '',
         ...inlineSkills.map((skill) => {
-          const skillMarkdownUrl = `https://agentrel.vercel.app/api/skills/${skill.id}.md`
-          const skillPageUrl = `https://agentrel.vercel.app/skills/${skill.id}`
+          const skillMarkdownUrl = siteUrl(`/api/skills/${skill.id}.md`)
+          const skillPageUrl = siteUrl(`/skills/${skill.id}`)
           const content = skill.content.replace(/^---[\s\S]*?---\s*/m, '').trim()
           const maxChars = 1200
           const snippet = content.length > maxChars
@@ -105,7 +106,7 @@ export async function GET(
           return `### ${skill.name}\n\n_Ecosystem: ${skill.ecosystem} · Skill ID: \`${skill.id}\` · Source: ${skill.source || 'unknown'}_\n\n- Skill URL: ${skillMarkdownUrl}\n- Web page: ${skillPageUrl}\n- Relevance: ${skillRelevance(skill)}\n- Fetch full source when: exact APIs, constraints, examples, or edge cases affect the implementation.\n\n${snippet}`
         }),
         additionalSkills.length > 0
-          ? `### Additional Relevant Skills\n\n${additionalSkills.map((skill) => `- [${skill.name}](https://agentrel.vercel.app/api/skills/${skill.id}.md) · \`${skill.id}\` — ${skillRelevance(skill)}`).join('\n')}`
+          ? `### Additional Relevant Skills\n\n${additionalSkills.map((skill) => `- [${skill.name}](${siteUrl(`/api/skills/${skill.id}.md`)}) · \`${skill.id}\` — ${skillRelevance(skill)}`).join('\n')}`
           : '',
       ].filter(Boolean).join('\n')
     : '_No skills matched the required ecosystems._'
@@ -132,7 +133,7 @@ ${skillsBullets}
 ## How to Apply
 
 Send a POST request to:
-\`https://agentrel.vercel.app/api/v1/grants/${grantId}/apply\`
+\`${siteUrl(`/api/v1/grants/${grantId}/apply`)}\`
 
 With Bearer token (user's AgentRel API key) and JSON body:
 \`\`\`json

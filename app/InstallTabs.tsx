@@ -1,18 +1,19 @@
 'use client'
 import { useState } from 'react'
 import { HomeCopyButton } from './HomeCopyButton'
+import { clientSiteUrl } from '@/lib/client-site-url'
 
 const EXAMPLES = [
-  { label: 'Ethereum', cmd: 'curl "https://agentrel.vercel.app/api/skills?ecosystem=ethereum&limit=5"' },
-  { label: 'Solana',   cmd: 'curl "https://agentrel.vercel.app/api/skills?ecosystem=solana&limit=5"' },
-  { label: 'Monad',    cmd: 'curl "https://agentrel.vercel.app/api/skills/monad/network-config.md"' },
-  { label: 'Security', cmd: 'curl "https://agentrel.vercel.app/api/skills?type=security&limit=5"' },
-  { label: 'Zama',     cmd: 'curl "https://agentrel.vercel.app/api/skills/zama/fhevm-dev-guide.md"' },
+  { label: 'Ethereum', path: '/api/skills?ecosystem=ethereum&limit=5' },
+  { label: 'Solana',   path: '/api/skills?ecosystem=solana&limit=5' },
+  { label: 'Monad',    path: '/api/skills/monad/network-config.md' },
+  { label: 'Security', path: '/api/skills?type=security&limit=5' },
+  { label: 'Zama',     path: '/api/skills/zama/fhevm-dev-guide.md' },
 ]
 
 export function InstallTabs() {
   const [active, setActive] = useState(0)
-  const cmd = EXAMPLES[active].cmd
+  const cmd = `curl "${clientSiteUrl(EXAMPLES[active].path)}"`
 
   return (
     <div className="mt-8 mx-auto max-w-2xl">

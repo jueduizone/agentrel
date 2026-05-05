@@ -7,6 +7,7 @@ import { Navbar } from '@/components/navbar'
 import { PageHeader } from '@/components/PageHeader'
 import { useLang } from '@/context/LanguageContext'
 import { formatBundleText } from '@/lib/utils'
+import { clientSiteUrl } from '@/lib/client-site-url'
 import { CopyButton } from './CopyButton'
 
 type Props = {
@@ -89,7 +90,7 @@ export function BundlesClient({ bundles, errorMessage }: Props) {
         ) : (
           <div className="grid gap-6 md:grid-cols-2">
             {bundles.map((bundle) => {
-              const installCmd = `curl https://agentrel.vercel.app/api/bundles/${bundle.id}/markdown`
+              const installCmd = `curl ${clientSiteUrl(`/api/bundles/${bundle.id}/markdown`)}`
               return (
                 <div
                   key={bundle.id}

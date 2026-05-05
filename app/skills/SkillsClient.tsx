@@ -6,12 +6,7 @@ import type { Skill } from '@/lib/types'
 import { useLang } from '@/context/LanguageContext'
 import { sendGAEvent } from '@next/third-parties/google'
 import { cleanSkillName, cleanSkillDescription, normalizeSkillSource, copyToClipboard } from '@/lib/utils'
-
-function healthClass(score: number) {
-  if (score >= 85) return 'text-green-600 bg-green-50'
-  if (score >= 60) return 'text-yellow-600 bg-yellow-50'
-  return 'text-red-600 bg-red-50'
-}
+import { clientSiteUrl } from '@/lib/client-site-url'
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime()
@@ -64,8 +59,8 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
   const { lang, t } = useLang()
 
   // 搜索建议（防抖 300ms，调 /api/skills/search）
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (search.length < 2) { setSuggestions([]); return }
     const timer = setTimeout(async () => {
       try {
@@ -129,14 +124,14 @@ export function SkillsClient({ skills, initialEcosystem, initialQ, initialType }
       const repo = skill.source_repo
       if (repo.includes('github.com') && !repo.includes('/blob/') && !repo.endsWith('.md')) {
         // It's a repo URL, not a direct file URL — fall back to our API
-        return `https://agentrel.vercel.app/api/skills/${skill.id}.md`
+        return clientSiteUrl(`/api/skills/${skill.id}.md`)
       }
       // Direct file URL or raw URL — use it
       if (repo.endsWith('.md') || repo.includes('raw.githubusercontent')) {
         return repo
       }
     }
-    return `https://agentrel.vercel.app/api/skills/${skill.id}.md`
+    return clientSiteUrl(`/api/skills/${skill.id}.md`)
   }
 
   async function handleCopy(e: React.MouseEvent, skill: Skill) {

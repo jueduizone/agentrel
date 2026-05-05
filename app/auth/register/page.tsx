@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Navbar } from '@/components/navbar'
 import { Footer } from '@/components/footer'
 import { createClient } from '@/lib/supabase'
+import { clientSiteUrl } from '@/lib/client-site-url'
 import { useLang } from '@/context/LanguageContext'
 
 function GitHubIcon() {
@@ -40,10 +41,9 @@ export default function RegisterPage() {
     setError('')
     try {
       const supabase = createClient()
-      const origin = process.env.NEXT_PUBLIC_APP_URL || window.location.origin
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
-        options: { redirectTo: `${origin}/auth/callback` },
+        options: { redirectTo: clientSiteUrl('/auth/callback') },
       })
       if (error) setError(error.message)
     } catch {

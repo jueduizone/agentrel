@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { serviceClient } from '@/lib/supabase'
+import { SITE_URL } from '@/lib/site-url'
 
 export const revalidate = 3600
 
@@ -21,7 +22,7 @@ export async function GET() {
     grouped[eco].push(skill)
   }
 
-  const BASE = 'https://agentrel.vercel.app'
+  const BASE = SITE_URL
 
   const lines: string[] = [
     '# AgentRel — Web3 AI Skills Index',

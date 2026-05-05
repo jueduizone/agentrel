@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { useState } from 'react'
 import { copyToClipboard } from '@/lib/utils'
+import { clientSiteUrl } from '@/lib/client-site-url'
 
 interface Props {
   grantId: string
@@ -12,7 +13,7 @@ export function ApplyCTA({ grantId, isOpen }: Props) {
   const [copied, setCopied] = useState(false)
   const [copyError, setCopyError] = useState(false)
 
-  const contextUrl = `https://agentrel.vercel.app/api/v1/grants/${grantId}/context.md`
+  const contextUrl = clientSiteUrl(`/api/v1/grants/${grantId}/context.md`)
 
   const handleAgentCopy = async () => {
     const ok = await copyToClipboard(contextUrl)

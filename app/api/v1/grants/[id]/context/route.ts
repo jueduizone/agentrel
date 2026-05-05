@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { serviceClient } from '@/lib/supabase'
+import { siteUrl } from '@/lib/site-url'
 
 /**
  * GET /api/v1/grants/{id}/context
@@ -65,7 +66,7 @@ export async function GET(
       ecosystem: s.ecosystem as string,
       type: s.type as string,
       source: s.source as string,
-      skill_url: `https://agentrel.vercel.app/api/skills/${s.id}.md`,
+      skill_url: siteUrl(`/api/skills/${s.id}.md`),
     }))
   }
 

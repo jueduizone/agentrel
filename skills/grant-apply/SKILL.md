@@ -9,14 +9,14 @@ source: official
 confidence: high
 maintainer: "@agentrel"
 last_updated: 2026-04-01
-feedback_endpoint: https://agentrel.vercel.app/api/feedback
+feedback_endpoint: https://agent.openbuild.xyz/api/feedback
 ---
 
 ## Overview
 
 This skill enables AI Agents to discover Web3 grants and bounties on AgentRel, retrieve application requirements, and submit applications on behalf of authenticated users.
 
-**Base URL:** `https://agentrel.vercel.app`
+**Base URL:** `https://agent.openbuild.xyz`
 
 ## Authentication
 

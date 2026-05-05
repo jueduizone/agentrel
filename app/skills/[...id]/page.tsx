@@ -5,6 +5,7 @@ import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 import rehypeSlug from 'rehype-slug'
 import { serviceClient } from '@/lib/supabase'
+import { siteUrl } from '@/lib/site-url'
 import type { Skill } from '@/lib/types'
 import { Navbar } from '@/components/navbar'
 import { cleanSkillName, normalizeSkillSource, stripFrontmatter, stripLeadingH1 } from '@/lib/utils'
@@ -61,7 +62,7 @@ export default async function SkillDetailPage({
   const installCmd = (skill.source === 'official' && skill.source_repo &&
     (skill.source_repo.endsWith('.md') || skill.source_repo.includes('raw.githubusercontent')))
     ? skill.source_repo
-    : `https://agentrel.vercel.app/api/skills/${skill.id}.md`
+    : siteUrl(`/api/skills/${skill.id}.md`)
 
   return (
     <div className="min-h-screen bg-background">
